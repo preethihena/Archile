@@ -123,11 +123,13 @@ class Tags(models.Model):
 
 
 class Post_tags(models.Model):
-	p_id = models.AutoField(primary_key = True)
+	pt_id = models.AutoField(primary_key = True)
+	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)
 	t_id = models.ForeignKey(Tags,on_delete=models.CASCADE)
 
 class Channel_tags(models.Model):
-	c_id = models.AutoField(primary_key = True)
+	ct_id = models.AutoField(primary_key = True)
+	c_id = models.ForeignKey(Channel,on_delete=models.CASCADE)
 	t_id = models.ForeignKey(Tags,on_delete=models.CASCADE)
 
 class post_actions(models.Model):
