@@ -7,7 +7,7 @@ This is an Django based website which is developed by my team as part of our pro
 * [Python](https://www.python.org/)   (3.5.2 tested)
 * [Django]( https://www.djangoproject.com/)
 * [PIL]( https://python-pillow.org/)
-* [Mysql]
+* [Mysql](https://www.mysql.com/)
 
 
 
@@ -41,7 +41,9 @@ $  CREATE DATABASE archile CHARACTER SET UTF8;
 
 ### Update the settings file
 Go to main project folder. 
-``` $ cd archile ```
+``` 
+$ cd archile 
+```
 In settings.py file update the database user and password.
 
 ### Migrate the databse
