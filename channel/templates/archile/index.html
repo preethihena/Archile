@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Archile</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
+</head>
+
+<style type="text/css">
+	:root{
+		--c1 : #fedfa0;
+		--c2 : #855f35;
+	}
+	html,body{padding: 0px;margin: 0px;}
+	html,body{
+		min-height: 100%;
+	}
+	*{box-sizing: border-box;}
+	body{
+		background:url('{% static 'archile/index_bg4.jpeg' %}') no-repeat center;
+	    padding: 25px;
+	    background-size: auto 100%;
+	}
+	.index-container{
+		margin-top: 80px;
+		padding: 30px;
+		width: 33.33%;
+		min-width: 300px;
+		max-height: 400px;
+		height: all;
+		background-color: var(--c1);
+		box-shadow: 0px 0px 15px 15px var(--c2);
+	}
+	.Archile{
+		font-size: 60px;
+		font-weight: 3000;
+		font-family: 'Fredericka the Great', cursive;
+	}
+	.tag-line{
+		font-size: 15px;
+		font-family: 'Mali', cursive;	
+	}
+	.line{
+		border: 0;
+		height: 3px;
+		background: #333;
+		background-color: #000;
+	}
+	.login-form{
+		font-family: 'calibri';
+	}
+	input[type="text"],input[type="password"]{
+		padding: 3px;
+		background-color: var(--c1);
+		border: none;
+		-webkit-box-shadow: 0px 0px 5px  var(--c2);
+		box-shadow: 0px 0px 5px  var(--c2);
+	}
+	input[type="text"]:focus,input[type="password"]:focus,.login-button{
+		outline:none; 
+		-webkit-box-shadow: 0px 0px 5px  var(--c2);
+		box-shadow: 0px 0px 5px  var(--c2);
+	}
+	.login-button{
+		margin-top: 10px;
+		width: 100px;
+		padding: 5px;
+		border-radius: 5px;
+		background-color: var(--c1);
+		box-shadow: 0px 0px 5px  var(--c2);
+	}
+</style>
+
+<body>
+	<center>
+		<div class="index-container">
+				<div class="Archile">Archile</div>
+				<div class="tag-line">Share your knowledge.<br>It’s a way to achieve immortality.</div>
+				<hr class="line">
+				<div class="login-form">
+					<form autocomplete="off">
+					<table>
+						<tr>
+							<td>Username:</td>
+							<td><input type="text" name="username"><br></td>
+						</tr>
+						<tr>
+							<td>Password:</td>
+							<td><input type="password" name="username"><br></td>
+						</tr>
+						<tr>
+							<td colspan="2"><center><input type="submit" class="login-button" value="Login"></center></td>
+						</tr>
+					</table>
+					</form>
+				</div>
+		</div>
+	</center>
+</body>
+</html>
