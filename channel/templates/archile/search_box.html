@@ -7,7 +7,7 @@
 <form method="post" action="{% url 'search_box' %}">
 	{% csrf_token %}
 
-	Search Query:<input type="text" name="search_query" required><br>
+	Search Query:<input type="text" name="search_query" maxlength="200" required><br>
 	<br>
 	Upload Date:<br>
 
