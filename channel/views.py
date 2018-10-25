@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 #import requests
 # Create your views here.
 def index(request):
-	return render(request,'archile/create_channel.html')
+	return render(request,'archile/base.html')
 
 def search(request,query):
 	
@@ -31,7 +31,21 @@ def home(request,token_id):
 	return render(request, 'archile/create_channel.html')
 
 
+def new_channel_data(request,channel_data):
+	if channel_data:
+		print(channel_data)
+	if 'channel_logo' in request.FILES:
+			print(request.FILES['channel_logo'])
+	return redirect('/')
+
 def create_channel(request):
+
 	if request.method == 'POST':
+		if 'channel_logo' in request.FILES:
+			print(request.FILES['channel_logo'])
 		for i in request.POST:
 			print(i,"\t",request.POST[i])
+		return redirect(new_channel_data,request.POST)
+	else:
+		pass
+	return render(request, 'archile/create_channel.html')

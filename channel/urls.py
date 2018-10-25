@@ -9,4 +9,5 @@ urlpatterns = [
     path('search/<str:query>',search,name="search"),
     path('search_box',search_box,name="search_box"),
     path('create_channel',create_channel,name="create_channel"),
+    path('new_channel_data/<str:channel_data>',new_channel_data,name="new_channel_data"),
 ]
