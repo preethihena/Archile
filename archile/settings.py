@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9k@ll0pj49v957n=v1m4w05udiex)3+rq(_lz)$^oz$3mu9hwv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -86,10 +86,10 @@ DATABASES = {
     'default': {
 
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'preethihena$Archile',
-        'USER': 'preethihena',
-        'PASSWORD': 'henad@22',
-        'HOST': 'preethihena.mysql.pythonanywhere-services.com',
+        'NAME': 'archile',
+        'USER': 'root',
+        'PASSWORD': 'hena@22',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
