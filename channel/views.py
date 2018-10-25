@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-import requests
+#import requests
 # Create your views here.
 def index(request):
 	return render(request,'archile/index.html')
