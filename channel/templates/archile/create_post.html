@@ -11,34 +11,114 @@
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
 	        	<form method="POST" enctype="multipart/form-data" action="">
-						<div class="form-group row">
-							<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
-							<div class="col-sm-3">
-								<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title">
+					<div class="form-group row">
+						<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="exampleFormControlTextarea1" class="col-sm-3 col-form-label">Description:</label>
+						<div class="col-sm-7">
+							<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" placeholder="Give a brief description about the post, here." required></textarea>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="logo" class="col-sm-3 col-form-label">Docs</label>
+						<div class="col-sm-6">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="customFile1"  accept="image/*" name="channel_logo" multiple>
+								<label class="custom-file-label" for="customFile1" >Choose files</label>
 							</div>
 						</div>
-						<div class="form-group row">
-								<label for="validationCustom01" class="col-sm-3 col-form-label">Description </label>
-								<div class="col-sm-3 custom-file">
-									<input type="file" class="custom-file-input" id="customFile"  accept="image/*">
-									<label class="custom-file-label" for="customFile" >Add a Description</label>
-								</div>
+					</div>
+					<div class="form-group row">
+						<label for="logo" class="col-sm-3 col-form-label">Images</label>
+						<div class="col-sm-6">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="customFile2"  accept="image/*" name="channel_logo" multiple>
+								<label class="custom-file-label" for="customFile2" >Choose files</label>
+							</div>
 						</div>
-				  <div class="form-group row">
-				    <label for="ChannelName" class="col-sm-3 col-form-label">Post Tags</label>
-				    <div class="col-sm-7">
-				  		<input type="text" value="" data-role="tagsinput" placeholder="Add tags" />
-				    </div>
-				  </div>
-				  <div class="form-group row">
-				    <label for="ChannelName" class="col-sm-3 col-form-label"></label>
-				    <div class="col-sm-7">
-				  		<button type="submit" class="btn btn-primary">Upload Files</button>
-				    </div>
-				  </div>
+					</div>
+					<div class="form-group row">
+						<label for="logo" class="col-sm-3 col-form-label">Videos</label>
+						<div class="col-sm-6">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="customFile3"  accept="image/*" name="channel_logo" multiple>
+								<label class="custom-file-label" for="customFile3" >Choose files</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="logo" class="col-sm-3 col-form-label">Audio</label>
+						<div class="col-sm-6">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="customFile4"  accept="image/*" name="channel_logo" multiple>
+								<label class="custom-file-label" for="customFile4" >Choose files</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="logo" class="col-sm-3 col-form-label">Archives</label>
+						<div class="col-sm-6">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="customFile5" accept="image/*" name="channel_logo" multiple>
+								<label class="custom-file-label" for="customFile5" >Choose files</label>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label for="ChannelName" class="col-sm-3 col-form-label">Tags:</label>
+						<div class="col-sm-7">
+							<input type="text" value="" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="ChannelName" class="col-sm-3 col-form-label"></label>
+						<div class="col-sm-7">
+							<button type="submit" class="btn btn-primary">Save</button>
+						</div>
+					</div>
 				</form>
 	        </div>
 	    </div>
 	</div>
 </div>
+<script>
+    $(function(){
+	    $('#customFile1').on('change',function(){
+	        var $fileUpload = $('#customFile1');
+	        $(this).next('.custom-file-label').html("Files: "+parseInt($fileUpload.get(0).files.length));
+	    });    
+	})
+    $(function(){
+	    $('#customFile2').on('change',function(){
+	        var $fileUpload = $('#customFile2');
+	        $(this).next('.custom-file-label').html("Files: "+parseInt($fileUpload.get(0).files.length));
+	    });    
+	})
+    $(function(){
+	    $('#customFile3').on('change',function(){
+	        var $fileUpload = $('#customFile3');
+	        $(this).next('.custom-file-label').html("Files: "+parseInt($fileUpload.get(0).files.length));
+	    });    
+	})
+    $(function(){
+	    $('#customFile4').on('change',function(){
+	        var $fileUpload = $('#customFile4');
+	        $(this).next('.custom-file-label').html("Files: "+parseInt($fileUpload.get(0).files.length));
+	    });    
+	})
+    $(function(){
+	    $('#customFile5').on('change',function(){
+	        var $fileUpload = $('#customFile5');
+	        $(this).next('.custom-file-label').html("Files: "+parseInt($fileUpload.get(0).files.length));
+	    });    
+	})
+    
+</script>
+<script src={% static 'archile/tags.js' %}></script>
+
 {% endblock %}

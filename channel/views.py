@@ -48,8 +48,6 @@ def home(request,token_id):
 	login(request, user_object)
 	return redirect('/')
 
-
-
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # @login_required(login_url='/login')
 def create_channel(request):
@@ -64,6 +62,10 @@ def create_channel(request):
 	return render(request, 'archile/create_channel.html')
 
 def create_post(request):
+	return render(request, 'archile/create_post.html')
+
+def edit_post(request):
+	return render(request, 'archile/create_post.html')
 	if request.method == 'POST':
 		user = request.user
 		title = request.POST['post_title']
@@ -107,4 +109,3 @@ def create_post(request):
 
 def edit_post(request):
 	pass
-
