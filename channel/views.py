@@ -58,14 +58,30 @@ def create_channel(request):
 		description = request.POST['channel_description']
 		tags = list(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(',')))
 		user = request.user
+
+		utc = arrow.utcnow()
+		local = utc.to('Asia/Kolkata')
+		channel_object = Channel(u_id=user,name=name,description=description,logo=logo,creation_datetime=local)
+		channel_object.save()
+
+		#saving all tags
+		for tag in tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			post_tag=Channel_tags(c_id=channel_object,t_id=tag_obj)
+			post_tag.save()
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
 
-def create_post(request):
-	return render(request, 'archile/create_post.html')
+def create_post(request,c_id):
+	channel = Channel.objects.get(c_id=c_id)
+	return render(request, 'archile/create_post.html',{'channel':channel})
 
-def edit_post(request):
-	return render(request, 'archile/create_post.html')
+def save_post(request):
 	if request.method == 'POST':
 		user = request.user
 		title = request.POST['post_title']
@@ -77,7 +93,7 @@ def edit_post(request):
 		#getting all files
 		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
 		file_data={}
-		for file in files:
+		for file in FILES:
 			if file in request.FILES:
 				file_data[file] = request.FILES.getlist(file)
 
@@ -105,7 +121,7 @@ def edit_post(request):
 				pf_obj.save()
 
 		return redirect(create_post)
-	return render(request, 'archile/create_post.html')
+	return render(request, 'archile/channel.html')
 
 def edit_post(request):
 	pass
