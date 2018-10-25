@@ -13,7 +13,7 @@
 *.pyc
 */__pycache__/*
 local_settings.py
-settings.py
+archile/settings.py
 db.sqlite3
 media
 arcile/staticfiles/*
