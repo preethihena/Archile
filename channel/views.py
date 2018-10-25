@@ -3,7 +3,7 @@ from .models import User
 import requests
 # Create your views here.
 def index(request):
-	return render(request,'archile/index.html')
+	return render(request,'archile/create_post.html')
 
 def search(request,query):
 	
