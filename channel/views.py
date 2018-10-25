@@ -48,8 +48,6 @@ def home(request,token_id):
 	login(request, user_object)
 	return redirect('/')
 
-
-
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # @login_required(login_url='/login')
 def create_channel(request):
@@ -64,7 +62,7 @@ def create_channel(request):
 	return render(request, 'archile/create_channel.html')
 
 def create_post(request):
-	pass
+	return render(request, 'archile/create_post.html')
 
 def edit_post(request):
-	pass
+	return render(request, 'archile/create_post.html')
