@@ -16,7 +16,7 @@ local_settings.py
 archile/settings.py
 db.sqlite3
 media
-arcile/staticfiles/*
+archile/staticfiles/*
 */migrations/*
 
 

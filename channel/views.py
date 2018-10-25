@@ -11,8 +11,8 @@ def index(request):
 def login(request):
 	return render(request,'archile/login.html')
 
+
 def search(request,query):
-	
 	if query:
 		print(query)
 	#if improper query....
@@ -102,5 +102,9 @@ def create_post(request):
 				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
 
-		return redirect()
+		return redirect(create_post)
+	return render(request, 'archile/create_post.html')
+
+def edit_post(request):
+	pass
 
