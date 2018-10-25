@@ -11,13 +11,13 @@
 *.log
 *.pot
 *.pyc
-*/__pycache__/
+*/__pycache__/*
 local_settings.py
 settings.py
 db.sqlite3
 media
-arcile/staticfiles/
-*//migrations/
+arcile/staticfiles/*
+*/migrations/*
 
 
 

@@ -16,7 +16,6 @@ class UserManager(BaseUserManager):
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(None)
         user.save(using=self._db)
         return user
 
@@ -35,12 +34,11 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(_('email address'), unique=True)
-    user_id=models.IntegerField(_('user_id'),unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     token = models.CharField(_('token'), max_length=1000, blank=True)
     is_active = models.BooleanField(_('active'), default=True)
-    
+    password=None
 
     objects = UserManager()
 

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-#import requests
+from .models import User
+import requests
 # Create your views here.
 def index(request):
-	return render(request,'archile/create_channel.html')
+	return render(request,'archile/create_post.html')
 
 def search(request,query):
 	
@@ -26,6 +27,12 @@ def home(request,token_id):
 	url = "https://serene-wildwood-35121.herokuapp.com/oauth/getDetails"
 	#url="/dammi/"
 	response=requests.post(url, data=payload)
-	p=response.text
-	print(p)
-	return render(request, 'archile/create_channel.html')
+	p=response.json()
+	p=p['student']
+	a=User()
+	a.first_name=p[0]['Student_First_Name']
+	a.last_name=p[0]['Student_Last_name']
+	a.email=p[0]['Student_Email']
+	a.token=token_id
+	a.save()
+	return render(request, 'archile/search_box.html')
