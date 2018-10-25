@@ -86,17 +86,10 @@ DATABASES = {
     'default': {
 
         'ENGINE': 'django.db.backends.mysql',
-<<<<<<< HEAD
-        'NAME': 'archile',
-        'USER': 'root',
-        'PASSWORD': 'hena@22',
-        'HOST': 'localhost',
-=======
         'NAME': 'preethihena$Archile',
         'USER': 'preethihena',
         'PASSWORD': 'henad@22',
         'HOST': 'preethihena.mysql.pythonanywhere-services.com',
->>>>>>> 4e8c7a2036441e7bd78cbb0a570fa54da01d996c
         'PORT': '',
     }
 }
