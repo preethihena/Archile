@@ -29,3 +29,9 @@ def home(request,token_id):
 	p=response.text
 	print(p)
 	return render(request, 'archile/create_channel.html')
+
+
+def create_channel(request):
+	if request.method == 'POST':
+		for i in request.POST:
+			print(i,"\t",request.POST[i])
