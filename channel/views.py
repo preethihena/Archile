@@ -62,3 +62,9 @@ def create_channel(request):
 		user = request.user
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
+
+def create_post(request):
+	pass
+
+def edit_post(request):
+	pass
