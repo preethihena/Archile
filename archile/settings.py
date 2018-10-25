@@ -85,10 +85,10 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 DATABASES = {
     'default': {
 
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'archile',
         'USER': 'root',
-        'PASSWORD': 'krishna',
+        'PASSWORD': 'hena@22',
         'HOST': 'localhost',
         'PORT': '',
     }
