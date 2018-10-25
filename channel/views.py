@@ -3,10 +3,9 @@ from .models import User
 import requests
 # Create your views here.
 def index(request):
-	return render(request,'archile/create_post.html')
+	return render(request,'archile/index.html')
 
 def search(request,query):
-	
 	if query:
 		print(query)
 	#if improper query....
@@ -36,3 +35,12 @@ def home(request,token_id):
 	a.token=token_id
 	a.save()
 	return render(request, 'archile/search_box.html')
+
+def create_channel(request):
+	return render(request, 'archile/create_channel.html')
+
+def create_post(request):
+	return render(request, 'archile/create_post.html')
+
+def edit_post(request):
+	return render(request, 'archile/edit_post.html')
