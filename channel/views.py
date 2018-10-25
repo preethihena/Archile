@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import User
+from .models import User,Channel,Tags,Channel_tags
 import requests
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
@@ -7,12 +7,17 @@ from django.contrib.auth.decorators import login_required
 def index(request):
 	return render(request,'archile/base.html')
 
+
+def login(request):
+	return render(request,'archile/login.html')
+
 def search(request,query):
 	
 	if query:
 		print(query)
 	#if improper query....
 	return render(request, 'archile/search.html')
+
 
 def search_box(request):
 
@@ -41,25 +46,19 @@ def home(request,token_id):
 	user_object.is_active = True
 	user_object.save()
 	login(request, user_object)
-	return render(request, 'archile/search_box.html')
-
-
-
-def new_channel_data(request,channel_data):
-	if channel_data:
-		print(channel_data)
-	if 'channel_logo' in request.FILES:
-			print(request.FILES['channel_logo'])
 	return redirect('/')
 
-def create_channel(request):
 
+
+# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+# @login_required(login_url='/login')
+def create_channel(request):
 	if request.method == 'POST':
+		name = request.POST['channel_name']
 		if 'channel_logo' in request.FILES:
-			print(request.FILES['channel_logo'])
-		for i in request.POST:
-			print(i,"\t",request.POST[i])
-		return redirect(new_channel_data,request.POST)
-	else:
-		pass
+			logo = request.FILES['channel_logo']
+		description = request.POST['channel_description']
+		tags = list(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(',')))
+		user = request.user
+		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
