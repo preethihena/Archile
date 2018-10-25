@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import User,Channel,Tags,Channel_tags
-import requests
+from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags
+import requests,arrow
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 
@@ -66,3 +66,46 @@ def create_post(request):
 
 def edit_post(request):
 	return render(request, 'archile/create_post.html')
+	if request.method == 'POST':
+		user = request.user
+		title = request.POST['post_title']
+		c_id = request.POST['channel']
+		channel = Channel.objects.get(c_id=c_id)
+		description = request.POST['post_description']
+		tags = list(map(lambda tag:tag.strip().lower(),request.POST['post_tags'].split(',')))
+
+		#getting all files
+		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
+		file_data={}
+		for file in files:
+			if file in request.FILES:
+				file_data[file] = request.FILES.getlist(file)
+
+		utc = arrow.utcnow()
+		local = utc.to('Asia/Kolkata')
+		post_object = Post(u_id=user,c_id=channel,description=description,title=title,creation_datetime=local)
+		post_object.save()
+
+		#saving all tags
+		for tag in tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			post_tag=Post_tags(p_id=post_object,t_id=tag_obj)
+			post_tag.save()
+
+
+		#saving all files
+		for file_name in file_data:
+			for file in file_data[file_name]:
+				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
+				pf_obj.save()
+
+		return redirect(create_post)
+	return render(request, 'archile/create_post.html')
+
+def edit_post(request):
+	pass
