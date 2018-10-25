@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'archile',
         'USER': 'root',
-        'PASSWORD': 'Dhruv!23',
+        'PASSWORD': 'hena@22',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -133,3 +133,4 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+AUTH_USER_MODEL = 'channel.User'
