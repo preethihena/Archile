@@ -1,0 +1,43 @@
+{% extends 'archile/base.html' %}
+{% load static %}
+{% block content %}
+<div style="padding-left: 1.5rem;padding-top: 1rem;">
+	<ol class="breadcrumb breadcrumb-right-arrow">
+  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Create Post</a></li>
+	    <li class="breadcrumb-item active" aria-current="page">Add/Edit Post</li>
+	</ol>
+	<div class="col-md-12">
+	    <div class="row">
+	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
+	        	<form method="POST" enctype="multipart/form-data" action="">
+						<div class="form-group row">
+							<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title">
+							</div>
+						</div>
+						<div class="form-group row">
+								<label for="validationCustom01" class="col-sm-3 col-form-label">Description </label>
+								<div class="col-sm-3 custom-file">
+									<input type="file" class="custom-file-input" id="customFile"  accept="image/*">
+									<label class="custom-file-label" for="customFile" >Add a Description</label>
+								</div>
+						</div>
+				  <div class="form-group row">
+				    <label for="ChannelName" class="col-sm-3 col-form-label">Post Tags</label>
+				    <div class="col-sm-7">
+				  		<input type="text" value="" data-role="tagsinput" placeholder="Add tags" />
+				    </div>
+				  </div>
+				  <div class="form-group row">
+				    <label for="ChannelName" class="col-sm-3 col-form-label"></label>
+				    <div class="col-sm-7">
+				  		<button type="submit" class="btn btn-primary">Upload Files</button>
+				    </div>
+				  </div>
+				</form>
+	        </div>
+	    </div>
+	</div>
+</div>
+{% endblock %}
