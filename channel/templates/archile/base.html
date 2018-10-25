@@ -10,55 +10,16 @@
 	<link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
-	<style type="text/css">
-		.avatar {
-		  width: 48px;
-		  height: 48px;
-		  border-radius: 50%;
-		  box-shadow:
-		    inset 0 0 0 2px rgba(255,255,255,0.6), 
-		    0 1px 1px rgba(0,0,0,0.1);
-		  background-color: transparent !important;
-		  z-index: 999;
-		}
-
-		.avatar img {
-		  border-radius: inherit;
-		  width: inherit;
-		  height: inherit;
-		  display: block;
-		  position: relative;
-		  z-index: 998;
-		}
-		.list-group-item{
-			border: none;
-		}
-		.navbar-light .navbar-toggler{
-			border-color: transparent;
-		}
-		.navbar-toggler-icon{
-			width: 3em;
-			height: 2em;
-		}
-		.Archile{
-			font-size: 60px;
-			font-weight: 3000;
-			font-family: 'Fredericka the Great', cursive;
-		}
-		.navbar-nav > li{
-		  padding-left:2rem;
-		  padding-right:2rem;
-		}
-
-	</style>
+	<link rel="stylesheet" type="text/css" href={% static 'archile/style.css' %}>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 </head>
 <body>
+	<!-- nav bar -->
 	<div class="container-fluid">
 		<div class="row navbar-expand-lg navbar navbar-light bg-light">
-			<a class="navbar-brand" href="#"><i class=" fas fa-bars fa-2x" ></i></a>
+			<button class="navbar-brand button"><i class=" fas fa-bars fa-2x" ></i></button>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 			    <span class="navbar-toggler-icon"></span>
 			</button>
@@ -70,10 +31,7 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link Archile" href="#"><h3>Archile</h3></a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#"><i class="fas fa-sliders-h fa-2x" ></i></a>
+						<a class="nav-link Archile" href="/"><h3>Archile</h3></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
@@ -81,6 +39,11 @@
 						<input class="form-control mr-sm-1" type="text" placeholder="Search">
 						<button class="btn btn-success" type="submit">Search</button>
 					</form>
+					<li class="nav-item">
+						<a class="nav-link" href="#"><i class="fas fa-sliders-h fa-2x" ></i></a>
+					</li>
+				</ul>
+				<ul class="navbar-nav ml-auto">
 					<li class="nav-item">
 						<a class="nav-link" href="#"><i class="fas fa-plus-square fa-2x" ></i></a>
 					</li>
@@ -92,6 +55,20 @@
 	            </ul>
 			</div>
 		</div>
+	</div>
+
+
+	<!-- side nav bar and main container -->
+	<div class="col-md-12">
+	    <div class="row dynamic-columns">
+	        <div class="col-sm-2 col">
+	            Sidebar content
+	        </div>
+	        <div class="col-sm-10 col">
+	            {% block content %}
+            	{% endblock %}
+	        </div>
+	    </div>
 	</div>
 
 
@@ -112,6 +89,7 @@
 			</li>
 		</ul>
     </div>
+
 	<!-- <div class="modal fade" id="smallModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
@@ -131,18 +109,43 @@
 			</div>
 		</div>
 	</div> -->
+
+
+	<!-- script for the toggle button -->
 	<script>
-$("[data-toggle=popover]").each(function(i, obj) {
+		$("button").click(function(){
+		  var columns_container = $(".dynamic-columns");
+		  if (!columns_container.hasClass("expanded")) {
+		    $(".dynamic-columns .col:first").removeClass("col-sm-2");
+		    $(".dynamic-columns .col:first").addClass("d-none");
+		    
+		    $(".dynamic-columns .col:last-child").removeClass("col-sm-10");
+		    $(".dynamic-columns .col:last-child").addClass("col-sm-12");
+		    columns_container.toggleClass("expanded");
+		  }
+		  else {
+		    $(".dynamic-columns .col:first").removeClass("d-none");
+		    $(".dynamic-columns .col:first").addClass("col-sm-2");
+		    
+		    $(".dynamic-columns .col:last-child").removeClass("col-sm-12");
+		    $(".dynamic-columns .col:last-child").addClass("col-sm-10");
+		    columns_container.toggleClass("expanded");
+		  }
+		});
+	</script>
 
-$(this).popover({
-  html: true,
-  content: function() {
-    var id = $(this).attr('id')
-    return $('#popover-content-' + id).html();
-  }
-});
+	<!-- script for pop-over-->
+	<script>
+		$("[data-toggle=popover]").each(function(i, obj) {
+			$(this).popover({
+			  html: true,
+			  content: function() {
+			    var id = $(this).attr('id')
+			    return $('#popover-content-' + id).html();
+			  }
+			});
 
-});
-</script>
+		});
+	</script>
 </body>
 </html>

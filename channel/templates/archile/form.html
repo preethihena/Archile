@@ -1,0 +1,20 @@
+<form action="{% url 'create' user.username %}" method="post" autocomplete="off" enctype="multipart/form-data">
+	{% csrf_token %}
+	<table>
+		<tr>
+			<td colspan="7"><input type="text" name="title" placeholder="Title"></td>
+		</tr>
+		<tr>
+			<td colspan="7"><textarea rows="5" name="text" placeholder="Write your experiences here..."></textarea></td>
+		</tr>
+		<tr>
+			<td>Images:</td>
+			<td><input type="file" name="images" accept="image/*" multiple></td>
+			<td>Videos:</td>
+			<td><input type="file" name="videos" accept="video/*" multiple></td>
+			<td>Audios:</td>
+			<td><input type="file" name="audios" accept="audio/*" multiple></td>
+			<td colspan="2"><input type="submit"></td>
+		</tr>
+	</table>
+</form>
