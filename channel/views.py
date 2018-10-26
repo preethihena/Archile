@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login
 from django.db.models.fields.related import ManyToManyField
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
 
 def to_dict(instance):
     opts = instance._meta
@@ -21,13 +23,31 @@ def to_dict(instance):
     return data
 
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def index(request):
 	return render(request,'archile/search_results.html')
+
+
 
 def login(request):
 	return render(request,'archile/login.html')
 
 
+#user logout
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def user_logout(request):
+    # Since we know the user is logged in, we can now just log them out.
+    logout(request)
+
+    # Take the user back to the homepage.
+    return redirect(login)
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def search(request,query):
 	
 	def valid_date(inputDate):
@@ -77,6 +97,9 @@ def search(request,query):
 	
 	return render(request, 'archile/search.html')
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def search_box(request):
 
 	if request.method == 'POST':
@@ -93,6 +116,7 @@ def search_box(request):
 			del query['to']
 
 		return redirect(search,query)
+
 
 def home(request,token_id):
 	payload = {'token': token_id, 'secret':"6d5fc80be2b62f1eb699f1be6bfc44394de1e2e18f7fd825a7cf045e9825b5ac2d5661b924965f49b97d6827a5bbd298e1549660d43ea70c5830af0241ff3482"}
@@ -112,10 +136,12 @@ def home(request,token_id):
 	user_object.is_active = True
 	user_object.save()
 	auth_login(request,user_object)
-	return redirect('/')
+	return redirect(index)
 
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @login_required(login_url='/login')
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
@@ -143,10 +169,16 @@ def create_channel(request):
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def create_post(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	return render(request, 'archile/create_post.html',{'channel':channel})
 
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def save_post(request):
 	if request.method == 'POST':
 		user = request.user
@@ -189,13 +221,21 @@ def save_post(request):
 		return redirect(channel,c_id)
 	return render(request, 'archile/channel.html')
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def edit_post(request):
 	pass
 
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def edit_channel(request,c_id):
 	pass
-	
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')	
 def subscribe_channel(request,c_id):
 	Chan = Channel.objects.get(c_id=c_id)
 	count =Chan.no_of_subscriptions
@@ -216,9 +256,15 @@ def subscribe_channel(request,c_id):
 	Chan.save()
 	return redirect(channel,c_id)
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def post(request,p_id):
 	pass
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def channel(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	posts=Post.objects.filter(c_id=channel)
