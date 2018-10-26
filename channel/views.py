@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 def index(request):
 	return render(request,'archile/search_results.html')
 
-
 def login(request):
 	return render(request,'archile/login.html')
 
@@ -50,7 +49,7 @@ def home(request,token_id):
 
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # @login_required(login_url='/login')
-def create_channel(request,c_id):
+def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
 		if 'channel_logo' in request.FILES:
@@ -126,3 +125,8 @@ def save_post(request):
 def edit_post(request):
 	return render(request, 'archile/edit_post.html')
 	
+def post(request):
+	return render(request, 'archile/post.html')
+
+def channel(request):
+	return render(request, 'archile/channel.html')
