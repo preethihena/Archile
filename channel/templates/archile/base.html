@@ -17,8 +17,8 @@
 </head>
 <body>
 	<!-- nav bar -->
-	<div class="container-fluid">
-		<div class="row navbar-expand-lg navbar navbar-light bg-light">
+	<!-- <div class="container-fluid"> -->
+		<div class="row navbar-expand-lg navbar navbar-light bg-light fixed-top">
 			<button class="navbar-brand button"><i class=" fas fa-bars fa-2x" ></i></button>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 			    <span class="navbar-toggler-icon"></span>
@@ -55,22 +55,23 @@
 	            </ul>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 
 
 	<!-- side nav bar and main container -->
-	<div class="col-md-12">
+	<div class="container-fluid" style="margin-top:74.5px">
+	<!-- <div class="col-md-12"> -->
 	    <div class="row dynamic-columns expanded">
-	        <div class="col d-none">
+	        <div class="col-2 d-none" id="sticky-sidebar" style="height: 100%;">
 	            Sidebar content
 	        </div>
-	        <div class="col-sm-12 col">
+	        <div class="col col-sm-12" id="main">
 	            {% block content %}
             	{% endblock %}
 	        </div>
 	    </div>
+	<!-- </div> -->
 	</div>
-
 
 	<!-- user profile popper -->
 	<div id="popover-content-login" class="d-none">
@@ -116,19 +117,19 @@
 		$("button").click(function(){
 		  var columns_container = $(".dynamic-columns");
 		  if (!columns_container.hasClass("expanded")) {
-		    $(".dynamic-columns .col:first").removeClass("col-sm-2");
-		    $(".dynamic-columns .col:first").addClass("d-none");
+		    $(".dynamic-columns .col-2:first").removeClass("px-1 position-fixed");
+		    $(".dynamic-columns .col-2:first").addClass("d-none");
 		    
-		    $(".dynamic-columns .col:last-child").removeClass("col-sm-10");
+		    $(".dynamic-columns .col:last-child").removeClass("offset-2");
 		    $(".dynamic-columns .col:last-child").addClass("col-sm-12");
 		    columns_container.toggleClass("expanded");
 		  }
 		  else {
-		    $(".dynamic-columns .col:first").removeClass("d-none");
-		    $(".dynamic-columns .col:first").addClass("col-sm-2");
+		    $(".dynamic-columns .col-2:first").removeClass("d-none");
+		    $(".dynamic-columns .col-2:first").addClass("px-1 position-fixed");
 		    
 		    $(".dynamic-columns .col:last-child").removeClass("col-sm-12");
-		    $(".dynamic-columns .col:last-child").addClass("col-sm-10");
+		    $(".dynamic-columns .col:last-child").addClass("offset-2");
 		    columns_container.toggleClass("expanded");
 		  }
 		});

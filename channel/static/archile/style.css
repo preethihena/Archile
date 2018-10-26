@@ -17,9 +17,24 @@
   background-color: transparent !important;
   z-index: 999;
 }
+.post_image{
+  margin-top: 2.5rem;
+  margin-left: 1rem; 
+  margin-bottom: 1rem;
+  width: 108px;
+  height: 108px;
+  /*border-radius: 50%;*/
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,0.6), 0 1px 1px rgba(0,0,0,0.1);
+  background-color: transparent !important;
+  z-index: 999;
+}
 
 .channel_des {
     max-height:110px;
+    overflow-y:auto;
+}
+.search_results {
+    max-height:90%;
     overflow-y:auto;
 }
 .avatar img {
@@ -49,15 +64,15 @@
   padding-left:2rem;
   padding-right:2rem;
 }
-html,body,.col-md-12,.row {
+.full {
   height:100%;
 }
-.row > div {
+.full > div {
   height:100%;
 }
   
 /* to make columns visible */
-.row .col-sm-2 {
+.row .col-sm-2,#sticky-sidebar {
   background-color:#eee;
 }
 .row .col-sm-10, .row .col-sm-12 {

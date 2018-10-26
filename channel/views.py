@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-	return render(request,'archile/channel.html')
+	return render(request,'archile/search_results.html')
 
 
 def login(request):
