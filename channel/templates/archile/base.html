@@ -35,12 +35,12 @@
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline" action="/search/">
+					<form class="form-inline" action="{% url 'Search' %}">
+						{% csrf_token %}
 						<input class="form-control mr-sm-1" type="text" placeholder="Search">
 						<button class="btn btn-success" type="submit">Search</button>
-					</form>
 					<li class="nav-item">
-						<a class="nav-link" href="#"><i class="fas fa-sliders-h fa-2x" ></i></a>
+						<a class="nav-link" href="#" data-toggle="popover" data-container="body" data-placement="bottom" type="button" data-html="true" id="filter" class="nav-link"><i class="fas fa-sliders-h fa-2x" ></i></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
@@ -91,25 +91,87 @@
 		</ul>
     </div>
 
-	<!-- <div class="modal fade" id="smallModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="myModalLabel">Small Modal</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<h3>Modal Body</h3>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
-				</div>
-			</div>
-		</div>
-	</div> -->
+
+    <div id="popover-content-filter" class="d-none">
+		<ul class="list-group">
+			<form method="post" action="{% url 'search_box' %}" class="form-inline">
+				{% csrf_token %}
+				<div class="form-group col-md-4">
+					<li class="list-group-item">
+		      			<label for="inputDate" style="font-weight: bolder;">Upload Date</label>
+			   		</li>
+			   		<li class="list-group-item">
+			   			<span class="col-3" style="font-weight: bolder;text-align-last: left;">From</span>
+		      			<input type="date" class="form-control" id="inputEmail4" placeholder="From" name="from">
+		      			<i class="fas fa-calendar-alt fa-lg" style="font-weight: bolder;text-align-last: right;"></i>
+			   		</li>
+			   		<li class="list-group-item">
+			   			<span class="col-3" style="font-weight: bolder;text-align-last: left;">To</span>
+		      			<input type="date" class="form-control" id="inputEmail4" placeholder="TO" name="to">
+		      			<i class="fas fa-calendar-alt fa-lg" style="font-weight: bolder;text-align-last: right;"></i>
+			   		</li>
+			   	</div>
+			   	<div class="form-group col-md-4">
+			   		<ul class="list-group col-md-6">
+						<li class="list-group-item">
+			      			<label for="inputDate" style="font-weight: bolder;">Type</label>
+				   		</li>
+				   		<li class="list-group-item">
+			      			<input type="checkbox" name="channel">Channel
+			      		</li>
+			      		<li class="list-group-item">
+							<input type="checkbox"  name="post">Post
+						</li>
+						<li class="list-group-item">
+							<input type="checkbox"  name="documents">Documents
+						</li>
+						<li class="list-group-item">
+							<input type="checkbox"  name="videos">Videos
+				   		</li>
+				   	</ul>
+				   	<ul class="list-group col-md-6">
+				   		<li class="list-group-item">
+			      			<input type="checkbox" name="images">Images
+			      		</li>
+			      		<li class="list-group-item">
+							<input type="checkbox"  name="audio">Audio
+						</li>
+						<li class="list-group-item">
+							<input type="checkbox"  name="archives">Archives
+						</li>
+				   	</ul>
+			   	</div>
+			   	<div class="form-group col-md-4">
+			   		<ul class="list-group col-md-7">
+						<li class="list-group-item">
+			      			<label for="inputDate" style="font-weight: bolder;">Sort By</label>
+				   		</li>
+				   		<li class="list-group-item">
+			      			<input type="radio" name="sort" value="uploadDate_asc">upload_date - asc
+			      		</li>
+			      		<li class="list-group-item">
+							<input type="radio" name="sort" value="uploadDate_dec">upload_date - dec
+						</li>
+						<li class="list-group-item">
+							<input type="radio" name="sort" value="likes_asc">likes - asc
+						</li>
+						<li class="list-group-item">
+							<input type="radio" name="sort" value="likes_dec">likes - dec
+				   		</li>
+				   	</ul>
+				   	<ul class="list-group col-md-5">
+				   		
+				   		<li class="list-group-item">
+			      			<input type="radio" name="sort" value="size_asc">size - asc
+			      		</li>
+						<li class="list-group-item">
+							<input type="radio" name="sort" value="size_dec">size - dec
+						</li>
+				   	</ul>
+			   	</div>
+	   		</form>
+	   	</ul>
+    </div>
 
 
 	<!-- script for the toggle button -->

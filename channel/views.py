@@ -50,7 +50,7 @@ def home(request,token_id):
 
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # @login_required(login_url='/login')
-def create_channel(request,c_id):
+def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
 		if 'channel_logo' in request.FILES:
@@ -72,8 +72,8 @@ def create_channel(request,c_id):
 			except:
 				tag_obj = Tags(tag_name=tag,no_of_use = 1)
 			tag_obj.save()
-			post_tag=Channel_tags(c_id=channel_object,t_id=tag_obj)
-			post_tag.save()
+			channel_tag=Channel_tags(c_id=channel_object,t_id=tag_obj)
+			channel_tag.save()
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
 
