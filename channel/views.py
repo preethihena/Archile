@@ -71,8 +71,8 @@ def create_channel(request):
 			except:
 				tag_obj = Tags(tag_name=tag,no_of_use = 1)
 			tag_obj.save()
-			post_tag=Channel_tags(c_id=channel_object,t_id=tag_obj)
-			post_tag.save()
+			channel_tag=Channel_tags(c_id=channel_object,t_id=tag_obj)
+			channel_tag.save()
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
 
