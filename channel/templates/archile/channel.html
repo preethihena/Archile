@@ -5,26 +5,30 @@
 		<div class="col-md-12">
 		    <div class="row">
 		    	<div class="col-md-2">
-		    		<img class="channel_logo" src="http://rs775.pbsrc.com/albums/yy35/PhoenyxStar/link-1.jpg~c200">
+		    		<img class="channel_logo" src="{{ channel.logo.url }}">
 		    	</div>
 		    	<div class="col-md-5" style="margin-top: 2.5rem;">
-		    		<h3>Channel Name</h3></center>
+		    		<h3>{{channel.name}}</h3>
 		    		<div class="channel_des">
-		    			channel description
+		    			Subscribers: {{channel.no_of_subscriptions}}
+		    			<br>
+		    			{{channel.description}}
 		    		</div>
 		    	</div>
 		    	<div class="col-md-5" style="margin-top: 2.5rem;">
 		    		<div class="row">
 		    			<div class="col-md-4">
-		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
-		    					<i class="col fas fa-pencil-alt fa-lg" ></i>
-		    				</div>
-		    				<div class="row" style="text-align: center;padding-top: 2px;">
-		    					<span class="col" style="font-weight: bolder;">Edit Channel</span>
-		    				</div>
+		    				<a href="{% url 'edit_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
+			    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
+			    					<i class="col fas fa-pencil-alt fa-lg" ></i>
+			    				</div>
+			    				<div class="row" style="text-align: center;padding-top: 2px;">
+			    					<span class="col" style="font-weight: bolder;">Edit Channel</span>
+			    				</div>
+			    			</a>
 		    			</div>
 		    			<div class="col-md-4">
-		    				<a href="{% url 'create_post' c_id=1 %}" style="text-decoration: none;color: black;">
+		    				<a href="{% url 'create_post' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
 		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
 		    					<i class="col fas fa-plus-circle fa-lg" ></i>
 		    				</div>
@@ -36,7 +40,15 @@
 		    		</div>
 		    		<div class="row" style="text-align: center;margin-top: 2rem;">
 		    			<div class="col-md-8">
-		    				<button type="button" class="btn btn-danger">Subscribe</button>
+		    				{% if subs %}
+		    				<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">UnSubscribe</button>
+			    			</a>
+			    			{% else %}
+			    			<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">Subscribe</button>
+			    			</a>
+			    			{% endif %}
 		    			</div>
 		    		</div>
 		    	</div>
@@ -44,4 +56,218 @@
 		</div>
 	</div>
 	<hr>
+	<div class="container mt-3">
+	  <!-- Nav tabs -->
+	  <ul class="nav nav-tabs">
+	    <li class="nav-item">
+	      <a class="nav-link active" data-toggle="tab" href="#home">Posts</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu1">Docs</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu2">Images</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu3">Audios</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu4">Videos</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu5">Archives</a>
+	    </li>
+	    <!--li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#menu6">Forum</a>
+	    </li-->
+
+	  </ul>
+
+	  <!-- Tab panes -->
+	  <div class="tab-content">
+	    <div id="home" class="container tab-pane active"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Title</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Upload Date</th>
+        			<th>Upload By</th>
+        		</tr>
+        		<!-- {% for pst in posts %} -->
+			    <tr>
+					<!-- <td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td> -->
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td>3<sup>rd</sup> October 2018 </td>
+					<td>Mark Zuckerberg</i></td>
+			    </tr>
+			    <!-- {% endfor %} -->
+			</table>
+	      </div>
+	    </div>
+	    <div id="menu1" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>django2.pdf</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    <div id="menu2" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>djangoMVC.jpeg</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    
+	    <div id="menu3" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>Podcast_Django_template.mp3</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    
+	    <div id="menu4" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>Bucky_Roberts_Django_tutorials.mp4</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 23</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    
+	    <div id="menu5" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>DjangoDocs.zip</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    
+	    <div id="menu6" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>django2.pdf</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div>
+	    
+	    <!--div id="menu7" class="container tab-pane fade"><br>
+	      <div class="row">
+	      	<table class="table">
+        		<tr>
+        			<th>Filename</th>
+        			<th>Download</th>
+        			<th>Likes</th>
+        			<th>Dislikes</th>
+        			<th>Post</th>
+        			<th>Upload Date</th>
+        		</tr>
+			    <tr>
+					<td>django2.pdf</td>
+					<td><i class="fas fa-download fa-lg"></i></td>
+					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
+					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+					<td><a href="{% url 'post' %}">Django Documentation</a></td>
+					<td>3<sup>rd</sup> October 2018 </td>
+			    </tr>
+			</table>
+	      </div>
+	    </div-->
+	    
+	  </div>
+	</div>
+
 {% endblock %}

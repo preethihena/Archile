@@ -234,6 +234,3 @@ class channel_actions(models.Model):
 	ca_id = models.AutoField(primary_key=True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	report_status = models.NullBooleanField()
-		
-	
-		

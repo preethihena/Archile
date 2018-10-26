@@ -1,5 +1,7 @@
 from .views import *
 from django.urls import path,re_path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('',index,name="index"),
@@ -10,7 +12,12 @@ urlpatterns = [
     path('create_channel',create_channel,name="create_channel"),
     path('create_post/<int:c_id>',create_post,name="create_post"),
     path('save_post/',save_post,name="save_post"),
-    path('edit_post',edit_post,name="edit_post"),
-    path('post',post,name="post"),
-    path('channel',channel,name="channel"),
+    path('edit_post/',edit_post,name="edit_post"),
+    path('post/',post,name="post"),
+    path('channel/<int:c_id>',channel,name="channel"),
+    path('subscribe_channel/<int:c_id>',subscribe_channel,name="subscribe_channel"),
+    path('edit_channel/<int:c_id>',edit_channel,name="edit_channel"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
