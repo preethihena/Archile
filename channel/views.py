@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 import datetime
-from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags
+from .models import *
 import requests,arrow
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login as auth_login,logout
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -10,7 +10,6 @@ def index(request):
 
 def login(request):
 	return render(request,'archile/login.html')
-
 
 def search(request,query):
 	
@@ -54,7 +53,20 @@ def search(request,query):
 
 	if valid_search(query):
 		#Send the search reults with this query to search-results page.
-		return render(request, 'archile/search.html')
+		text =query['search_query'].lower().split()
+		
+		Channels = Channel.objects.all()
+		Posts = Post.objects.all()
+		for word in text:
+			Channels = Channels.filter(name__contains=word)
+			Posts = Posts.filter(title__contains=word)
+		
+		context = {
+			'channels': Channels,
+			'posts': Posts
+		}
+		print(context)
+		return render(request, 'archile/search_results.html',context)
 	else:
 		# redirect to home page, as of now redirecting to search_box(which is a dummy for our search filter)
 		return redirect(search_box)
@@ -70,11 +82,11 @@ def search_box(request):
 
 		del query['csrfmiddlewaretoken']
 
-		if query['from'] == '':
-			del query['from']
+		# if query['from'] == '':
+		# 	del query['from']
 
-		if query['to'] == '':
-			del query['to']
+		# if query['to'] == '':
+		# 	del query['to']
 
 		return redirect(search,query)
 
@@ -94,7 +106,7 @@ def home(request,token_id):
 	user_object.token=token_id
 	user_object.is_active = True
 	user_object.save()
-	login(request, user_object)
+	auth_login(request, user_object)
 	return redirect('/')
 
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
