@@ -36,3 +36,5 @@ def home(request,token_id):
 	a.token=token_id
 	a.save()
 	return render(request, 'archile/search_box.html')
+def create_channel(request):
+	return render(request, 'archile/create_channel.html')
