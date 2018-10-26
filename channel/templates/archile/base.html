@@ -35,9 +35,9 @@
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline" action="{% url 'search_box' %}">
+					<form class="form-inline" action="{% url 'search_box' %}" method="post">
 						{% csrf_token %}
-						<input class="form-control mr-sm-1" type="text" placeholder="Search">
+						<input class="form-control mr-sm-1" type="text" placeholder="Search" name="search_query">
 						<button class="btn btn-success" type="submit">Search</button>
 					</form>
 				</ul>
