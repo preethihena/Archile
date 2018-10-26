@@ -94,8 +94,8 @@ def search(request,query):
 		Channels = Channel.objects.all()
 		Posts = Post.objects.all()
 		for word in text:
-			Channels = Channels.filter(name__contains=word)
-			Posts = Posts.filter(title__contains=word)
+			Channels = Channels.filter(name__icontains=word)
+			Posts = Posts.filter(title__icontains=word)
 		
 		context = {
 			'channels': Channels,
