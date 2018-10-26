@@ -10,26 +10,24 @@
 	<div class="col-md-12">
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
-	        	<form method="POST" enctype="multipart/form-data" action="{% url 'save_post' %}">
-	        		{% csrf_token %}
-	        		<input type="text" name="channel" value="{{channel.c_id}}" hidden>
+	        	<form method="POST" enctype="multipart/form-data" action="">
 					<div class="form-group row">
 						<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title" name="post_title">
+							<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title">
 						</div>
 					</div>
 					<div class="form-group row">
 						<label for="exampleFormControlTextarea1" class="col-sm-3 col-form-label">Description:</label>
 						<div class="col-sm-7">
-							<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="post_description" placeholder="Give a brief description about the post, here." required></textarea>
+							<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" placeholder="Give a brief description about the post, here." required></textarea>
 						</div>
 					</div>
 					<div class="form-group row">
 						<label for="logo" class="col-sm-3 col-form-label">Docs</label>
 						<div class="col-sm-6">
 							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="customFile1" name="DOCS" accept=".pdf,.txt,.doc,.xls,.csv,.docx,.ppt" multiple>
+								<input type="file" class="custom-file-input" id="customFile1"  accept="image/*" name="channel_logo" multiple>
 								<label class="custom-file-label" for="customFile1" >Choose files</label>
 							</div>
 						</div>
@@ -38,7 +36,7 @@
 						<label for="logo" class="col-sm-3 col-form-label">Images</label>
 						<div class="col-sm-6">
 							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="customFile2" name="IMAGES" accept="image/*"  multiple>
+								<input type="file" class="custom-file-input" id="customFile2"  accept="image/*" name="channel_logo" multiple>
 								<label class="custom-file-label" for="customFile2" >Choose files</label>
 							</div>
 						</div>
@@ -47,7 +45,7 @@
 						<label for="logo" class="col-sm-3 col-form-label">Videos</label>
 						<div class="col-sm-6">
 							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="customFile3" name="VIDEO" accept="video/*"  multiple>
+								<input type="file" class="custom-file-input" id="customFile3"  accept="image/*" name="channel_logo" multiple>
 								<label class="custom-file-label" for="customFile3" >Choose files</label>
 							</div>
 						</div>
@@ -56,7 +54,7 @@
 						<label for="logo" class="col-sm-3 col-form-label">Audio</label>
 						<div class="col-sm-6">
 							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="customFile4" name="AUDIO" accept="audio/*"  multiple>
+								<input type="file" class="custom-file-input" id="customFile4"  accept="image/*" name="channel_logo" multiple>
 								<label class="custom-file-label" for="customFile4" >Choose files</label>
 							</div>
 						</div>
@@ -65,7 +63,7 @@
 						<label for="logo" class="col-sm-3 col-form-label">Archives</label>
 						<div class="col-sm-6">
 							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="customFile5" name="ARCHIVES" accept=".TAR.GZ,.ZIP,.ZIPX,.7Z" multiple>
+								<input type="file" class="custom-file-input" id="customFile5" accept="image/*" name="channel_logo" multiple>
 								<label class="custom-file-label" for="customFile5" >Choose files</label>
 							</div>
 						</div>
@@ -74,7 +72,7 @@
 					<div class="form-group row">
 						<label for="ChannelName" class="col-sm-3 col-form-label">Tags:</label>
 						<div class="col-sm-7">
-							<input type="text" value="" name="post_tags" data-role="tagsinput" placeholder="Add tags" />
+							<input type="text" value="" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
 						</div>
 					</div>
 					<div class="form-group row">
@@ -84,6 +82,70 @@
 						</div>
 					</div>
 				</form>
+	        </div>
+	        <div class="col-sm-4" style="border:2px solid var(--light);">
+	        	<div style="overflow: auto;height: 300px;">
+		        	<table class="table">
+		        		<tr>
+		        			<th style="text-align: center;" colspan="4">Uploaded Files</th>
+		        		</tr>
+					    <tr>
+					      <th scope="row">1</th>
+					      <td>Mark</td>
+					      <td>Otto</td>
+					      <td>@mdo</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">2</th>
+					      <td>Jacob</td>
+					      <td>Thornton</td>
+					      <td>@fat</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">3</th>
+					      <td>Larry</td>
+					      <td>the Bird</td>
+					      <td>@twitter</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">1</th>
+					      <td>Mark</td>
+					      <td>Otto</td>
+					      <td>@mdo</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">2</th>
+					      <td>Jacob</td>
+					      <td>Thornton</td>
+					      <td>@fat</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">3</th>
+					      <td>Larry</td>
+					      <td>the Bird</td>
+					      <td>@twitter</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">1</th>
+					      <td>Mark</td>
+					      <td>Otto</td>
+					      <td>@mdo</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">2</th>
+					      <td>Jacob</td>
+					      <td>Thornton</td>
+					      <td>@fat</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">3</th>
+					      <td>Larry</td>
+					      <td>the Bird</td>
+					      <td>@twitter</td>
+					    </tr>
+					    
+					</table>
+				</div>
 	        </div>
 	    </div>
 	</div>

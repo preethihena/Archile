@@ -10,7 +10,7 @@
 	<div class="col-md-12">
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
-	            <form method="POST" enctype="multipart/form-data" action="{% url 'create_channel' %}">
+	            <form method="POST" enctype="multipart/form-data" action="{% url 'create_channel' c_id %}">
 	            	{% csrf_token %}
 				  <div class="form-group row">
 				    <label for="validationCustom01" class="col-sm-3 col-form-label">Channel Name</label>
@@ -22,11 +22,17 @@
 				    <label for="logo" class="col-sm-3 col-form-label">Channel Logo</label>
 				    <div class="col-sm-6">
 					    <div class="custom-file">
-							<input type="file" class="custom-file-input" id="customFile"  accept="image/*" name="channel_logo">
+							<input type="file" class="custom-file-input" id="customFile"  accept="image/*" name="channel_logo" required>
 							<label class="custom-file-label" for="customFile" >Choose file</label>
 						</div>
 				    </div>
 				  </div>
+				<div class="form-group row">
+				    <label for="exampleFormControlTextarea1" class="col-sm-3 col-form-label">Description:</label>
+				    <div class="col-sm-7">
+				    	<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" required></textarea>
+				    </div>
+				</div>
 				  <div class="form-group row">
 				    <label for="ChannelName" class="col-sm-3 col-form-label">Tags</label>
 				    <div class="col-sm-7">
