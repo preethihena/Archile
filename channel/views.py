@@ -128,7 +128,7 @@ def create_channel(request):
 	return render(request, 'archile/create_channel.html')
 
 def create_post(request,c_id):
-	channel = Channel.objects.get(c_id=c_id)
+	#channel = Channel.objects.get(c_id=c_id)
 	return render(request, 'archile/create_post.html',{'channel':channel})
 
 def save_post(request):
