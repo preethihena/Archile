@@ -30,20 +30,21 @@
 							<img style="width: 48px;height: auto;" src={% static 'archile/Institute_logo.png' %}>
 						</a>
 					</li>
+					
+				</ul>
+				<ul class="navbar-nav ml-auto">
 					<li class="nav-item">
-						<a class="nav-link Archile" href="/"><h3>Archile</h3></a>
+							<a class="nav-link Archile" href="/"><h1>Archile</h1></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
 					<form class="form-inline" action="{% url 'search_box' %}">
-						{% csrf_token %}
-						<input class="form-control mr-sm-1" type="text" placeholder="Search">
-						<button class="btn btn-success" type="submit">Search</button>
-					<li class="nav-item">
-						<a class="nav-link" href="#" data-toggle="popover" data-container="body" data-placement="bottom" type="button" data-html="true" id="filter" class="nav-link"><i class="fas fa-sliders-h fa-2x" ></i></a>
-					</li>
-				</ul>
-				<ul class="navbar-nav ml-auto">
+							{% csrf_token %}
+							<input class="form-control mr-sm-1" type="text" placeholder="Search">
+							<button class="btn btn-success" type="submit">Search</button>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-toggle="popover" data-container="body" data-placement="bottom" type="button" data-html="true" id="filter" class="nav-link"><i class="fas fa-sliders-h fa-2x" ></i></a>
+						</li>
 					<li class="nav-item">
 						<a class="nav-link" href="{% url 'create_channel' %}"><i class="fas fa-plus-square fa-2x" ></i></a>
 					</li>
