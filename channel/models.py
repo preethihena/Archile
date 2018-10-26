@@ -93,7 +93,7 @@ class Channel(models.Model):
 		help_text='Designates whether the Channel is active or not.',
 		)
 	def __str__(self):
-		return str(self.name)
+		return str(self.name+str(self.c_id))
 
 
 class Subscription(models.Model):
@@ -120,7 +120,7 @@ class Post(models.Model):
         help_text='Designates whether the Post is active or not.',
     )
 	def __str__(self):
-		return str(self.title)
+		return str(self.title+str(self.p_id))
 
 class Post_files(models.Model):
 	pf_id = models.AutoField(primary_key = True)
@@ -137,7 +137,7 @@ class Post_files(models.Model):
         help_text='Designates whether the File uploaded is active or not.',
     )
 	def __str__(self):
-		return str(self.p_id.title+self.pf_id+"status="+self.status)
+		return str(self.p_id.title+str(self.pf_id)+"status="+self.status)
 
 
 QA_CHOICES =[('A','Assertive'),('Q','Question')]
@@ -159,7 +159,7 @@ class Channel_threads(models.Model):
         help_text='Designates whether the Channel_thread is active or not.',
     )
 	def __str__(self):
-		return str(self.c_id.name+self.ct_id+"status="+self.status)
+		return str(self.c_id.name+str(self.ct_id)+"status="+self.status)
 
 class Post_threads(models.Model):
 	pt_id = models.AutoField(primary_key = True)
@@ -178,14 +178,14 @@ class Post_threads(models.Model):
         help_text='Designates whether the Post_thread is active or not.',
     )
 	def __str__(self):
-		return str(self.p_id.name+self.pt_id+"status="+self.status)
+		return str(self.p_id.name+str(self.pt_id)+"status="+self.status)
 
 class Tags(models.Model):
 	t_id = models.AutoField(primary_key=True)
 	tag_name = models.CharField(max_length=200)
 	no_of_use = models.IntegerField(default=0)
 	def __str__(self):
-		return str(self.tag_name+self.no_of_use)
+		return str(self.tag_name+str(self.no_of_use))
 
 
 class Post_tags(models.Model):
