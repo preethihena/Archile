@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags
+from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags,Subscription
 import requests,arrow
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import login as auth_login
 def index(request):
 	return render(request,'archile/search_results.html')
 
@@ -36,6 +36,7 @@ def home(request,token_id):
 	data=data['student']
 	try:
 		user_object = User.objects.get(token=token_id)
+		print(user_object)
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']
@@ -44,7 +45,7 @@ def home(request,token_id):
 	user_object.token=token_id
 	user_object.is_active = True
 	user_object.save()
-	login(request, user_object)
+	auth_login(request,user_object)
 	return redirect('/')
 
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -123,10 +124,48 @@ def save_post(request):
 	return render(request, 'archile/channel.html')
 
 def edit_post(request):
-	return render(request, 'archile/edit_post.html')
-	
-def post(request):
-	return render(request, 'archile/post.html')
+	pass
 
-def channel(request):
-	return render(request, 'archile/channel.html')
+
+def edit_channel(request,c_id):
+	pass
+	
+def subscribe_channel(request,c_id):
+	Chan = Channel.objects.get(c_id=c_id)
+	count =Chan.no_of_subscriptions
+	user = request.user
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	try:
+		subs = Subscription.objects.get(c_id=Chan,u_id=user)
+		Chan.no_of_subscriptions = count -1
+		subs.delete()
+	except:
+		subs = Subscription(c_id=Chan,u_id=user,s_datetime=local)
+		if count == None:
+			Chan.no_of_subscriptions = 1
+		else:
+			Chan.no_of_subscriptions = count + 1
+		subs.save()
+	Chan.save()
+	return redirect(channel,c_id)
+
+def post(request):
+	pass
+
+def channel(request,c_id):
+	channel = Channel.objects.get(c_id=c_id)
+	posts=Post.objects.filter(c_id=channel)
+	for x in posts:
+		print(x)
+	user = request.user
+	context = {}
+	context['channel'] = channel
+	context['posts'] = posts
+	try:
+		subs = Subscription.objects.get(c_id=channel,u_id=user)
+		context['subs'] = True
+	except:
+		context['subs'] = False
+	print(context)
+	return render(request, 'archile/channel.html',context)

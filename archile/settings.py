@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -84,8 +85,7 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 
 DATABASES = {
     'default': {
-
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'archile',
         'USER': 'root',
         'PASSWORD': 'krishna',
