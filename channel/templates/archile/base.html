@@ -35,10 +35,11 @@
 					</li>
 				</ul>
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline" action="{% url 'search_box' %}">
+					<form class="form-inline" action="{% url 'search_box' %}" method="post">
 						{% csrf_token %}
-						<input class="form-control mr-sm-1" type="text" placeholder="Search">
+						<input class="form-control mr-sm-1" type="text" placeholder="Search" name="search_query">
 						<button class="btn btn-success" type="submit">Search</button>
+
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-toggle="popover" data-container="body" data-placement="bottom" type="button" data-html="true" id="filter" class="nav-link"><i class="fas fa-sliders-h fa-2x" ></i></a>
 					</li>
@@ -94,7 +95,7 @@
 
     <div id="popover-content-filter" class="d-none">
 		<ul class="list-group">
-			<form method="post" action="{% url 'search_box' %}" class="form-inline">
+			<div class="form-inline">
 				{% csrf_token %}
 				<div class="form-group col-md-4">
 					<li class="list-group-item">
@@ -169,6 +170,7 @@
 						</li>
 				   	</ul>
 			   	</div>
+	   		</div>
 	   		</form>
 	   	</ul>
     </div>
