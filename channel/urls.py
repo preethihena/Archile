@@ -11,4 +11,6 @@ urlpatterns = [
     path('create_post/<int:c_id>',create_post,name="create_post"),
     path('save_post/',save_post,name="save_post"),
     path('edit_post',edit_post,name="edit_post"),
+    path('post',post,name="post"),
+    path('channel',channel,name="channel"),
 ]
