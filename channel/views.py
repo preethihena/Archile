@@ -126,7 +126,7 @@ def home(request,token_id):
 	data=data['student']
 	try:
 		user_object = User.objects.get(token=token_id)
-		print(user_object)
+		#print(user_object)
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']
@@ -259,10 +259,9 @@ def subscribe_channel(request,c_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
-def post(request,p_id):
-	pass
-
-
+def post(request):
+	return render(request, 'archile/post.html')
+	
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
 def channel(request,c_id):
