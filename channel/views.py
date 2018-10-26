@@ -4,13 +4,49 @@ from .models import *
 import requests,arrow
 from django.contrib.auth import authenticate, login as auth_login,logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login as auth_login
+from django.db.models.fields.related import ManyToManyField
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
 
+def to_dict(instance):
+    opts = instance._meta
+    data = {}
+    for f in opts.concrete_fields + opts.many_to_many:
+        if isinstance(f, ManyToManyField):
+            if instance.pk is None:
+                data[f.name] = []
+            else:
+                data[f.name] = list(f.value_from_object(instance).values_list('pk', flat=True))
+        else:
+            data[f.name] = f.value_from_object(instance)
+    return data
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def index(request):
 	return render(request,'archile/search_results.html')
+
+
 
 def login(request):
 	return render(request,'archile/login.html')
 
+#user logout
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def user_logout(request):
+    # Since we know the user is logged in, we can now just log them out.
+    logout(request)
+
+    # Take the user back to the homepage.
+    return redirect(login)
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def search(request,query):
 	
 	def valid_date(inputDate):
@@ -73,6 +109,9 @@ def search(request,query):
 	
 	return render(request, 'archile/search.html')
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def search_box(request):
 
 	if request.method == 'POST':
@@ -90,6 +129,7 @@ def search_box(request):
 
 		return redirect(search,query)
 
+
 def home(request,token_id):
 	payload = {'token': token_id, 'secret':"6d5fc80be2b62f1eb699f1be6bfc44394de1e2e18f7fd825a7cf045e9825b5ac2d5661b924965f49b97d6827a5bbd298e1549660d43ea70c5830af0241ff3482"}
 	url = "https://serene-wildwood-35121.herokuapp.com/oauth/getDetails"
@@ -98,6 +138,7 @@ def home(request,token_id):
 	data=data['student']
 	try:
 		user_object = User.objects.get(token=token_id)
+		#print(user_object)
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']
@@ -106,11 +147,12 @@ def home(request,token_id):
 	user_object.token=token_id
 	user_object.is_active = True
 	user_object.save()
-	auth_login(request, user_object)
-	return redirect('/')
+	auth_login(request,user_object)
+	return redirect(index)
 
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @login_required(login_url='/login')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
@@ -138,16 +180,22 @@ def create_channel(request):
 		return redirect(create_channel)
 	return render(request, 'archile/create_channel.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def create_post(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	return render(request, 'archile/create_post.html',{'channel':channel})
 
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def save_post(request):
 	if request.method == 'POST':
 		user = request.user
 		title = request.POST['post_title']
 		c_id = request.POST['channel']
-		channel = Channel.objects.get(c_id=c_id)
+		ch = Channel.objects.get(c_id=c_id)
 		description = request.POST['post_description']
 		tags = list(map(lambda tag:tag.strip().lower(),request.POST['post_tags'].split(',')))
 
@@ -160,7 +208,7 @@ def save_post(request):
 
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
-		post_object = Post(u_id=user,c_id=channel,description=description,title=title,creation_datetime=local)
+		post_object = Post(u_id=user,c_id=ch,description=description,title=title,creation_datetime=local)
 		post_object.save()
 
 		#saving all tags
@@ -181,14 +229,74 @@ def save_post(request):
 				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
 
-		return redirect(create_post)
+		return redirect(channel,c_id)
 	return render(request, 'archile/channel.html')
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
 def edit_post(request):
-	return render(request, 'archile/edit_post.html')
-	
-def post(request):
-	return render(request, 'archile/post.html')
+	pass
 
-def channel(request):
-	return render(request, 'archile/channel.html')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def edit_channel(request,c_id):
+	pass
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')	
+def subscribe_channel(request,c_id):
+	Chan = Channel.objects.get(c_id=c_id)
+	count =Chan.no_of_subscriptions
+	user = request.user
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	try:
+		subs = Subscription.objects.get(c_id=Chan,u_id=user)
+		Chan.no_of_subscriptions = count -1
+		subs.delete()
+	except:
+		subs = Subscription(c_id=Chan,u_id=user,s_datetime=local)
+		if count == None:
+			Chan.no_of_subscriptions = 1
+		else:
+			Chan.no_of_subscriptions = count + 1
+		subs.save()
+	Chan.save()
+	return redirect(channel,c_id)
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def post(request,p_id):
+	pass
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def channel(request,c_id):
+	channel = Channel.objects.get(c_id=c_id)
+	posts=Post.objects.filter(c_id=channel)
+	user = request.user
+	context = {}
+	context['channel'] = channel
+	context['posts']=[]
+	for post in posts:
+		dic=to_dict(post)
+		dic['creation_datetime']=arrow.get(dic['creation_datetime']).format('Do MMMM YYYY')
+		dic['user']=User.objects.get(id=dic['u_id'])
+		try:
+			post_atc_obj = post_actions.objects.get(p_id=dic['p_id'],u_id=user.id)
+			dic['ld_status'] = post_atc_obj.ld_status
+		except:
+			dic['ld_status'] = None
+		context['posts'].append(dic)
+
+	try:
+		subs = Subscription.objects.get(c_id=channel,u_id=user)
+		context['subs'] = True
+	except:
+		context['subs'] = False
+	return render(request, 'archile/channel.html',context)
