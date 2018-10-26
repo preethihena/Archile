@@ -50,7 +50,7 @@ def home(request,token_id):
 
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # @login_required(login_url='/login')
-def create_channel(request):
+def create_channel(request,c_id):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
 		if 'channel_logo' in request.FILES:
@@ -124,4 +124,5 @@ def save_post(request):
 	return render(request, 'archile/channel.html')
 
 def edit_post(request):
-	pass
+	return render(request, 'archile/edit_post.html')
+	
