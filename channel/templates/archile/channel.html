@@ -42,7 +42,7 @@
 		    			<div class="col-md-8">
 		    				{% if subs %}
 		    				<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">UnSubscribe</button>
+			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
 			    			</a>
 			    			{% else %}
 			    			<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">

@@ -126,7 +126,7 @@ def home(request,token_id):
 	data=data['student']
 	try:
 		user_object = User.objects.get(token=token_id)
-		print(user_object)
+		#print(user_object)
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']
@@ -281,9 +281,8 @@ def channel(request,c_id):
 			dic['ld_status'] = post_atc_obj.ld_status
 		except:
 			dic['ld_status'] = None
-		# print(dic['user'].first_name)
 		context['posts'].append(dic)
-	# print(context['posts'])
+
 	try:
 		subs = Subscription.objects.get(c_id=channel,u_id=user)
 		context['subs'] = True
