@@ -84,7 +84,8 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'archile',
         'USER': 'root',
         'PASSWORD': 'Dhruv!23',
@@ -133,3 +134,4 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+AUTH_USER_MODEL = 'channel.User'
