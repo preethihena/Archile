@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'archile',
         'USER': 'root',
-        'PASSWORD': 'krishna',
+        'PASSWORD': 'Dhruv!23',
         'HOST': 'localhost',
         'PORT': '',
     }

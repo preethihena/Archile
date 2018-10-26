@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 def index(request):
 	return render(request,'archile/search_results.html')
 
-
 def login(request):
 	return render(request,'archile/login.html')
 
@@ -126,3 +125,8 @@ def save_post(request):
 def edit_post(request):
 	return render(request, 'archile/edit_post.html')
 	
+def post(request):
+	return render(request, 'archile/post.html')
+
+def channel(request):
+	return render(request, 'archile/channel.html')
