@@ -1,10 +1,26 @@
 from django.shortcuts import render, redirect
-from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags,Subscription
+from .models import User,Channel,Tags,Channel_tags,Post_files,Post,Post_tags,Subscription,post_actions
 import datetime
 import requests,arrow
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login
+from django.db.models.fields.related import ManyToManyField
+
+def to_dict(instance):
+    opts = instance._meta
+    data = {}
+    for f in opts.concrete_fields + opts.many_to_many:
+        if isinstance(f, ManyToManyField):
+            if instance.pk is None:
+                data[f.name] = []
+            else:
+                data[f.name] = list(f.value_from_object(instance).values_list('pk', flat=True))
+        else:
+            data[f.name] = f.value_from_object(instance)
+    return data
+
+
 def index(request):
 	return render(request,'archile/search_results.html')
 
@@ -136,7 +152,7 @@ def save_post(request):
 		user = request.user
 		title = request.POST['post_title']
 		c_id = request.POST['channel']
-		channel = Channel.objects.get(c_id=c_id)
+		ch = Channel.objects.get(c_id=c_id)
 		description = request.POST['post_description']
 		tags = list(map(lambda tag:tag.strip().lower(),request.POST['post_tags'].split(',')))
 
@@ -149,7 +165,7 @@ def save_post(request):
 
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
-		post_object = Post(u_id=user,c_id=channel,description=description,title=title,creation_datetime=local)
+		post_object = Post(u_id=user,c_id=ch,description=description,title=title,creation_datetime=local)
 		post_object.save()
 
 		#saving all tags
@@ -170,7 +186,7 @@ def save_post(request):
 				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
 
-		return redirect(create_post)
+		return redirect(channel,c_id)
 	return render(request, 'archile/channel.html')
 
 def edit_post(request):
@@ -200,22 +216,31 @@ def subscribe_channel(request,c_id):
 	Chan.save()
 	return redirect(channel,c_id)
 
-def post(request):
+def post(request,p_id):
 	pass
 
 def channel(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	posts=Post.objects.filter(c_id=channel)
-	for x in posts:
-		print(x)
 	user = request.user
 	context = {}
 	context['channel'] = channel
-	context['posts'] = posts
+	context['posts']=[]
+	for post in posts:
+		dic=to_dict(post)
+		dic['creation_datetime']=arrow.get(dic['creation_datetime']).format('Do MMMM YYYY')
+		dic['user']=User.objects.get(id=dic['u_id'])
+		try:
+			post_atc_obj = post_actions.objects.get(p_id=dic['p_id'],u_id=user.id)
+			dic['ld_status'] = post_atc_obj.ld_status
+		except:
+			dic['ld_status'] = None
+		# print(dic['user'].first_name)
+		context['posts'].append(dic)
+	# print(context['posts'])
 	try:
 		subs = Subscription.objects.get(c_id=channel,u_id=user)
 		context['subs'] = True
 	except:
 		context['subs'] = False
-	print(context)
 	return render(request, 'archile/channel.html',context)
