@@ -76,29 +76,30 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'USER': 'root',
-        'PASSWORD': 'hena@22',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 
 # DATABASES = {
 #     'default': {
-
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'archile',
+#         'ENGINE': 'django.db.backends.sqlite3',
+        
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #         'USER': 'root',
 #         'PASSWORD': 'Dhruv!23',
 #         'HOST': 'localhost',
 #         'PORT': '',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'archile',
+        'USER': 'root',
+        'PASSWORD': 'krishna',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 

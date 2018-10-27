@@ -27,7 +27,20 @@ def to_dict(instance):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
 def index(request):
-	return render(request,'archile/search_results.html')
+	user=request.user
+	chan = Channel.objects.all()
+	Channels_all=[]
+	for each in chan:
+		data = to_dict(each)
+		try:
+			subs = Subscription.objects.get(c_id=data['c_id'],u_id=user)
+			data['subs'] = True
+		except:
+			data['subs'] = False
+		Channels_all.append(data)
+	Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
+
+	return render(request,'archile/index.html',{'channels':Channels_all})
 
 
 
@@ -85,6 +98,7 @@ def search(request,query):
 		return True
 
 	#query is a string, converting it to dictionary
+	user=request.user
 	query = eval(query)
 
 	if valid_search(query):
@@ -93,15 +107,38 @@ def search(request,query):
 		
 		Channels = Channel.objects.all()
 		Posts = Post.objects.all()
+		Ch=[]
+		Ps=[]
 		for word in text:
-			Channels = Channels.filter(name__icontains=word)
-			Posts = Posts.filter(title__icontains=word)
-		
+			Ch.append(Channels.filter(name__icontains=word))
+			Ps.append(Posts.filter(title__icontains=word))
+		Channels_all=[]
+		ch_set = set()
+		for chan in Ch:
+			for each in chan:
+				if each.c_id not in ch_set:
+					data = to_dict(each)
+					try:
+						subs = Subscription.objects.get(c_id=data['c_id'],u_id=user)
+						data['subs'] = True
+					except:
+						data['subs'] = False
+					ch_set.add(data['c_id'])
+					Channels_all.append(data)
+		Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
+		Posts_all=[]
+		ps_set = set()
+		for pst in Ps:
+			for each in pst:
+				if each.p_id not in ps_set:
+					data = to_dict(each)
+					ps_set.add(data['p_id'])
+					Posts_all.append(data)
+		Posts_all=sorted(Posts_all,key=lambda d:[-d['no_of_likes'],d['no_of_dislikes'],d['creation_datetime']])
 		context = {
-			'channels': Channels,
-			'posts': Posts
+			'channels': Channels_all,
+			'posts': Posts_all
 		}
-		print(context)
 		return render(request, 'archile/search_results.html',context)
 	else:
 		# redirect to home page, as of now redirecting to search_box(which is a dummy for our search filter)
@@ -138,7 +175,6 @@ def home(request,token_id):
 	data=data['student']
 	try:
 		user_object = User.objects.get(token=token_id)
-		#print(user_object)
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']

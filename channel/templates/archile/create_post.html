@@ -3,8 +3,8 @@
 {% block content %}
 <div style="padding-left: 1.5rem;padding-top: 1rem;">
 	<ol class="breadcrumb breadcrumb-right-arrow">
-  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Channel Name</a></li>
+  		<li class="breadcrumb-item"><a href="{% url 'index' %}" style="text-decoration: none;">Home</a></li>
+  		<li class="breadcrumb-item"><a href="{% url 'channel' c_id=channel.c_id %}" style="text-decoration: none;">{{channel.name}}</a></li>
 	    <li class="breadcrumb-item active" aria-current="page">Add Post</li>
 	</ol>
 	<div class="col-md-12">

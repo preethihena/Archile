@@ -6,7 +6,7 @@
 			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
 			<div class="row">
 				<div class="col-md-12" style="margin-top: 2.5rem;">
-				<h4>No Results</h4>
+				<h4>No Channels</h4>
 				</div>
 			</div>
 			{% endif %}
@@ -37,20 +37,6 @@
 			    			</a>
 			    			{% endif %}
 		    			</div>
-		    		</div>
-		    	</div>
-		    </div>
-		    <hr>
-		    {% endfor %}
-		    {% for i in posts %}
-		    <div class="row">
-		    	<div class="col-md-2">
-		    		<img class="post_image" src="http://rs775.pbsrc.com/albums/yy35/PhoenyxStar/link-1.jpg~c200">
-		    	</div>
-		    	<div class="col-md-7" style="margin-top: 2.5rem;">
-		    		<h3><a href="{% url 'post' p_id=i.p_id %}" style="text-decoration: none;color: black;">{{i.title}}</a></h3></center>
-		    		<div class="channel_des">
-		    			{{i.description}}
 		    		</div>
 		    	</div>
 		    </div>
