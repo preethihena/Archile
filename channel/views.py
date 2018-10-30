@@ -280,9 +280,7 @@ def edit_post(request,p_id):
 		post_obj.description=description
 		post_obj.save()
 		return redirect(post,p_id)
-
-# def edit_post(request,):
-# 	pass
+	return render(request, 'archile/edit_post.html', {'post' : Post.objects.get(p_id=p_id)})
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -367,9 +365,9 @@ def channel(request,c_id):
 		context['posts'].append(dic)
 		files=Post_files.objects.filter(p_id=post.p_id)
 		for f in files:
+			p=str(f.file)
+			f.filename=p.split('/')[1]
 			if f.file_type == "IMAGES":
-				p=str(f.file)
-				f.filename=p.split('/')[1]
 				context['images'].append(f)
 			if f.file_type == "AUDIO":
 				context['audio'].append(f)
@@ -399,13 +397,15 @@ def download(request, path):
 			return response
 	raise Http404
 
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
-def actions(request,action,pf_id):
-	post_file_obj=Post_files.objects.get(pf_id=pf_id)
+def actions(request,type_of,action,any_id):
+	if type_of==0:
+		post_file_obj=Post.objects.get(p_id=any_id)
+		action_object=post_actions.objects.get(p_id=any_id)
+	elif type_of==1:
+		post_file_obj=Post_files.objects.get(pf_id=any_id)
+		action_object=post_file_actions.objects.get(pf_id=any_id)
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
-	action_object=post_file_actions.objects.get(pf_id=pf_id)
 	if action_object!=None:
 		action_object.datetime=local
 		if action==0:
@@ -440,9 +440,16 @@ def actions(request,action,pf_id):
 			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
 	else:
-		if action==1 or action==0:
-			pfa_obj=post_file_actions(datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
+		if type_of==1:
+			if action==1 or action==0:
+				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
+			else:
+				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=action)
 		else:
-			pfa_obj=post_file_actions(datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=action)
+			if action==1 or action==0:
+				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=action)
+			else:
+				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=action)
+
 		pfa_obj.save()
 	return render(request, 'archile/index.html')

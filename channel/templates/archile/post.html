@@ -28,7 +28,7 @@
    					</div>
    					<div class="col-md-6">
    						<i class="fas fa-user-circle fa-lg"></i> {{post.c_id.u_id.first_name}} {{post.c_id.u_id.last_name}}
-   						<i style="padding-left: 20px;" class="fas fa-pencil-alt fa-lg" ></i> Edit
+   						<a href="{% url 'edit_post' p_id=post.p_id %}"><i style="padding-left: 20px;" class="fas fa-pencil-alt fa-lg" ></i> Edit</a>
    					</div>
 				</div>
 				<div class="row">
