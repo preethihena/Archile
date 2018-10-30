@@ -319,9 +319,9 @@ def subscribe_channel(request,c_id):
 def post(request,p_id):
 	post_obj = Post.objects.get(p_id=p_id)
 	context={}
-	context['post']=post_obj
+	context['post'] = post_obj
 	post_files = Post_files.objects.filter(p_id=p_id)
-	context['post_files']=post_files
+	context['post_files'] = post_files
 	return render(request, 'archile/post.html',context)
 
 
