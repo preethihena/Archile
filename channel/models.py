@@ -122,6 +122,9 @@ class Post(models.Model):
 	def __str__(self):
 		return str(self.title+str(self.p_id))
 
+	def myfiles(self):
+		return Post_files.objects.all().filter(p_id=self.p_id)
+	
 class Post_files(models.Model):
 	pf_id = models.AutoField(primary_key = True)
 	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)
@@ -139,6 +142,8 @@ class Post_files(models.Model):
 	def __str__(self):
 		return str(str(self.p_id)+str(self.pf_id)+"status="+str(self.status))
 
+	def myname(self):
+		return list((self.file.name).split('/'))[1]
 
 QA_CHOICES =[('A','Assertive'),('Q','Question')]
 
