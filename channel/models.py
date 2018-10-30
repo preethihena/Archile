@@ -137,7 +137,7 @@ class Post_files(models.Model):
         help_text='Designates whether the File uploaded is active or not.',
     )
 	def __str__(self):
-		return str(self.p_id.title+str(self.pf_id)+"status="+self.status)
+		return str(str(self.p_id)+str(self.pf_id)+"status="+str(self.status))
 
 
 QA_CHOICES =[('A','Assertive'),('Q','Question')]
@@ -211,8 +211,8 @@ class post_file_actions(models.Model):
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	pf_id = models.ForeignKey(Post_files,on_delete=models.CASCADE)
 	datetime = models.DateTimeField('date created',auto_now_add=True)
-	ld_status = models.NullBooleanField()
-	report_status = models.NullBooleanField()
+	ld_status = models.NullBooleanField(default=2)
+	report_status = models.NullBooleanField(default=0)
 
 class channel_thread_actions(models.Model):
 	cta_id = models.AutoField(primary_key = True)
@@ -234,3 +234,10 @@ class channel_actions(models.Model):
 	ca_id = models.AutoField(primary_key=True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	report_status = models.NullBooleanField()
+
+class Dowload_history(models.Model):
+	dw_id = models.AutoField(primary_key=True)
+	pf_id = models.ForeignKey(Post_files,on_delete=models.PROTECT)
+	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
+	download_datetime = models.DateTimeField('date downloded',auto_now_add=True)
+		
