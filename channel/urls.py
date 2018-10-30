@@ -18,6 +18,7 @@ urlpatterns = [
     path('channel/<int:c_id>',channel,name="channel"),
     path('subscribe_channel/<int:c_id>',subscribe_channel,name="subscribe_channel"),
     path('edit_channel/<int:c_id>',edit_channel,name="edit_channel"),
+    path('report/<int:p_id>',report,name="report"),
 ]
 
 if settings.DEBUG:
