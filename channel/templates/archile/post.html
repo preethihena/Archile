@@ -5,29 +5,29 @@
 	<div class="col-md-12">
 		<ol class="breadcrumb breadcrumb-right-arrow">
 	  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-	  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Channel Name</a></li>
-		    <li class="breadcrumb-item active" aria-current="page">Post</li>
+	  		<li class="breadcrumb-item"><a href="{% url 'channel' c_id=post.c_id.c_id %}" style="text-decoration: none;">{{post.c_id.name}}</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">{{post.title|title}}</li>
 		</ol>
 		<div class="row">
     		<div class="col-md-7" style="padding-left: 1.8em;">
-   				<h3>Post Title</h3></center>		
+   				<h3>{{post.title|title}}</h3></center>		
     		</div>
     	</div>
     	<div class="row">
     		<div class="col-sm-12" style="padding-left: 1.8em;">
    				<div class="row">
    					<div class="col-md-6">
-   						<i class="far fa-thumbs-up fa-lg"></i> 234
-   						<i style="padding-left: 20px;" class="far fa-thumbs-down fa-lg"></i> 40
+   						<i class="far fa-thumbs-up fa-lg"></i> {{post.no_of_likes}}
+   						<i style="padding-left: 20px;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
    					</div>
    					<div class="col-md-6">
-   						<i class="fas fa-user-circle fa-lg"></i> Charles Babbage
+   						<i class="fas fa-user-circle fa-lg"></i> {{post.c_id.u_id.first_name}} {{post.c_id.u_id.last_name}}
    						<i style="padding-left: 20px;" class="fas fa-pencil-alt fa-lg" ></i> Edit
    					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-9"  style="margin-top: 10px;">
-						{% lorem %}
+						{{ post.description}}
 					</div>
 					<div class="col-md-9" style="margin-top: 30px;">
 				        	<table class="table">
@@ -38,13 +38,15 @@
 				        			<th>Type</th>
 				        			<th>Download</th>
 				        		</tr>
+				        		{% for file in post_files %}
 							    <tr>
-									<td>PythonDocs.pdf</td>
-									<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
-									<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
-									<td>Docs</td>
+									<td>{{file.file}}</td>
+									<td><i class="far fa-thumbs-up fa-lg"></i> {{ file.no_of_likes }} </td>
+									<td><i class="far fa-thumbs-down fa-lg"></i> {{ file.no_of_dislikes }}</td>
+									<td>{{file.file_type }}</td>
 									<td><i class="fas fa-download fa-lg"></i></td>
 							    </tr>
+							    {% endfor %}
 							</table>
 					</div>
 				</div>
