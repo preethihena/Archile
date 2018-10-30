@@ -148,9 +148,9 @@
 					<td>{{image.filename}}</td>
 					<!--<td><img src="{{ image.file.url }}"></td>-->
 					<td><a href="download/{{image.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' action=1 pf_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i> 234</a></td>
-					<td><a href="{% url 'actions' action=0 pf_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> 40</a></td>
-					<td><a href="{% url 'actions' action=2 pf_id=image.pf_id %}">Irrelevant 4</a></td>
+					<td><a href="{% url 'actions' action=1 pf_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{image.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' action=0 pf_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{image.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' action=2 pf_id=image.pf_id %}">Irrelevant {{image.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>3<sup>rd</sup> October 2018 </td>
 			    {% else%}
