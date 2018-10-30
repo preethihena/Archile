@@ -271,8 +271,18 @@ def save_post(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
-def edit_post(request):
-	pass
+def edit_post(request,p_id):
+	if request.method == 'POST':
+		title = request.POST['post_title']
+		post_obj = Post.objects.get(p_id=p_id)
+		description = request.POST['post_description']
+		post_obj.title=title
+		post_obj.description=description
+		post_obj.save()
+		return redirect(post,p_id)
+
+# def edit_post(request,):
+# 	pass
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -307,7 +317,12 @@ def subscribe_channel(request,c_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
 def post(request,p_id):
-	pass
+	post_obj = Post.objects.get(p_id=p_id)
+	context={}
+	context['post']=post_obj
+	post_files = Post_files.objects.filter(p_id=p_id)
+	context['post_files']=post_files
+	return render(request, 'archile/post.html',context)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
