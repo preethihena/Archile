@@ -284,9 +284,7 @@ def edit_post(request,p_id):
 		post_obj.description=description
 		post_obj.save()
 		return redirect(post,p_id)
-
-# def edit_post(request,):
-# 	pass
+	return render(request, 'archile/edit_post.html', {'post' : Post.objects.get(p_id=p_id)})
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

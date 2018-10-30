@@ -1,6 +1,7 @@
 {% extends 'archile/base.html' %}
 {% load static %}
 {% block content %}
+
 <div style="padding-left: 1.5rem;padding-top: 1rem;">
 	<ol class="breadcrumb breadcrumb-right-arrow">
   		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
@@ -14,15 +15,43 @@
 					<div class="form-group row">
 						<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title">
+							<input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Give a title" value="{{post.title}}">
 						</div>
 					</div>
 					<div class="form-group row">
 						<label for="exampleFormControlTextarea1" class="col-sm-3 col-form-label">Description:</label>
 						<div class="col-sm-7">
-							<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" placeholder="Give a brief description about the post, here." required></textarea>
+							<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" placeholder="Give a brief description about the post, here." required>{{post.description}}</textarea>
 						</div>
 					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label">Current Files:</label>
+						<div class="col-sm-8 custom-control custom-checkbox">
+							<table class="table">
+								<tr>
+									<th>File name</th>
+									<th>Type</th>
+									<th>Delete?</th>
+								</tr>
+							{% for i in post.myfiles %}
+								<tr>
+									<td scope="row">{{i.myname}}</td>
+									<td>{{i.file_type}}</td>
+									<td><input type="checkbox"></td>
+								</tr>
+							{% endfor %}
+							</table>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="ChannelName" class="col-sm-3 col-form-label">Tags:</label>
+						<div class="col-sm-7">
+							<input type="text" value="my tags here" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
+						</div>
+					</div>
+
+					<hr>
+
 					<div class="form-group row">
 						<label for="logo" class="col-sm-3 col-form-label">Docs</label>
 						<div class="col-sm-6">
@@ -69,12 +98,7 @@
 						</div>
 					</div>
 					
-					<div class="form-group row">
-						<label for="ChannelName" class="col-sm-3 col-form-label">Tags:</label>
-						<div class="col-sm-7">
-							<input type="text" value="" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
-						</div>
-					</div>
+
 					<div class="form-group row">
 						<label for="ChannelName" class="col-sm-3 col-form-label"></label>
 						<div class="col-sm-7">
@@ -82,70 +106,6 @@
 						</div>
 					</div>
 				</form>
-	        </div>
-	        <div class="col-sm-4" style="border:2px solid var(--light);">
-	        	<div style="overflow: auto;height: 300px;">
-		        	<table class="table">
-		        		<tr>
-		        			<th style="text-align: center;" colspan="4">Uploaded Files</th>
-		        		</tr>
-					    <tr>
-					      <th scope="row">1</th>
-					      <td>Mark</td>
-					      <td>Otto</td>
-					      <td>@mdo</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">2</th>
-					      <td>Jacob</td>
-					      <td>Thornton</td>
-					      <td>@fat</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">3</th>
-					      <td>Larry</td>
-					      <td>the Bird</td>
-					      <td>@twitter</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">1</th>
-					      <td>Mark</td>
-					      <td>Otto</td>
-					      <td>@mdo</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">2</th>
-					      <td>Jacob</td>
-					      <td>Thornton</td>
-					      <td>@fat</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">3</th>
-					      <td>Larry</td>
-					      <td>the Bird</td>
-					      <td>@twitter</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">1</th>
-					      <td>Mark</td>
-					      <td>Otto</td>
-					      <td>@mdo</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">2</th>
-					      <td>Jacob</td>
-					      <td>Thornton</td>
-					      <td>@fat</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">3</th>
-					      <td>Larry</td>
-					      <td>the Bird</td>
-					      <td>@twitter</td>
-					    </tr>
-					    
-					</table>
-				</div>
 	        </div>
 	    </div>
 	</div>
