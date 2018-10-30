@@ -396,35 +396,34 @@ def actions(request,action,pf_id):
 		action_object.datetime=local
 		if action==0:
 			if action_object.ld_status==0:
-				post_file_obj.save(update_fields=['datetime'])
-			if action_object.ld_status==1:
+				action_object.save(update_fields=['latest_datetime'])
+			elif action_object.ld_status==1:
 				action_object.ld_status=0
 				post_file_obj.no_of_dislikes+=1
 				if post_file_obj.no_of_likes >0:
 					post_file_obj.no_of_likes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
-			action_object.save(update_fields=['ld_status','datetime'])
+			action_object.save(update_fields=['ld_status','latest_datetime'])
 		elif action==1:
-			if action_object.ld_status==0:
-				post_file_obj.save(update_fields=['datetime'])
-			if action_object.ld_status==0:
+			if action_object.ld_status==1:
+				action_object.save(update_fields=['latest_datetime'])
+			elif action_object.ld_status==0:
 				action_object.ld_status=1
-				action_object.datetime=local
-				if post_file_obj.no_of_likes >0:
-					post_file_obj.no_of_dislikes-=1
 				post_file_obj.no_of_likes+=1
+				if post_file_obj.no_of_dislikes >0:
+					post_file_obj.no_of_dislikes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
-			action_object.save(update_fields=['ld_status','datetime'])
+			action_object.save(update_fields=['ld_status','latest_datetime'])
 		elif action==2:
 			action_object.report_status=1
 			post_file_obj.no_of_reports+=1
-			action_object.save(update_fields=['report_status','datetime'])
+			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
 		elif action==3:
 			action_object.report_status=0
-			if post_file_obj.no_of_likes >0:
+			if post_file_obj.no_of_reports >0:
 				post_file_obj.no_of_reports-=1
-			action_object.save(update_fields=['report_status','datetime'])
+			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
 	else:
 		if action==1 or action==0:
