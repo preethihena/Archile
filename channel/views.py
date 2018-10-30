@@ -376,7 +376,6 @@ def actions(request,action,pf_id):
 	action_object=post_file_actions.objects.get(pf_id=pf_id)
 	if action_object!=None:
 		action_object.datetime=local
-		type(action_object.datetime)
 		if action==0:
 			if action_object.ld_status==0:
 				post_file_obj.save(update_fields=['datetime'])
