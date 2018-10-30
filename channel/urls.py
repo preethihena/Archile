@@ -18,8 +18,9 @@ urlpatterns = [
     path('channel/<int:c_id>',channel,name="channel"),
     path('subscribe_channel/<int:c_id>',subscribe_channel,name="subscribe_channel"),
     path('edit_channel/<int:c_id>',edit_channel,name="edit_channel"),
-    path('report/<int:p_id>',report,name="report"),
-    path('actions/<int:action>/<int:pf_id>',actions,name="actions"),
+    #path('report/<int:p_id>',report,name="report"),
+    path('actions/<int:type_of>/<int:action>/<int:any_id>/',actions,name="actions"),
+    #re_path('actions/(?P<type_of>[a-z_]+)/(?P<action>[0-9]+)/(?P<any_id>[0-9]+)/',actions,name="actions"),
     re_path('download/(?P<path>[\w\.!@?#$%&:+;=-]+[.][A-Za-z0-9]+)',download,name="download")
 ]
 

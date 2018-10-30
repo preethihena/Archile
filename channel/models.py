@@ -202,7 +202,7 @@ class post_actions(models.Model):
 	pa_id = models.AutoField(primary_key = True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)
-	datetime = models.DateTimeField('date created',auto_now=True)
+	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
 
