@@ -8,6 +8,9 @@ from django.contrib.auth import login as auth_login
 from django.db.models.fields.related import ManyToManyField
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
+import os
+from django.conf import settings
+from django.http import HttpResponse
 
 def to_dict(instance):
     opts = instance._meta
@@ -172,9 +175,10 @@ def home(request,token_id):
 	url = "https://serene-wildwood-35121.herokuapp.com/oauth/getDetails"
 	response=requests.post(url, data=payload)
 	data=response.json()
+	#print(data)
 	data=data['student']
 	try:
-		user_object = User.objects.get(token=token_id)
+		user_object = User.objects.get(email=data[0]['Student_Email'])
 	except:
 		user_object=User()
 	user_object.first_name=data[0]['Student_First_Name']
@@ -271,8 +275,18 @@ def save_post(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
-def edit_post(request):
-	pass
+def edit_post(request,p_id):
+	if request.method == 'POST':
+		title = request.POST['post_title']
+		post_obj = Post.objects.get(p_id=p_id)
+		description = request.POST['post_description']
+		post_obj.title=title
+		post_obj.description=description
+		post_obj.save()
+		return redirect(post,p_id)
+
+# def edit_post(request,):
+# 	pass
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -306,12 +320,34 @@ def subscribe_channel(request,c_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
+
 def post(request,p_id):
-	pass
+	post_obj = Post.objects.get(p_id=p_id)
+	context={}
+	context['post'] = post_obj
+	post_files = Post_files.objects.filter(p_id=p_id)
+	context['post_files'] = post_files
+	return render(request, 'archile/post.html',context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def report_post(request, p_id):
+	context = {}
+	user = request.user
+	context['user'] = user
+	post_act_obj = post_actions.objects.get(p_id = p_id)
+	if post_act_obj.report_status == True:
+		post_act_obj.report_status = False
+	context['post_action'] = post_act_obj
+
+	return render(request, 'archile/post.html', context)
+
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/login')
+
 def channel(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	posts=Post.objects.filter(c_id=channel)
@@ -319,6 +355,11 @@ def channel(request,c_id):
 	context = {}
 	context['channel'] = channel
 	context['posts']=[]
+	context['docs']=[]
+	context['images']=[]
+	context['audio']=[]
+	context['video']=[]
+	context['archives']=[]
 	for post in posts:
 		dic=to_dict(post)
 		dic['creation_datetime']=arrow.get(dic['creation_datetime']).format('Do MMMM YYYY')
@@ -329,10 +370,79 @@ def channel(request,c_id):
 		except:
 			dic['ld_status'] = None
 		context['posts'].append(dic)
-
+		files=Post_files.objects.filter(p_id=post.p_id)
+		for f in files:
+			if f.file_type == "IMAGES":
+				p=str(f.file)
+				f.filename=p.split('/')[1]
+				context['images'].append(f)
+			if f.file_type == "AUDIO":
+				context['audio'].append(f)
+			if f.file_type == "VIDEO":
+				context['video'].append(f)
+			if f.file_type == "DOCS":
+				context['docs'].append(f)
+			if f.file_type == "ARCHIVES":
+				context['archives'].append(f)
 	try:
 		subs = Subscription.objects.get(c_id=channel,u_id=user)
 		context['subs'] = True
 	except:
 		context['subs'] = False
 	return render(request, 'archile/channel.html',context)
+
+	
+def download(request, path):
+	path='post_files/'+path
+	file_path = os.path.join(settings.MEDIA_ROOT, path)
+	if os.path.exists(file_path):
+		with open(file_path, 'rb') as fh:
+			response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+			return response
+	raise Http404
+def actions(request,action,pf_id):
+	post_file_obj=Post_files.objects.get(pf_id=pf_id)
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	action_object=post_file_actions.objects.get(pf_id=pf_id)
+	if action_object!=None:
+		action_object.datetime=local
+		if action==0:
+			if action_object.ld_status==0:
+				action_object.save(update_fields=['latest_datetime'])
+			elif action_object.ld_status==1:
+				action_object.ld_status=0
+				post_file_obj.no_of_dislikes+=1
+				if post_file_obj.no_of_likes >0:
+					post_file_obj.no_of_likes-=1
+				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
+			action_object.save(update_fields=['ld_status','latest_datetime'])
+		elif action==1:
+			if action_object.ld_status==1:
+				action_object.save(update_fields=['latest_datetime'])
+			elif action_object.ld_status==0:
+				action_object.ld_status=1
+				post_file_obj.no_of_likes+=1
+				if post_file_obj.no_of_dislikes >0:
+					post_file_obj.no_of_dislikes-=1
+				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
+			action_object.save(update_fields=['ld_status','latest_datetime'])
+		elif action==2:
+			action_object.report_status=1
+			post_file_obj.no_of_reports+=1
+			action_object.save(update_fields=['report_status','latest_datetime'])
+			post_file_obj.save(update_fields=['no_of_reports'])
+		elif action==3:
+			action_object.report_status=0
+			if post_file_obj.no_of_reports >0:
+				post_file_obj.no_of_reports-=1
+			action_object.save(update_fields=['report_status','latest_datetime'])
+			post_file_obj.save(update_fields=['no_of_reports'])
+	else:
+		if action==1 or action==0:
+			pfa_obj=post_file_actions(datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
+		else:
+			pfa_obj=post_file_actions(datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=action)
+		pfa_obj.save()
+	return render(request, 'archile/index.html')

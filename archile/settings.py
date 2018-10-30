@@ -76,6 +76,7 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'archile.wsgi.application'
 DATABASES = {
     'default': {
 
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'archile',
         'USER': 'root',
         'PASSWORD': 'krishna',
