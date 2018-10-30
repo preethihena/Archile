@@ -329,6 +329,20 @@ def post(request,p_id):
 	context['post_files'] = post_files
 	return render(request, 'archile/post.html',context)
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/login')
+def report_post(request, p_id):
+	context = {}
+	user = request.user
+	context['user'] = user
+	post_act_obj = post_actions.objects.get(p_id = p_id)
+	if post_act_obj.report_status == True:
+		post_act_obj.report_status = False
+	context['post_action'] = post_act_obj
+
+	return render(request, 'archile/post.html', context)
+
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
