@@ -26,8 +26,9 @@ def to_dict(instance):
     return data
 
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def index(request):
 	user=request.user
 	chan = Channel.objects.all()
@@ -51,17 +52,17 @@ def user_login(request):
 
 #user logout
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def user_logout(request):
     # Since we know the user is logged in, we can now just log them out.
     logout(request)
 
     # Take the user back to the homepage.
-    return redirect(user_login)
+    return redirect(login)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def search(request,query):
 	
 	def valid_date(inputDate):
@@ -148,8 +149,9 @@ def search(request,query):
 	
 	return render(request, 'archile/search.html')
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def search_box(request):
 
 	if request.method == 'POST':
@@ -190,7 +192,7 @@ def home(request,token_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
@@ -219,14 +221,15 @@ def create_channel(request):
 	return render(request, 'archile/create_channel.html')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def create_post(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	return render(request, 'archile/create_post.html',{'channel':channel})
 
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def save_post(request):
 	if request.method == 'POST':
 		user = request.user
@@ -269,8 +272,9 @@ def save_post(request):
 		return redirect(channel,c_id)
 	return render(request, 'archile/channel.html')
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def edit_post(request,p_id):
 	if request.method == 'POST':
 		title = request.POST['post_title']
@@ -284,12 +288,13 @@ def edit_post(request,p_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def edit_channel(request,c_id):
 	pass
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')	
 def subscribe_channel(request,c_id):
 	Chan = Channel.objects.get(c_id=c_id)
 	count =Chan.no_of_subscriptions
@@ -312,7 +317,8 @@ def subscribe_channel(request,c_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
+
 def post(request,p_id):
 	post_obj = Post.objects.get(p_id=p_id)
 	context={}
@@ -321,10 +327,8 @@ def post(request,p_id):
 	context['post_files'] = post_files
 	return render(request, 'archile/post.html',context)
 
-
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
 def report_post(request, p_id):
 	context = {}
 	user = request.user
@@ -332,8 +336,6 @@ def report_post(request, p_id):
 	post_act_obj = post_actions.objects.get(p_id = p_id)
 	if post_act_obj.report_status == True:
 		post_act_obj.report_status = False
-	elif post_act_obj.report_status == False:
-		post_act_obj.report_status = True
 	context['post_action'] = post_act_obj
 
 	return render(request, 'archile/post.html', context)
@@ -342,7 +344,8 @@ def report_post(request, p_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+@login_required(login_url='/login')
+
 def channel(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	posts=Post.objects.filter(c_id=channel)
@@ -356,15 +359,8 @@ def channel(request,c_id):
 	context['video']=[]
 	context['archives']=[]
 	for post in posts:
-		dic=to_dict(post)
-		dic['creation_datetime']=arrow.get(dic['creation_datetime']).format('Do MMMM YYYY')
-		dic['user']=User.objects.get(id=dic['u_id'])
-		try:
-			post_atc_obj = post_actions.objects.get(p_id=dic['p_id'],u_id=user.id)
-			dic['ld_status'] = post_atc_obj.ld_status
-		except:
-			dic['ld_status'] = None
-		context['posts'].append(dic)
+		post.creation_datetime=arrow.get(post.creation_datetime).format('Do MMMM YYYY')
+		context['posts'].append(post)
 		files=Post_files.objects.filter(p_id=post.p_id)
 		for f in files:
 			p=str(f.file)
@@ -386,9 +382,7 @@ def channel(request,c_id):
 		context['subs'] = False
 	return render(request, 'archile/channel.html',context)
 
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
+	
 def download(request, path):
 	path='post_files/'+path
 	file_path = os.path.join(settings.MEDIA_ROOT, path)
@@ -412,7 +406,7 @@ def actions(request,type_of,action,any_id):
 		elif type_of=='post_file':
 			action_object=post_file_actions.objects.get(pf_id=any_id,u_id=request.user)
 		action_object.datetime=local
-		if action==0:
+		if int(action)==0:
 			if action_object.ld_status==0:
 				action_object.save(update_fields=['latest_datetime'])
 			elif action_object.ld_status==1:
@@ -422,7 +416,7 @@ def actions(request,type_of,action,any_id):
 					post_file_obj.no_of_likes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
 			action_object.save(update_fields=['ld_status','latest_datetime'])
-		elif action==1:
+		elif int(action)==1:
 			if action_object.ld_status==1:
 				action_object.save(update_fields=['latest_datetime'])
 			elif action_object.ld_status==0:
@@ -432,12 +426,12 @@ def actions(request,type_of,action,any_id):
 					post_file_obj.no_of_dislikes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
 			action_object.save(update_fields=['ld_status','latest_datetime'])
-		elif action==2:
+		elif int(action)==2:
 			action_object.report_status=1
 			post_file_obj.no_of_reports+=1
 			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
-		elif action==3:
+		elif int(action)==3:
 			action_object.report_status=0
 			if post_file_obj.no_of_reports >0:
 				post_file_obj.no_of_reports-=1
@@ -445,20 +439,18 @@ def actions(request,type_of,action,any_id):
 			post_file_obj.save(update_fields=['no_of_reports'])
 	except:
 		if type_of=='post_file':
-			if action==1 or action==0:
+			if int(action)==1 or int(action)==0:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
-			elif action==3 or action==2:
-				if action==2:
-					pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
-				elif action==3:
-					pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
+			elif int(action)==2:
+				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
+			elif int(action)==3:
+				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
 		elif type_of=='post':
-			if action==1 or action==0:
+			if int(action)==1 or int(action)==0:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=action)
-			elif action==3 or action==2:
-				if action==2:
-					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
-				elif action==3:
-					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
+			elif int(action)==2:
+				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=1)
+			elif int(action)==3:
+				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
 	return render(request, 'archile/index.html')

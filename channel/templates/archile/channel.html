@@ -98,12 +98,14 @@
         		</tr>
         		{% for pst in posts %}
 			    <tr>
+			    	{%if pst%}
 					<td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td>
 					<td><a href="{% url 'actions' type_of='post' action=1 any_id=pst.p_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{pst.no_of_likes}}</a></td>
 					<td><a href="{% url 'actions' type_of='post' action=0 any_id=pst.p_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{pst.no_of_dislikes}}</a></td>
 					<td><a href="{% url 'actions'  type_of='post'  action=2 any_id=pst.p_id %}">Irrelevant {{pst.no_of_reports}}</a></td>
 					<td> {{pst.creation_datetime}}</td>
-					<td>{{pst.user.first_name}} {{pst.user.last_name}}</i></td>
+					<!--<td>{{pst['user'].first_name}} {{pst['user'].last_name}}</i></td>-->
+					{%endif%}
 			    </tr>
 			    {% endfor %}
 			</table>
@@ -127,9 +129,9 @@
         		{%if doc %}
 					<td>{{doc.filename}}</td>
 					<td><a href="download/{{doc.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions'%} type_of='post_file'  action=1  any_id=doc.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{doc.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions'%} type_of='post_file'  action=0  any_id=doc.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{doc.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions'%} type_of='post_file'  action=2  any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=1  any_id=doc.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{doc.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=doc.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{doc.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{doc.upload_datetime}} </td>
 			    {% endif %}
