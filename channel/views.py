@@ -281,7 +281,27 @@ def edit_post(request,p_id):
 		post_obj.title=title
 		post_obj.description=description
 		post_obj.save()
+		files = request.POST.getlist('old_file')
+		for pf_id in files:
+			postf_obj=Post_files.objects.get(pf_id=pf_id)
+			postf_obj.status=False
+			postf_obj.save()
+		post_tags = request.POST['post_tags']
+		print(post_tags)
+
+		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
+		file_data={}
+		for file in FILES:
+			if file in request.FILES:
+				file_data[file] = request.FILES.getlist(file)
+				
+		for file_name in file_data:
+			for file in file_data[file_name]:
+				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
+				pf_obj.save()
+
 		return redirect(post,p_id)
+
 	return render(request, 'archile/edit_post.html', context)
 
 
