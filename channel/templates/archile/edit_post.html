@@ -5,8 +5,8 @@
 <div style="padding-left: 1.5rem;padding-top: 1rem;">
 	<ol class="breadcrumb breadcrumb-right-arrow">
   		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Channel Name</a></li>
-	    <li class="breadcrumb-item active" aria-current="page">Add Post</li>
+  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">{{post.c_id.name}}</a></li>
+	    <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
 	</ol>
 	<div class="col-md-12">
 	    <div class="row">
@@ -46,7 +46,7 @@
 					<div class="form-group row">
 						<label for="ChannelName" class="col-sm-3 col-form-label">Tags:</label>
 						<div class="col-sm-7">
-							<input type="text" value="my tags here" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
+							<input type="text" value="{% for tag in tags %}{{tag.t_id.tag_name}},{%endfor%}" name="post_tags" data-role="tagsinput" placeholder="Add tags" />
 						</div>
 					</div>
 

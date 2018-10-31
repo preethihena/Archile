@@ -272,15 +272,17 @@ def save_post(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def edit_post(request,p_id):
+	post_obj=Post.objects.get(p_id=p_id)
+	post_tag_object = Post_tags.objects.filter(p_id=p_id)
+	context = {'post':post_obj,'tags':post_tag_object}
 	if request.method == 'POST':
 		title = request.POST['post_title']
-		post_obj = Post.objects.get(p_id=p_id)
 		description = request.POST['post_description']
 		post_obj.title=title
 		post_obj.description=description
 		post_obj.save()
 		return redirect(post,p_id)
-	return render(request, 'archile/edit_post.html', {'post' : Post.objects.get(p_id=p_id)})
+	return render(request, 'archile/edit_post.html', context)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -402,6 +404,7 @@ def download(request, path):
 def actions(request,type_of,action,any_id):
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
+	action = int(action)
 	if type_of=='post':
 		post_file_obj=Post.objects.get(p_id=any_id)
 	elif type_of=='post_file':
@@ -457,8 +460,8 @@ def actions(request,type_of,action,any_id):
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=action)
 			elif action==3 or action==2:
 				if action==2:
-					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
+					pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=1)
 				elif action==3:
-					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
+					pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
-	return render(request, 'archile/index.html')
+	return redirect(request, 'archile/index.html')
