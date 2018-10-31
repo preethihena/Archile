@@ -338,6 +338,8 @@ def report_post(request, p_id):
 	post_act_obj = post_actions.objects.get(p_id = p_id)
 	if post_act_obj.report_status == True:
 		post_act_obj.report_status = False
+	elif post_act_obj.report_status == False:
+		post_act_obj.report_status = True
 	context['post_action'] = post_act_obj
 
 	return render(request, 'archile/post.html', context)
