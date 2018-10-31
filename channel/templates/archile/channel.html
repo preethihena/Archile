@@ -99,9 +99,9 @@
         		{% for pst in posts %}
 			    <tr>
 					<td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td>
-					<td><a href="{% url 'actions' type_of=0 action=1 any_id=pst.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{pst.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of=0 action=0 any_id=pst.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{pst.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of=0 action=2  any_id=pst.pf_id %}">Irrelevant {{pst.no_of_reports}}</a></td>
+					<td><a href="{% url 'actions' type_of='post' action=1 any_id=pst.p_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{pst.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post' action=0 any_id=pst.p_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{pst.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post'  action=2 any_id=pst.p_id %}">Irrelevant {{pst.no_of_reports}}</a></td>
 					<td> {{pst.creation_datetime}}</td>
 					<td>{{pst.user.first_name}} {{pst.user.last_name}}</i></td>
 			    </tr>
@@ -127,10 +127,10 @@
         		{%if doc %}
 					<td>{{doc.filename}}</td>
 					<td><a href="download/{{doc.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=doc.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{doc.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=doc.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{doc.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
-					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td><a href="{% url 'actions'%} type_of='post_file'  action=1  any_id=doc.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{doc.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions'%} type_of='post_file'  action=0  any_id=doc.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{doc.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions'%} type_of='post_file'  action=2  any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
+					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{doc.upload_datetime}} </td>
 			    {% endif %}
 			     </tr>
@@ -156,10 +156,10 @@
         		{%if image %}
 					<td>{{image.filename}}</td>
 					<td><a href="download/{{image.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{image.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{image.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=image.pf_id %}">Irrelevant {{image.no_of_reports}}</a></td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td><a href="{% url 'actions'  type_of='post_file'  action=1  any_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{image.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{image.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post_file'  action=2  any_id=image.pf_id %}">Irrelevant {{image.no_of_reports}}</a></td>
+					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{image.upload_datetime}} </td>
 			    {%endif%}
 			     </tr>
@@ -184,10 +184,10 @@
         		{%if aud %}
 					<td>{{aud.filename}}</td>
 					<td><a href="download/{{aud.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=aud.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{aud.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=aud.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{aud.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=aud.pf_id %}">Irrelevant {{aud.no_of_reports}}</a></td>
-					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td><a href="{% url 'actions' type_of='post_file'  action=1  any_id=aud.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{aud.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=aud.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{aud.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=aud.pf_id %}">Irrelevant {{aud.no_of_reports}}</a></td>
+					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{aud.upload_datetime}} </td>
 			    {%endif%}
 			     </tr>
@@ -212,10 +212,10 @@
         		{%if vid %}
 					<td>{{vid.filename}}</td>
 					<td><a href="download/{{vid.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=vid.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{vid.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=vid.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{vid.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=vid.pf_id %}">Irrelevant {{vid.no_of_reports}}</a></td>
-					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td><a href="{% url 'actions'  type_of='post_file'  action=1  any_id=vid.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{vid.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post_file'  action=0  any_id=vid.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{vid.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post_file'  action=2  any_id=vid.pf_id %}">Irrelevant {{vid.no_of_reports}}</a></td>
+					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{vid.upload_datetime}} </td>
 			    {%endif%}
 			     </tr>
@@ -240,9 +240,9 @@
         		{%if archive %}
 					<td>{{archive.filename}}</td>
 					<td><a href="download/{{archive.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=archive.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{archive.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=archive.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{archive.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=archive.pf_id %}">Irrelevant {{archive.no_of_reports}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post_file'  action=1  any_id=archive.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{archive.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=archive.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{archive.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=archive.pf_id %}">Irrelevant {{archive.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{archive.upload_datetime}} </td>
 			    {%endif%}
