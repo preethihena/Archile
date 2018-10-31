@@ -401,15 +401,17 @@ def download(request, path):
 	raise Http404
 
 def actions(request,type_of,action,any_id):
-	if type_of==0:
-		post_file_obj=Post.objects.get(p_id=any_id)
-		action_object=post_actions.objects.get(p_id=any_id)
-	elif type_of==1:
-		post_file_obj=Post_files.objects.get(pf_id=any_id)
-		action_object=post_file_actions.objects.get(pf_id=any_id)
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
-	if action_object!=None:
+	if type_of=='post':
+		post_file_obj=Post.objects.get(p_id=any_id)
+	elif type_of=='post_file':
+		post_file_obj=Post_files.objects.get(pf_id=any_id)
+	try:
+		if type_of=='post':
+			action_object=post_actions.objects.get(p_id=any_id,u_id=request.user)
+		elif type_of=='post_file':
+			action_object=post_file_actions.objects.get(pf_id=any_id,u_id=request.user)
 		action_object.datetime=local
 		if action==0:
 			if action_object.ld_status==0:
@@ -442,17 +444,22 @@ def actions(request,type_of,action,any_id):
 				post_file_obj.no_of_reports-=1
 			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
-	else:
-		if type_of==1:
+	except:
+		if type_of=='post_file':
 			if action==1 or action==0:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
-			else:
-				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=action)
-		else:
+			elif action==3 or action==2:
+				if action==2:
+					pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
+				elif action==3:
+					pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
+		elif type_of=='post':
 			if action==1 or action==0:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=action)
-			else:
-				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=action)
-
+			elif action==3 or action==2:
+				if action==2:
+					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
+				elif action==3:
+					pfa_obj=post_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
 	return render(request, 'archile/index.html')
