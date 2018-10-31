@@ -38,6 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     token = models.CharField(_('token'), max_length=1000, blank=True)
     password=None
+    
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
