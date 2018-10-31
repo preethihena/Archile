@@ -329,7 +329,7 @@ def report_post(request, p_id):
 	context = {}
 	user = request.user
 	context['user'] = user
-	post_act_obj = post_actions.objects.get(p_id = p_id, u_id = user)
+	post_act_obj = post_actions.objects.get(p_id = p_id)
 	if post_act_obj.report_status == True:
 		post_act_obj.report_status = False
 	elif post_act_obj.report_status == False:
