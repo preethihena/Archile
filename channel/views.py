@@ -285,10 +285,12 @@ def edit_post(request,p_id):
 		for pf_id in files:
 			postf_obj=Post_files.objects.get(pf_id=pf_id)
 			postf_obj.status=False
+			print(postf_obj.file)
 			postf_obj.save()
 		post_tags = request.POST['post_tags']
 		print(post_tags)
-
+		utc = arrow.utcnow()
+		local = utc.to('Asia/Kolkata')
 		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
 		file_data={}
 		for file in FILES:
@@ -297,7 +299,7 @@ def edit_post(request,p_id):
 				
 		for file_name in file_data:
 			for file in file_data[file_name]:
-				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
+				pf_obj=Post_files(p_id=post_obj,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
 
 		return redirect(post,p_id)
