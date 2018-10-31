@@ -38,6 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     token = models.CharField(_('token'), max_length=1000, blank=True)
     password=None
+    
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -207,7 +208,7 @@ class post_actions(models.Model):
 	pa_id = models.AutoField(primary_key = True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)
-	datetime = models.DateTimeField('date created',auto_now=True)
+	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
 
@@ -216,14 +217,14 @@ class post_file_actions(models.Model):
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	pf_id = models.ForeignKey(Post_files,on_delete=models.CASCADE)
 	latest_datetime = models.DateTimeField('date created',auto_now=True)
-	ld_status = models.NullBooleanField(default=2)
-	report_status = models.NullBooleanField(default=0)
+	ld_status = models.NullBooleanField()
+	report_status = models.NullBooleanField()
 
 class channel_thread_actions(models.Model):
 	cta_id = models.AutoField(primary_key = True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	ct_id = models.ForeignKey(Channel_threads,on_delete=models.CASCADE)
-	datetime = models.DateTimeField('date created',auto_now=True)
+	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
 
@@ -231,7 +232,7 @@ class post_thread_actions(models.Model):
 	pta_id = models.AutoField(primary_key = True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
 	pt_id = models.ForeignKey(Post_threads,on_delete=models.CASCADE)
-	datetime = models.DateTimeField('date created',auto_now=True)
+	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
 
