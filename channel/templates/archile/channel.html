@@ -85,6 +85,7 @@
 
 	  <!-- Tab panes -->
 	  <div class="tab-content">
+	  	{% comment %}
 	    <div id="home" class="container tab-pane active"><br>
 	      <div class="row">
 	      	<table class="table">
@@ -98,8 +99,9 @@
         		{% for pst in posts %}
 			    <tr>
 					<td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td>
-					<td>{% if pst.ld_status == None or pst.ld_status == False %}<i class="far fa-thumbs-up fa-lg">{% elif pst.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg">{% endif %}</i> {{pst.no_of_likes}}</td>
-					<td>{% if pst.ld_status == None or pst.ld_status == True %}<i class="far fa-thumbs-down fa-lg">{% elif pst.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-up fa-lg">{% endif %}</i> {{pst.no_of_dislikes}}</td>
+					<td><a href="{% url 'actions' type_of=0 action=1 any_id=pst.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{pst.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of=0 action=0 any_id=pst.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{pst.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of=0 action=2  any_id=pst.pf_id %}">Irrelevant {{pst.no_of_reports}}</a></td>
 					<td> {{pst.creation_datetime}}</td>
 					<td>{{pst.user.first_name}} {{pst.user.last_name}}</i></td>
 			    </tr>
@@ -107,6 +109,7 @@
 			</table>
 	      </div>
 	    </div>
+	    {% endcomment %}
 	    <div id="menu1" class="container tab-pane fade"><br>
 	      <div class="row">
 	      	<table class="table">
@@ -119,18 +122,24 @@
         			<th>Upload By</th>
         		</tr>
         		
-			    <tr>
-					<td>django.pdf</td>
-					<td><i class="fas fa-download fa-lg"></i></td>
-					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
-					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
-					<td>3<sup>rd</sup> October 2018 </td>
-			    </tr>
+			    {% for doc in docs %}
+        		<tr>
+        		{%if doc %}
+					<td>{{doc.filename}}</td>
+					<td><a href="download/{{doc.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=doc.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{doc.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=doc.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{doc.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
+					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td>{{doc.upload_datetime}} </td>
+			    {% endif %}
+			     </tr>
+			    {% endfor %}
 			   
 			</table>
 	      </div>
 	    </div>
+	    
 	    <div id="menu2" class="container tab-pane fade"><br>
 	      <div class="row">
 	      	<table class="table">
@@ -146,15 +155,12 @@
         		<tr>
         		{%if image %}
 					<td>{{image.filename}}</td>
-					<!--<td><img src="{{ image.file.url }}"></td>-->
 					<td><a href="download/{{image.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' action=1 pf_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i> 234</a></td>
-					<td><a href="{% url 'actions' action=0 pf_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> 40</a></td>
-					<td><a href="{% url 'actions' action=2 pf_id=image.pf_id %}">Irrelevant 4</a></td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
-					<td>3<sup>rd</sup> October 2018 </td>
-			    {% else%}
-			    <td><bold>No images uploaded yet!!:)</bold>
+					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=image.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{image.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=image.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{image.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=image.pf_id %}">Irrelevant {{image.no_of_reports}}</a></td>
+					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td>{{image.upload_datetime}} </td>
 			    {%endif%}
 			     </tr>
 			    {% endfor %}
@@ -173,14 +179,19 @@
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
-			    <tr>
-					<td>Podcast_Django_template.mp3</td>
-					<td><i class="fas fa-download fa-lg"></i></td>
-					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
-					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
-					<td>3<sup>rd</sup> October 2018 </td>
-			    </tr>
+			    {% for aud in audio %}
+        		<tr>
+        		{%if aud %}
+					<td>{{aud.filename}}</td>
+					<td><a href="download/{{aud.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=aud.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{aud.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=aud.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{aud.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=aud.pf_id %}">Irrelevant {{aud.no_of_reports}}</a></td>
+					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td>{{aud.upload_datetime}} </td>
+			    {%endif%}
+			     </tr>
+			    {% endfor %}
 			</table>
 	      </div>
 	    </div>
@@ -196,14 +207,19 @@
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
-			    <tr>
-					<td>Bucky_Roberts_Django_tutorials.mp4</td>
-					<td><i class="fas fa-download fa-lg"></i></td>
-					<td><i class="far fa-thumbs-up fa-lg"></i> 23</td>
-					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
-					<td>3<sup>rd</sup> October 2018 </td>
-			    </tr>
+			    {% for vid in video %}
+        		<tr>
+        		{%if vid %}
+					<td>{{vid.filename}}</td>
+					<td><a href="download/{{vid.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=vid.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{vid.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=vid.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{vid.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=vid.pf_id %}">Irrelevant {{vid.no_of_reports}}</a></td>
+					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
+					<td>{{vid.upload_datetime}} </td>
+			    {%endif%}
+			     </tr>
+			    {% endfor %}
 			</table>
 	      </div>
 	    </div>
@@ -219,14 +235,19 @@
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
-			    <tr>
-					<td>DjangoDocs.zip</td>
-					<td><i class="fas fa-download fa-lg"></i></td>
-					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
-					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
+			    {% for archive in archives %}
+        		<tr>
+        		{%if archive %}
+					<td>{{archive.filename}}</td>
+					<td><a href="download/{{archive.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=1 any_id=archive.pf_id %}"><i class="far fa-thumbs-up fa-lg"></i>{{archive.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=0 any_id=archive.pf_id %}"><i class="far fa-thumbs-down fa-lg"></i> {{archive.no_of_dislikes}}</a></td>
+					<td><a href="{% url 'actions' type_of='1_file' action=2 any_id=archive.pf_id %}">Irrelevant {{archive.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
-					<td>3<sup>rd</sup> October 2018 </td>
-			    </tr>
+					<td>{{archive.upload_datetime}} </td>
+			    {%endif%}
+			     </tr>
+			    {% endfor %}
 			</table>
 	      </div>
 	    </div>
@@ -247,7 +268,7 @@
 					<td><i class="fas fa-download fa-lg"></i></td>
 					<td><i class="far fa-thumbs-up fa-lg"></i> 234</td>
 					<td><i class="far fa-thumbs-down fa-lg"></i> 40</td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
+					{%comment%}<td><a href="{% url 'post' %}">Django Documentation</a></td>{%endcomment%}
 					<td>3<sup>rd</sup> October 2018 </td>
 			    </tr>
 			</table>
@@ -277,6 +298,7 @@
 	      </div>
 	    </div-->
 	    {% endcomment %}
+
 	  </div>
 	</div>
 
