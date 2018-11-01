@@ -186,6 +186,7 @@ def home(request,token_id):
 	user_object.email=data[0]['Student_Email']
 	user_object.token=token_id
 	user_object.is_active = True
+	user_object.set_unusable_password()
 	user_object.save()
 	auth_login(request,user_object)
 	return redirect(index)
