@@ -483,14 +483,19 @@ def actions(request,type_of,action,any_id):
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
 		if int(action)==0:
+			post_file_obj.no_of_dislikes+=1
 			post_file_obj.save(update_fields=['no_of_dislikes'])
 		elif int(action)==1:
+			post_file_obj.no_of_likes+=1
 			post_file_obj.save(update_fields=['no_of_likes'])
-		elif int(action)==3 or int(action)==4:
+		elif int(action)==2:
+			post_file_obj.no_of_reports+=1
 			post_file_obj.save(update_fields=['no_of_reports'])
-	if type_of =='posts':
-		return redirect(post,any_id)
-	else:
-		return redirect(post,post_file_obj.p_id)
-
-	
+		elif int(action)==3:
+			post_file_obj.no_of_reports-=1
+			post_file_obj.save(update_fields=['no_of_reports'])
+	# if type_of =='posts':
+	# 	return redirect(post,any_id)
+	# else:
+	# 	return redirect(post,post_file_obj.p_id)
+	return HttpResponse("Redirecting onto other pages not working:(")
