@@ -58,7 +58,7 @@ def user_logout(request):
     logout(request)
 
     # Take the user back to the homepage.
-    return redirect(login)
+    return redirect(user_login)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -423,13 +423,12 @@ def download(request, path):
 def actions(request,type_of,action,any_id):
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
-	action = int(action)
-	if type_of=='post':
+	if type_of=='posts':
 		post_file_obj=Post.objects.get(p_id=any_id)
 	elif type_of=='post_file':
 		post_file_obj=Post_files.objects.get(pf_id=any_id)
 	try:
-		if type_of=='post':
+		if type_of=='posts':
 			action_object=post_actions.objects.get(p_id=any_id,u_id=request.user)
 		elif type_of=='post_file':
 			action_object=post_file_actions.objects.get(pf_id=any_id,u_id=request.user)
@@ -468,17 +467,30 @@ def actions(request,type_of,action,any_id):
 	except:
 		if type_of=='post_file':
 			if int(action)==1 or int(action)==0:
-				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=action)
+				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=int(action))
+
 			elif int(action)==2:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=1)
+				
 			elif int(action)==3:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
-		elif type_of=='post':
+		elif type_of=='posts':
 			if int(action)==1 or int(action)==0:
-				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=action)
+				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=int(action))
 			elif int(action)==2:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=1)
 			elif int(action)==3:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
-	return redirect(request, 'archile/index.html')
+		if int(action)==0:
+			post_file_obj.save(update_fields=['no_of_dislikes'])
+		elif int(action)==1:
+			post_file_obj.save(update_fields=['no_of_likes'])
+		elif int(action)==3 or int(action)==4:
+			post_file_obj.save(update_fields=['no_of_reports'])
+	if type_of =='posts':
+		return redirect(post,any_id)
+	else:
+		return redirect(post,post_file_obj.p_id)
+
+	
