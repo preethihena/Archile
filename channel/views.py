@@ -314,7 +314,7 @@ def edit_post(request,p_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def edit_channel(request,c_id):
-	return redirect(channel,c_i)
+	return redirect(channel,c_id)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
