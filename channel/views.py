@@ -397,11 +397,46 @@ def channel(request,c_id):
 	context['archives']=[]
 	for post in posts:
 		post.creation_datetime=arrow.get(post.creation_datetime).format('Do MMMM YYYY')
+		try:
+			cur_user_pst_act_obj = post_actions.objects.get(p_id=post,u_id=user)
+			if cur_user_pst_act_obj.ld_status == 1:
+				post.ld_status = True
+			elif cur_user_pst_act_obj.ld_status == 0:
+				post.ld_status = False
+			else:
+				post.ld_status = None
+			if cur_user_pst_act_obj.report_status == 1:
+				post.report_status = True
+			elif cur_user_pst_act_obj.report_status == 0:
+				post.report_status = False
+			else:
+				post.report_status = None
+		except:
+			post.ld_status = None
+			post.report_status = None
 		context['posts'].append(post)
 		files=Post_files.objects.filter(p_id=post.p_id)
 		for f in files:
 			p=str(f.file)
 			f.filename=p.split('/')[1]
+			try:
+				cur_user_pf_act_obj = post_file_actions.objects.get(pf_id=f,u_id=user)
+				if cur_user_pf_act_obj.ld_status == 1:
+					f.ld_status = True
+				elif cur_user_pf_act_obj.ld_status == 0:
+					f.ld_status = False
+				else:
+					f.ld_status = None
+				if cur_user_pf_act_obj.report_status == 1:
+					f.report_status = True
+				elif cur_user_pf_act_obj.report_status == 0:
+					f.report_status = False
+				else:
+					f.report_status = None
+			except:
+				f.report_status = None
+				f.ld_status = None
+
 			if f.file_type == "IMAGES":
 				context['images'].append(f)
 			if f.file_type == "AUDIO":
