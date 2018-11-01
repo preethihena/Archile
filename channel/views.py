@@ -28,7 +28,7 @@ def to_dict(instance):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def index(request):
 	user=request.user
 	chan = Channel.objects.all()
@@ -52,7 +52,7 @@ def user_login(request):
 
 #user logout
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def user_logout(request):
     # Since we know the user is logged in, we can now just log them out.
     logout(request)
@@ -62,7 +62,7 @@ def user_logout(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def search(request,query):
 	
 	def valid_date(inputDate):
@@ -151,7 +151,7 @@ def search(request,query):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def search_box(request):
 
 	if request.method == 'POST':
@@ -192,7 +192,7 @@ def home(request,token_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def create_channel(request):
 	if request.method == 'POST':
 		name = request.POST['channel_name']
@@ -221,7 +221,7 @@ def create_channel(request):
 	return render(request, 'archile/create_channel.html')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def create_post(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	return render(request, 'archile/create_post.html',{'channel':channel})
@@ -229,7 +229,7 @@ def create_post(request,c_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def save_post(request):
 	if request.method == 'POST':
 		user = request.user
@@ -274,7 +274,7 @@ def save_post(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def edit_post(request,p_id):
 	post_obj=Post.objects.get(p_id=p_id)
 	post_tag_object = Post_tags.objects.filter(p_id=p_id)
@@ -312,13 +312,13 @@ def edit_post(request,p_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def edit_channel(request,c_id):
-	pass
+	return redirect(channel,c_i)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')	
+@login_required(login_url='/user_login')	
 def subscribe_channel(request,c_id):
 	Chan = Channel.objects.get(c_id=c_id)
 	count =Chan.no_of_subscriptions
@@ -341,18 +341,29 @@ def subscribe_channel(request,c_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
-
+@login_required(login_url='/user_login')
 def post(request,p_id):
 	post_obj = Post.objects.get(p_id=p_id)
 	context={}
 	context['post'] = post_obj
-	post_files = Post_files.objects.filter(p_id=p_id)
+	files = Post_files.objects.filter(p_id=p_id)
+	thread_obj = Post_threads.objects.filter(p_id=p_id,pt_id_reply_to=None)
+	post_files = []
+	post_threads = []
+	for f in files:
+		p=str(f.file)
+		f.filename=p.split('/')[1]
+		post_files.append(f)
+	for thread in thread_obj:
+		reply_threads = Post_threads.objects.filter(pt_id_reply_to=thread.pt_id)
+		val = [thread,reply_threads]
+		post_threads.append(val)
 	context['post_files'] = post_files
+	context['post_threads'] = post_threads
 	return render(request, 'archile/post.html',context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
+@login_required(login_url='/user_login')
 def report_post(request, p_id):
 	user = request.user
 	try:
@@ -371,8 +382,7 @@ def report_post(request, p_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/login')
-
+@login_required(login_url='/user_login')
 def channel(request,c_id):
 	channel = Channel.objects.get(c_id=c_id)
 	posts=Post.objects.filter(c_id=channel)
@@ -482,6 +492,7 @@ def actions(request,type_of,action,any_id):
 			elif int(action)==3:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
+		
 		if int(action)==0:
 			post_file_obj.no_of_dislikes+=1
 			post_file_obj.save(update_fields=['no_of_dislikes'])
@@ -499,3 +510,35 @@ def actions(request,type_of,action,any_id):
 	# else:
 	# 	return redirect(post,post_file_obj.p_id)
 	return HttpResponse("Redirecting onto other pages not working:(")
+
+
+def add_thread(request,place,any_id):
+	if request.method == "POST":
+		utc = arrow.utcnow()
+		local = utc.to('Asia/Kolkata')
+		if place == 'posts':
+			comment = request.POST['comment']
+			typ = request.POST['typ']
+			post_obj = Post.objects.get(p_id=any_id)
+			post_thread_obj = Post_threads(u_id=request.user,p_id=post_obj,typ=typ,description=comment,creation_datetime=local)
+			post_thread_obj.save()
+			return redirect(post,any_id)
+		if place == 'channel':
+			return redirect(channel,any_id)
+	return redirect(index)
+
+def add_reply(request,place,any_id):
+	if request.method == "POST":
+		utc = arrow.utcnow()
+		local = utc.to('Asia/Kolkata')
+		if place == 'posts':
+			comment = request.POST['comment']
+			typ = request.POST['typ']
+			pt_obj = Post_threads.objects.get(pt_id=any_id)
+			post_obj = pt_obj.p_id
+			post_thread_obj = Post_threads(u_id=request.user,p_id=post_obj,typ=typ,description=comment,creation_datetime=local,pt_id_reply_to=pt_obj)
+			post_thread_obj.save()
+			return redirect(post,post_obj.p_id)
+		if place == 'channel':
+			return redirect(channel,any_id)
+	return redirect(index)
