@@ -10,7 +10,7 @@
 	<div class="col-md-12">
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
-	        	<form method="POST" enctype="multipart/form-data" action="">
+	        	<form method="POST" enctype="multipart/form-data" action="{% url 'edit_post' p_id=post.p_id %}">
 	        		{% csrf_token %}
 					<div class="form-group row">
 						<label for="validationCustom01" class="col-sm-3 col-form-label">Post Title:</label>
@@ -34,11 +34,13 @@
 									<th>Delete?</th>
 								</tr>
 							{% for i in post.myfiles %}
+								{% if i.status %}
 								<tr>
 									<td scope="row">{{i.myname}}</td>
 									<td>{{i.file_type}}</td>
 									<td><input type="checkbox" name="old_file" value="{{i.pf_id}}"></td>
 								</tr>
+								{%endif%}
 							{% endfor %}
 							</table>
 						</div>

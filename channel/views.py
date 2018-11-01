@@ -186,6 +186,7 @@ def home(request,token_id):
 	user_object.email=data[0]['Student_Email']
 	user_object.token=token_id
 	user_object.is_active = True
+	user_object.set_unusable_password()
 	user_object.save()
 	auth_login(request,user_object)
 	return redirect(index)
@@ -314,7 +315,7 @@ def edit_post(request,p_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def edit_channel(request,c_id):
-	return redirect(channel,c_i)
+	return redirect(channel,c_id)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -397,11 +398,46 @@ def channel(request,c_id):
 	context['archives']=[]
 	for post in posts:
 		post.creation_datetime=arrow.get(post.creation_datetime).format('Do MMMM YYYY')
+		try:
+			cur_user_pst_act_obj = post_actions.objects.get(p_id=post,u_id=user)
+			if cur_user_pst_act_obj.ld_status == 1:
+				post.ld_status = True
+			elif cur_user_pst_act_obj.ld_status == 0:
+				post.ld_status = False
+			else:
+				post.ld_status = None
+			if cur_user_pst_act_obj.report_status == 1:
+				post.report_status = True
+			elif cur_user_pst_act_obj.report_status == 0:
+				post.report_status = False
+			else:
+				post.report_status = None
+		except:
+			post.ld_status = None
+			post.report_status = None
 		context['posts'].append(post)
 		files=Post_files.objects.filter(p_id=post.p_id)
 		for f in files:
 			p=str(f.file)
 			f.filename=p.split('/')[1]
+			try:
+				cur_user_pf_act_obj = post_file_actions.objects.get(pf_id=f,u_id=user)
+				if cur_user_pf_act_obj.ld_status == 1:
+					f.ld_status = True
+				elif cur_user_pf_act_obj.ld_status == 0:
+					f.ld_status = False
+				else:
+					f.ld_status = None
+				if cur_user_pf_act_obj.report_status == 1:
+					f.report_status = True
+				elif cur_user_pf_act_obj.report_status == 0:
+					f.report_status = False
+				else:
+					f.report_status = None
+			except:
+				f.report_status = None
+				f.ld_status = None
+
 			if f.file_type == "IMAGES":
 				context['images'].append(f)
 			if f.file_type == "AUDIO":
@@ -430,52 +466,70 @@ def download(request, path):
 			return response
 	raise Http404
 
+# if action=0 -->dislike, action=1-->like ,action=2 -->report,action=3-->unreport
 def actions(request,type_of,action,any_id):
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
+	# retrieving the respective post or post_file on which action is performed
 	if type_of=='posts':
 		post_file_obj=Post.objects.get(p_id=any_id)
 	elif type_of=='post_file':
 		post_file_obj=Post_files.objects.get(pf_id=any_id)
+	# enters "try" only if the any action object(like,dislike,report,unreport) is already in the database and it is to be modified
 	try:
+		#respective post or post_file action object gets retrieved
 		if type_of=='posts':
 			action_object=post_actions.objects.get(p_id=any_id,u_id=request.user)
 		elif type_of=='post_file':
 			action_object=post_file_actions.objects.get(pf_id=any_id,u_id=request.user)
 		action_object.datetime=local
+		#if action==dislike 
 		if int(action)==0:
-			if action_object.ld_status==0:
+			if action_object.ld_status==0:         #if already disliked dont make any changes except datetime
 				action_object.save(update_fields=['latest_datetime'])
-			elif action_object.ld_status==1:
+			elif action_object.ld_status==None:    #if ld_status is None make it disliked i.e(ld_status=0) and increase the no_of_dislikes
+				action_object.ld_status=0
+				post_file_obj.no_of_dislikes+=1
+#if ld_status=1 (i.e it is already liked and user wants to dislike it then make ld_status=0 (i.e disliking it) 
+#and increase the number of dislikes and increase the number of likes by 1
+			elif action_object.ld_status==1:      
 				action_object.ld_status=0
 				post_file_obj.no_of_dislikes+=1
 				if post_file_obj.no_of_likes >0:
 					post_file_obj.no_of_likes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
 			action_object.save(update_fields=['ld_status','latest_datetime'])
+		#if action==like
 		elif int(action)==1:
 			if action_object.ld_status==1:
 				action_object.save(update_fields=['latest_datetime'])
+			elif action_object.ld_status==None:
+				action_object.ld_status=1
+				post_file_obj.no_of_likes+=1
 			elif action_object.ld_status==0:
 				action_object.ld_status=1
 				post_file_obj.no_of_likes+=1
-				if post_file_obj.no_of_dislikes >0:
+				if post_file_obj.no_of_dislikes >0:  #no_of_dislikes or likes or reports cant be negative
 					post_file_obj.no_of_dislikes-=1
 				post_file_obj.save(update_fields=['no_of_dislikes','no_of_likes'])
 			action_object.save(update_fields=['ld_status','latest_datetime'])
+		#if action==report
 		elif int(action)==2:
 			action_object.report_status=1
 			post_file_obj.no_of_reports+=1
 			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
+		#if action==unreport
 		elif int(action)==3:
 			action_object.report_status=0
-			if post_file_obj.no_of_reports >0:
+			if post_file_obj.no_of_reports >0:  
 				post_file_obj.no_of_reports-=1
 			action_object.save(update_fields=['report_status','latest_datetime'])
 			post_file_obj.save(update_fields=['no_of_reports'])
+	#enters except if action object enters the database newly
 	except:
 		if type_of=='post_file':
+			#creating the action object for post_files
 			if int(action)==1 or int(action)==0:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,ld_status=int(action))
 
@@ -485,6 +539,7 @@ def actions(request,type_of,action,any_id):
 			elif int(action)==3:
 				pfa_obj=post_file_actions(latest_datetime=local,pf_id=post_file_obj,u_id=request.user,report_status=0)
 		elif type_of=='posts':
+			#creating the action object for posts
 			if int(action)==1 or int(action)==0:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,ld_status=int(action))
 			elif int(action)==2:
@@ -492,7 +547,7 @@ def actions(request,type_of,action,any_id):
 			elif int(action)==3:
 				pfa_obj=post_actions(latest_datetime=local,p_id=post_file_obj,u_id=request.user,report_status=0)
 		pfa_obj.save()
-		
+		#increasing the number of likes or dislikes or reports accordingly
 		if int(action)==0:
 			post_file_obj.no_of_dislikes+=1
 			post_file_obj.save(update_fields=['no_of_dislikes'])
