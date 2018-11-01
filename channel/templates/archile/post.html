@@ -1,6 +1,8 @@
 {% extends 'archile/base.html' %}
 {% load static %}
 {% block content %}
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <div class="container-fluid">
 	<div class="col-md-12">
 		<ol class="breadcrumb breadcrumb-right-arrow">
@@ -9,14 +11,15 @@
 		    <li class="breadcrumb-item active" aria-current="page">{{post.title|title}}</li>
 		</ol>
 		<div class="row">
-    		<div class="col-md-7" style="padding-left: 1.8em;">
-   				<h3>{{post.title|title}}</h3></center>		
+    		<div class="col-md-12" style="padding-left: 1.8em;">
+   				<h3>{{post.title|title}}</h3>
     		</div>
+    			
     	</div>
     	<div class="row">
     		<div class="col-sm-12" style="padding-left: 1.8em;">
    				<div class="row">
-   					<div class="col-md-6">
+   					<div class="col-md-5">
    						{% if post.ld_status == None or post.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i> {{post.no_of_likes}}
    						{% elif post.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i> {{post.no_of_likes}}
    						{% endif %}
@@ -25,15 +28,18 @@
    						{% elif post.ld_status == True %}<i style="padding-left: 20px; color:#a00;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
    						{% endif %}
 
+   						<i style="padding-left: 20px;" class="far fa-flag fa-lg"></i> {{post.no_of_dislikes}}
+
    					</div>
-   					<div class="col-md-6">
-   						<i class="fas fa-user-circle fa-lg"></i> {{post.c_id.u_id.first_name}} {{post.c_id.u_id.last_name}}
-   						<a href="{% url 'edit_post' p_id=post.p_id %}"><i style="padding-left: 20px;" class="fas fa-pencil-alt fa-lg" ></i> Edit</a>
+   					<div class="col-md-4" style="text-align: right;">
+   						<a href="{% url 'edit_post' p_id=post.p_id %}"><i  class="fas fa-pencil-alt fa-lg" ></i> Edit</a>
+   						<i style="padding-left: 20px;" class="fas fa-user-circle fa-lg"></i> {{post.c_id.u_id.first_name}} {{post.c_id.u_id.last_name}}
+   						<span>| 23 October 2018</span>
    					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-9"  style="margin-top: 10px;">
-						{{ post.description}}
+						{{ post.description}} {% lorem %}
 					</div>
 					<div class="col-md-9" style="margin-top: 30px;">
 				        	<table class="table">
@@ -46,7 +52,7 @@
 				        		</tr>
 				        		{% for file in post_files %}
 							    <tr>
-									<td>{{file.file}}</td>
+									<td>{{file.myname}}</td>
 									<td>{% if file.ld_status == None or file.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i> {{ file.no_of_likes }} 
 									{% elif file.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i> {{ file.no_of_likes }} 
 									{% endif %}
@@ -66,8 +72,125 @@
 				</div>
     		</div>
     	</div>
-		   
-		</div>
+    	<hr>
+    	<h5>Questions & Assertions</h5>
+    	<br>
+    	
+    	<script type="text/javascript">
+    		function change_arrow(icon_id) {
+    			cn = document.getElementById(icon_id).className;
+    			if (cn.endsWith("down") == true){
+    				document.getElementById(icon_id).className = "fas fa-chevron-up";
+    			}
+    			else{
+    				document.getElementById(icon_id).className = "fas fa-chevron-down";	
+    			}
+    		}
+    	</script>
+    	<div class="row">
+    		<div class="col-md-9">
+    			<form>
+    			<table style="width: 100%;" class="table">
+    				<tr>
+    					<td style="width: 80%;" rowspan="2"><textarea rows="4" class="form-control" type="text" name="comment" placeholder="Add a comment..."></textarea></td>
+    					<td>
+    						<select class="form-control" style="width: 100%;">
+			    				<option>Question</option>
+			    				<option>Assertion</option>
+			    			</select>			
+    					</td>
+    				</tr>
+    				<tr>
+    					<td><input style="width: 100%;" class="btn btn-light" type="submit" value="Comment"></td>
+    				</tr>
+    			</table>
+    			</form>
+    		</div>
+    	</div>
+    	
+    	<!-- This is a comment -->
+    	<div class="row">
+    		<div class="col-md-9">
+    			<div class="alert alert-info" role="alert" style="margin-bottom: 1px;">
+				  Anurag your posts are amazing.
+				</div>
+				<div class="row">
+					<div class="col-md-8">
+						<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;"> 34</span>
+						<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;"> 4</span>
+						<a data-toggle="collapse" href="#collapseExample" onclick='change_arrow("down_arrow")'><span style="padding-left: 25px;font-size: 14px;">Previous replies <i id="down_arrow" class="fas fa-chevron-down"></i></span></a>
+						<a data-toggle="collapse" href="#replytocomment"><span style="padding-left: 25px;font-size: 14px;">Add Reply <i class="fas fa-plus"></i></span></a>
+					</div>
+					<div style="text-align: right;" class="col-md-4">
+						<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> Kriti Mall
+					</div>
+				</div>
+
+				<div class="collapse" id="replytocomment">
+					<div class="row">
+			    		<div class="col-md-1"></div>
+						<div class="col-md-11">
+			    			<form>
+			    			<table style="width: 100%;" class="table">
+			    				<tr>
+			    					<td style="width: 80%;" rowspan="2"><textarea rows="4" class="form-control" type="text" name="comment" placeholder="Add a comment..."></textarea></td>
+			    					<td>
+			    						<select class="form-control" style="width: 100%;">
+						    				<option>Question</option>
+						    				<option>Assertion</option>
+						    			</select>			
+			    					</td>
+			    				</tr>
+			    				<tr>
+			    					<td><input style="width: 100%;" class="btn btn-light" type="submit" value="Comment"></td>
+			    				</tr>
+			    			</table>
+			    			</form>
+			    		</div>
+			    	</div>
+				</div>
+
+				<div class="collapse" id="collapseExample">
+					<div class="row" style="padding-top: 15px;">
+						<div class="col-md-1"></div>
+						<div class="col-md-11">
+							<div class="alert alert-info" role="alert" style="margin-bottom: 1px;">
+							  Ya I agree to Kriti.
+							</div>	
+							<div class="row" >
+								<div class="col-md-6">
+									<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;"> 34</span>
+									<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;"> 4</span>
+								</div>
+								<div style="text-align: right;" class="col-md-6">
+									<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> Harshita Singh
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="padding-top: 15px;">
+						<div class="col-md-1"></div>
+						<div class="col-md-11">
+							<div class="alert alert-warning" role="alert" style="margin-bottom: 1px;">
+							  Ya I agree to Kriti.
+							</div>	
+							<div class="row" >
+								<div class="col-md-6">
+									<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;"> 34</span>
+									<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;"> 4</span>
+								</div>
+								<div style="text-align: right;" class="col-md-6">
+									<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> Harshita Singh
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+    		</div>
+    	</div>
 	</div>
+	<br>
+	<br>
+	<br>
 </div>
 {% endblock %}
