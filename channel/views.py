@@ -200,7 +200,7 @@ def create_channel(request):
 		if 'channel_logo' in request.FILES:
 			logo = request.FILES['channel_logo']
 		description = request.POST['channel_description']
-		tags = list(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(',')))
+		tags = list(set(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(','))))
 		user = request.user
 
 		utc = arrow.utcnow()
@@ -238,7 +238,7 @@ def save_post(request):
 		c_id = request.POST['channel']
 		ch = Channel.objects.get(c_id=c_id)
 		description = request.POST['post_description']
-		tags = list(map(lambda tag:tag.strip().lower(),request.POST['post_tags'].split(',')))
+		tags = list(set(map(lambda tag:tag.strip().lower(),request.POST['post_tags'].split(','))))
 
 		#getting all files
 		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
@@ -461,7 +461,7 @@ def post(request,p_id):
 		try:
 			cur_user_pt_act_obj = post_thread_actions.objects.get(pt_id=thread,u_id=user)
 			thread.ld_status=cur_user_pt_act_obj.ld_status
-			thread.report_status=cur_user_pf_act_obj.report_status
+			thread.report_status=cur_user_pt_act_obj.report_status
 		except:
 			thread.report_status = None
 			thread.ld_status = None
@@ -470,7 +470,7 @@ def post(request,p_id):
 			try:
 				cur_user_pt_act_obj = post_thread_actions.objects.get(pt_id=each,u_id=user)
 				each.ld_status=cur_user_pt_act_obj.ld_status
-				each.report_status=cur_user_pf_act_obj.report_status
+				each.report_status=cur_user_pt_act_obj.report_status
 			except:
 				each.report_status = None
 				each.ld_status = None
@@ -806,13 +806,13 @@ def post_thread_action(request,pt_id,typ):
 			elif pt_act_obj.ld_status == None:
 				pt_act_obj.ld_status = 0
 				pt_obj.no_of_dislikes+=1
-		elif typ == 3:
-			if pt_act_obj.report_status == None or pt_act_obj.report_status == False:
-				pt_act_obj.report_status = True
+		elif typ == 2:
+			if pt_act_obj.report_status == None or pt_act_obj.report_status == 0:
+				pt_act_obj.report_status = 1
 				pt_obj.no_of_reports+=1
-			elif pt_act_obj.report_status == True:
-				pt_act_obj.report_status = False
-				pt_act_obj.no_of_reports-=1
+			elif pt_act_obj.report_status == 1:
+				pt_act_obj.report_status = 0
+				pt_obj.no_of_reports-=1
 	except:
 		pt_act_obj = post_thread_actions()
 		pt_act_obj.u_id=user
@@ -820,11 +820,11 @@ def post_thread_action(request,pt_id,typ):
 		if typ==1:
 			pt_act_obj.ld_status = 1
 			pt_obj.no_of_likes+=1
-		elif typ == 2:
+		elif typ == 0:
 			pt_act_obj.ld_status = 0
 			pt_obj.no_of_dislikes+=1
-		elif typ == 3:
-			pt_act_obj.report_status = True
+		elif typ == 2:
+			pt_act_obj.report_status = 1
 			pt_obj.no_of_reports+=1
 	pt_obj.save()
 	pt_act_obj.latest_datetime = local
