@@ -3,7 +3,7 @@
 {% block content %}
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-<div class="container-fluid">
+<div class="container-fluid" style="padding-left: 1.5rem;padding-top: 1rem;">
 	<div class="col-md-12">
 		<ol class="breadcrumb breadcrumb-right-arrow">
 	  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
@@ -20,15 +20,20 @@
     		<div class="col-sm-12" style="padding-left: 1.8em;">
    				<div class="row">
    					<div class="col-md-5">
-   						{% if post.ld_status == None or post.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i> {{post.no_of_likes}}
-   						{% elif post.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i> {{post.no_of_likes}}
+   						{% if post.report_status != True %}
+   						<a href="{% url 'actions' type_of='posts' action=1 any_id=post.p_id %}?next=post">
+   						{%endif%}
+   						{% if post.ld_status == None or post.ld_status == False %}
+   						<i class="far fa-thumbs-up fa-lg"></i>
+   						{% elif post.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{% endif %} {{post.no_of_likes}}
+   						{% if post.report_status != True %}</a>{%endif%}
+   						<a href="{% url 'actions' type_of='posts' action=0 any_id=post.p_id %}?next=post">
+   						{% if post.ld_status == None or post.ld_status == True %}<i style="padding-left: 20px;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
+   						{% elif post.ld_status == False %}<i style="padding-left: 20px; color:#a00;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
    						{% endif %}
-
-   						{% if post.ld_status == None or post.ld_status == False %}<i style="padding-left: 20px;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
-   						{% elif post.ld_status == True %}<i style="padding-left: 20px; color:#a00;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
-   						{% endif %}
-
-   						<i style="padding-left: 20px;" class="far fa-flag fa-lg"></i> {{post.no_of_reports}}
+   						</a>
+   						{%if post.report_status == None or post.report_status == False %}
+   						<a href="{% url 'actions' type_of='posts' action=2 any_id=post.p_id  %}?next=post"><i class="fas fa-bug fa-lg" style="padding-left: 20px;"></i>{%elif post.report_status == True %}<a href="{% url 'actions' type_of='posts' action=3 any_id=post.p_id %}?next=post"><i style="color: red;padding-left: 20px;" class="fas fa-bug fa-lg "></i>{%endif%}  {{post.no_of_reports}}</a>
 
    					</div>
    					<div class="col-md-4" style="text-align: right;">
@@ -44,29 +49,33 @@
 					<div class="col-md-9" style="margin-top: 30px;">
 				        	<table class="table">
 				        		<tr>
-				        			<th>File Name</th>
+				        			<th>Filename</th>
+				        			<th>Download</th>
 				        			<th>Likes</th>
 				        			<th>Dislikes</th>
-				        			<th>Type</th>
-				        			<th>Download</th>
+				        			<th>Reports</th>
+				        			<th>Upload Date</th>
+				        			<th>Upload By</th>
 				        		</tr>
 				        		{% for file in post_files %}
 				        		{% if file.status %}
-							    <tr>
-									<td>{{file.myname}}</td>
-									<td>{% if file.ld_status == None or file.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i> {{ file.no_of_likes }} 
-									{% elif file.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i> {{ file.no_of_likes }} 
-									{% endif %}
-									</td>
-
-									<td>{% if file.ld_status == None or file.ld_status == False %}<i class="far fa-thumbs-down fa-lg"></i> {{ file.no_of_dislikes }}
-									{% elif file.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-down fa-lg"></i> {{ file.no_of_dislikes }}
-									{% endif %}
-									</td>
-
-									<td>{{file.file_type }}</td>
-									<td><a href="/download/{{file.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-							    </tr>
+				        		<tr>
+							    <td>{{file.filename}}</td>
+								<td>
+									<a href="{% url 'download' path=file.filename pf_id=file.pf_id %}"><i class="fas fa-download fa-lg"></i></a>
+								</td>
+								<td>
+									{% if file.report_status != True %}<a href="{% url 'actions' type_of='post_file'  action=1  any_id=file.pf_id %}?next=post">{%endif%}{% if file.ld_status == None or file.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif file.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{file.no_of_likes}}{% if file.report_status != True %}</a>{%endif%}
+								</td>
+								<td>
+									<a href="{% url 'actions' type_of='post_file'  action=0  any_id=file.pf_id %}?next=post">{% if file.ld_status == None or file.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif file.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{file.no_of_dislikes}}</a>
+								</td>
+								<td>
+									{% if file.report_status == False or file.report_status == None %}<a href="{% url 'actions' type_of='post_file'  action=2  any_id=file.pf_id %}?next=post"><i class="fas fa-bug fa-lg"></i>{%elif file.report_status == True %}<a href="{% url 'actions' type_of='post_file'  action=3  any_id=file.pf_id %}?next=post"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{file.no_of_reports}}</a>
+								</td>
+								<td>{{file.upload_datetime}} </td>
+								<td>{{file.p_id.u_id.first_name}}</td>
+								</tr>
 							    {% endif %}
 							    {% endfor %}
 							</table>
@@ -120,8 +129,27 @@
 				</div>
 				<div class="row">
 					<div class="col-md-8">
-						<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;">{{post_th.0.no_of_likes}}</span>
-						<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;">{{post_th.0.no_of_dislikes}}</span>
+						{% if post_th.0.report_status != True %}
+						<a href="{% url 'post_thread_action'  pt_id=post_th.0.pt_id  typ=1 %}">
+						{%endif%}
+						{% if post_th.0.ld_status == None or post_th.0.ld_status == False %}
+						<i class="far fa-thumbs-up fa-sm" style="padding-left: 15px;"></i>
+						{% elif post_th.0.ld_status == True %}
+						<i style="color:#0a0;padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i>
+						{%endif%}
+						{{post_th.0.no_of_likes}}
+
+						{% if post_th.0.report_status != True %}</a>{%endif%}
+						<a href="{% url 'post_thread_action'  pt_id=post_th.0.pt_id  typ=0 %}">
+						{% if post_th.0.ld_status == None or post_th.0.ld_status == True %}
+						<i class="far fa-thumbs-down fa-sm" style="padding-left: 15px;"></i>
+						{% elif post_th.0.ld_status == False %}
+						<i style="color:#a00;padding-left: 15px;" class="far fa-thumbs-down fa-sm"></i>
+						{%endif%}
+						{{post_th.0.no_of_dislikes}}
+
+						<a href="{% url 'post_thread_action'  pt_id=post_th.0.pt_id  typ=2 %}">{% if post_th.0.report_status == False or post_th.0.report_status == None %}<i class="fas fa-bug fa-sm" style="padding-left: 15px;"></i>{%elif post_th.0.report_status == True %}<i class="fas fa-bug fa-sm" style="color: red;padding-left: 15px;"></i>{%endif%} {{post_th.0.no_of_reports}}</a>
+
 						<a data-toggle="collapse" href="#collapse{{post_th.0.pt_id}}" onclick='change_arrow("down_arrow")'><span style="padding-left: 25px;font-size: 14px;">Previous replies <i id="down_arrow" class="fas fa-chevron-down"></i></span></a>
 						<a data-toggle="collapse" href="#replyto{{post_th.0.pt_id}}"><span style="padding-left: 25px;font-size: 14px;">Add Reply <i class="fas fa-plus"></i></span></a>
 					</div>
@@ -165,8 +193,26 @@
 							</div>	
 							<div class="row" >
 								<div class="col-md-6">
-									<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;"> {{reply.no_of_likes}}</span>
-									<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;"> {{reply.no_of_dislikes}}</span>
+								{% if reply.report_status != True %}
+						<a href="{% url 'post_thread_action'  pt_id=reply.pt_id  typ=1 %}">
+						{%endif%}
+						{% if reply.ld_status == None or reply.ld_status == False %}
+						<i class="far fa-thumbs-up fa-sm" style="padding-left: 15px;"></i>
+						{% elif reply.ld_status == True %}
+						<i style="color:#0a0;padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i>
+						{%endif%}
+						<span style="font-size: 14px;"> {{reply.no_of_likes}}</span>
+						{% if reply.report_status != True %}</a>{%endif%}
+
+						<a href="{% url 'post_thread_action'  pt_id=reply.pt_id  typ=0 %}">
+						{% if reply.ld_status == None or reply.ld_status == True %}
+						<i class="far fa-thumbs-down fa-sm" style="padding-left: 5px;"></i>
+						{% elif reply.ld_status == False %}
+						<i style="color:#a00;padding-left: 5px;" class="far fa-thumbs-down fa-sm"></i>
+						{%endif%}
+						<span style="font-size: 14px;"> {{reply.no_of_dislikes}}</span>
+						</a>
+						<a href="{% url 'post_thread_action'  pt_id=reply.pt_id  typ=2 %}">{% if reply.report_status == False or reply.report_status == None %}<i class="fas fa-bug fa-sm" style="padding-left: 5px;"></i>{%elif reply.report_status == True %}<i class="fas fa-bug fa-sm" style="color: red;padding-left: 5px;"></i>{%endif%} {{reply.no_of_reports}}</a>
 								</div>
 								<div style="text-align: right;" class="col-md-6">
 									<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> {{reply.u_id.first_name}}

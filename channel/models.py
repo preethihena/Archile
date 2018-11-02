@@ -247,6 +247,8 @@ class channel_thread_actions(models.Model):
 	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
+	class Meta:
+		unique_together = ('u_id', 'ct_id',)
 
 class post_thread_actions(models.Model):
 	pta_id = models.AutoField(primary_key = True)
@@ -255,6 +257,8 @@ class post_thread_actions(models.Model):
 	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
+	class Meta:
+		unique_together = ('u_id', 'pt_id',)
 
 class channel_actions(models.Model):
 	ca_id = models.AutoField(primary_key=True)
