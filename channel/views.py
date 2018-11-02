@@ -278,8 +278,11 @@ def save_post(request):
 @login_required(login_url='/user_login')
 def edit_post(request,p_id):
 	post_obj=Post.objects.get(p_id=p_id)
-	post_tag_object = Post_tags.objects.filter(p_id=p_id)
+	post_tag_object = Post_tags.objects.filter(p_id=post_obj)
 	context = {'post':post_obj,'tags':post_tag_object}
+	post_old_tags = []
+	for tags in post_tag_object:
+		post_old_tags.append(tags.t_id.tag_name)
 	if request.method == 'POST':
 		title = request.POST['post_title']
 		description = request.POST['post_description']
@@ -292,8 +295,27 @@ def edit_post(request,p_id):
 			postf_obj.status=False
 			print(postf_obj.file)
 			postf_obj.save()
-		post_tags = request.POST['post_tags']
-		print(post_tags)
+
+		#eedit tags
+		post_tags = list(map(lambda tag:tag.strip(),request.POST['post_tags'].split(',')))
+		old_tags = list(set(post_old_tags).difference(set(post_tags)))
+		for tag in old_tags:
+			tag_obj = Tags.objects.get(tag_name=tag)
+			old_tag_obj = Post_tags.objects.filter(t_id=tag_obj,p_id=post_obj)
+			tag_obj.no_of_use-=1
+			tag_obj.save()
+			old_tag_obj.delete()
+		new_tags = list(set(post_tags).difference(set(post_old_tags)))
+		for tag in new_tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			post_tag=Post_tags(p_id=post_obj,t_id=tag_obj)
+			post_tag.save()
+
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
 		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
@@ -315,7 +337,48 @@ def edit_post(request,p_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def edit_channel(request,c_id):
-	return redirect(channel,c_id)
+	channel_obj=Channel.objects.get(c_id=c_id)
+	channel_tag_object = Channel_tags.objects.filter(c_id=channel_obj)
+	channel_old_tags = []
+	for tags in channel_tag_object:
+		channel_old_tags.append(tags.t_id.tag_name)
+	context = {'channel':channel_obj,'tags':channel_old_tags}
+	if request.method == 'POST':
+		description = request.POST['channel_description']
+		channel_obj.description=description
+		try:
+			logo = request.POST['old_logo']
+			channel_obj.logo.delete(save=True)
+		except:
+			pass
+		channel_tags = list(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(',')))
+
+
+		old_tags = list(set(channel_old_tags).difference(set(channel_tags)))
+		for tag in old_tags:
+			tag_obj = Tags.objects.get(tag_name=tag)
+			old_tag_obj = Channel_tags.objects.filter(t_id=tag_obj,c_id=channel_obj)
+			tag_obj.no_of_use-=1
+			tag_obj.save()
+			old_tag_obj.delete()
+		new_tags = list(set(channel_tags).difference(set(channel_old_tags)))
+		for tag in new_tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			channel_tag=Channel_tags(c_id=channel_obj,t_id=tag_obj)
+			channel_tag.save()
+
+		if 'channel_logo' in request.FILES:
+			logo = request.FILES['channel_logo']
+			channel_obj.logo = logo
+		channel_obj.save()
+		return redirect(channel,c_id)
+
+	return render(request, 'archile/edit_channel.html', context)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -365,20 +428,27 @@ def post(request,p_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
-def report_post(request, p_id):
+def report_channel(request, c_id):
 	user = request.user
+	channel_object = Channel.objects.get(c_id=c_id)
 	try:
-		post_act_obj = post_actions.objects.get(p_id = p_id,u_id=user)
-		if post_act_obj.report_status == True:
-			post_act_obj.report_status = False
-		elif post_act_obj.report_status == False:
-			post_act_obj.report_status = True
+		channel_act_obj = channel_actions.objects.get(c_id = channel_object,u_id=user)
+		print(channel_act_obj.report_status)
+		if channel_act_obj.report_status == True:
+			channel_act_obj.report_status = False
+			channel_object.no_of_reports-=1
+		elif channel_act_obj.report_status == False:
+			channel_act_obj.report_status = True
+			channel_object.no_of_reports+=1
 	except:
-		post_act_obj = post_actions()
-		post_act_obj.report_status = True
-		post_act_obj.u_id=user
-	post_act_obj.save()
-	return redirect(post,p_id)
+		channel_act_obj = channel_actions()
+		channel_act_obj.report_status = True
+		channel_act_obj.u_id=user
+		channel_act_obj.c_id = channel_object
+		channel_object.no_of_reports+=1
+	channel_act_obj.save()
+	channel_object.save()
+	return redirect(channel,c_id)
 
 
 
@@ -389,6 +459,11 @@ def channel(request,c_id):
 	posts=Post.objects.filter(c_id=channel)
 	user = request.user
 	context = {}
+	try:
+		channel_actions_obj = channel_actions.objects.get(c_id = channel,u_id=user)
+		channel.report_status = channel_actions_obj.report_status
+	except:
+		channel.report_status = None
 	context['channel'] = channel
 	context['posts']=[]
 	context['docs']=[]
@@ -420,6 +495,7 @@ def channel(request,c_id):
 		for f in files:
 			p=str(f.file)
 			f.filename=p.split('/')[1]
+			f.upload_datetime =arrow.get(f.upload_datetime).format('Do MMMM YYYY')
 			try:
 				cur_user_pf_act_obj = post_file_actions.objects.get(pf_id=f,u_id=user)
 				if cur_user_pf_act_obj.ld_status == 1:
@@ -455,8 +531,18 @@ def channel(request,c_id):
 		context['subs'] = False
 	return render(request, 'archile/channel.html',context)
 
-	
-def download(request, path):
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')	
+def download(request, path,pf_id):
+	pf_obj = Post_files.objects.get(pf_id=pf_id)
+	user = request.user
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	download_obj = Dowload_history(pf_id=pf_obj,u_id=user,download_datetime=local)
+	download_obj.save()
 	path='post_files/'+path
 	file_path = os.path.join(settings.MEDIA_ROOT, path)
 	if os.path.exists(file_path):
@@ -467,9 +553,12 @@ def download(request, path):
 	raise Http404
 
 # if action=0 -->dislike, action=1-->like ,action=2 -->report,action=3-->unreport
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
 def actions(request,type_of,action,any_id):
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
+	next_url = request.GET['next']
 	# retrieving the respective post or post_file on which action is performed
 	if type_of=='posts':
 		post_file_obj=Post.objects.get(p_id=any_id)
@@ -486,12 +575,16 @@ def actions(request,type_of,action,any_id):
 		#if action==dislike 
 		if int(action)==0:
 			if action_object.ld_status==0:         #if already disliked dont make any changes except datetime
+				action_object.ld_status = None
+				post_file_obj.no_of_dislikes-=1
+				post_file_obj.save()
 				action_object.save(update_fields=['latest_datetime'])
 			elif action_object.ld_status==None:    #if ld_status is None make it disliked i.e(ld_status=0) and increase the no_of_dislikes
 				action_object.ld_status=0
 				post_file_obj.no_of_dislikes+=1
-#if ld_status=1 (i.e it is already liked and user wants to dislike it then make ld_status=0 (i.e disliking it) 
-#and increase the number of dislikes and increase the number of likes by 1
+				post_file_obj.save()
+				#if ld_status=1 (i.e it is already liked and user wants to dislike it then make ld_status=0 (i.e disliking it) 
+				#and increase the number of dislikes and increase the number of likes by 1
 			elif action_object.ld_status==1:      
 				action_object.ld_status=0
 				post_file_obj.no_of_dislikes+=1
@@ -502,10 +595,14 @@ def actions(request,type_of,action,any_id):
 		#if action==like
 		elif int(action)==1:
 			if action_object.ld_status==1:
+				action_object.ld_status = None
+				post_file_obj.no_of_likes-=1
+				post_file_obj.save()
 				action_object.save(update_fields=['latest_datetime'])
 			elif action_object.ld_status==None:
 				action_object.ld_status=1
 				post_file_obj.no_of_likes+=1
+				post_file_obj.save()
 			elif action_object.ld_status==0:
 				action_object.ld_status=1
 				post_file_obj.no_of_likes+=1
@@ -560,13 +657,23 @@ def actions(request,type_of,action,any_id):
 		elif int(action)==3:
 			post_file_obj.no_of_reports-=1
 			post_file_obj.save(update_fields=['no_of_reports'])
-	# if type_of =='posts':
-	# 	return redirect(post,any_id)
-	# else:
-	# 	return redirect(post,post_file_obj.p_id)
+
+	if type_of =='posts':
+		if next_url == 'post':
+			return redirect(post,any_id)
+		elif next_url == 'channel':
+			return redirect(channel,post_file_obj.c_id.c_id)
+	else:
+		if next_url == 'post':
+			return redirect(post,post_file_obj.p_id.p_id)
+		elif next_url == 'channel':
+			return redirect(channel,post_file_obj.p_id.c_id.c_id)
 	return HttpResponse("Redirecting onto other pages not working:(")
 
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
 def add_thread(request,place,any_id):
 	if request.method == "POST":
 		utc = arrow.utcnow()
@@ -582,6 +689,9 @@ def add_thread(request,place,any_id):
 			return redirect(channel,any_id)
 	return redirect(index)
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
 def add_reply(request,place,any_id):
 	if request.method == "POST":
 		utc = arrow.utcnow()
