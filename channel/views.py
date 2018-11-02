@@ -45,6 +45,9 @@ def my_channels(request):
 
 	return render(request,'archile/my_channels.html',{'channels':Channels_all})
 
+
+
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def index(request):
@@ -940,3 +943,51 @@ def channel_thread_action(request,ct_id,typ):
 	ct_act_obj.save()
 	return redirect(channel,ct_obj.c_id.c_id)
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def liked_posts(request):
+	user = request.user
+	liked_obj = post_actions.objects.filter(u_id=user,ld_status=1)
+	context = {}
+	context['posts']=[]
+	for pst in liked_obj:
+		post = pst.p_id
+		post.creation_datetime=arrow.get(post.creation_datetime).format('Do MMMM YYYY')
+		try:
+			cur_user_pst_act_obj = post_actions.objects.get(p_id=post,u_id=user)
+			if cur_user_pst_act_obj.ld_status == 1:
+				post.ld_status = True
+			elif cur_user_pst_act_obj.ld_status == 0:
+				post.ld_status = False
+			else:
+				post.ld_status = None
+			if cur_user_pst_act_obj.report_status == 1:
+				post.report_status = True
+			elif cur_user_pst_act_obj.report_status == 0:
+				post.report_status = False
+			else:
+				post.report_status = None
+		except:
+			post.ld_status = None
+			post.report_status = None
+		context['posts'].append(post)
+	
+	return render(request,'archile/liked_posts.html',context)
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def my_subscriptions(request):
+	user=request.user
+	subs_obj = Subscription.objects.filter(u_id=user)
+	Channels_all=[]
+	for ech in subs_obj:
+		each = ech.c_id
+		data = to_dict(each)
+		data['subs']=True
+		Channels_all.append(data)
+	Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
+
+	return render(request,'archile/my_subscriptions.html',{'channels':Channels_all})
