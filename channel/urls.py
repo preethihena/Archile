@@ -22,8 +22,10 @@ urlpatterns = [
     path('report_channel/<int:c_id>',report_channel,name="report_channel"),
     re_path('download/(?P<path>[\w\.!@?#$%&:+;=-]+[.][A-Za-z0-9]+)/(?P<pf_id>[0-9]+)/',download,name="download"),
     path('add_thread/<str:place>/<int:any_id>',add_thread,name="add_thread"),
-    path('add_reply/<str:place>/<int:any_id>',add_reply,name="add_reply")
-
+    path('add_reply/<str:place>/<int:any_id>',add_reply,name="add_reply"),
+    path('my_channels',my_channels,name="my_channels"),
+    path('liked_posts',liked_posts,name="liked_posts"),
+    path('my_subscriptions',my_subscriptions,name="my_subscriptions"),
 ]
 
 if settings.DEBUG:

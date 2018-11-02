@@ -1,0 +1,53 @@
+{% extends 'archile/base.html' %}
+{% load static %}
+{% block content %}
+	<div class="container">
+		<ol class="breadcrumb breadcrumb-right-arrow" style="padding: 0px;">
+	  		<li class="breadcrumb-item"><a href="{% url 'index' %}" style="text-decoration: none;">Home</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">My Subscriptions</li>
+		</ol>
+		<hr>
+		<div class="col-md-12 search_results">
+			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
+			<div class="row">
+				<div class="col-md-12" style="margin-top: 2.5rem;">
+				<h4>No Channels</h4>
+				</div>
+			</div>
+			{% endif %}
+			{% for i in channels %}
+		    <div class="row">
+		    	<div class="col-md-2">
+		    		<img class="channel_logo" src="{{i.logo.url}}">
+		    	</div>
+		    	
+		    	<div class="col-md-7" style="margin-top: 2.5rem;">
+		    		<h3><a href="{% url 'channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">{{i.name}}</a></h3></center>
+		    		<div class="channel_des">
+		    			Subscriptions: {{i.no_of_subscriptions}}
+		    			<br>
+		    			{{i.description}}
+		    		</div>
+		    	</div>
+		    	<div class="col-md-3" style="margin-top: 2.5rem;">
+		    		<div class="row" style="text-align: center;margin-top: 2rem;">
+		    			<div class="col-md-8">
+		    				{% if i.subs %}
+		    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
+			    			</a>
+			    			{% else %}
+			    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">Subscribe</button>
+			    			</a>
+			    			{% endif %}
+		    			</div>
+		    		</div>
+		    	</div>
+		    </div>
+		    <hr>
+		    {% endfor %}
+		</div>
+	</div>
+	
+{% endblock %}

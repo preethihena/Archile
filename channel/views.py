@@ -29,7 +29,7 @@ def to_dict(instance):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
-def index(request):
+def my_channels(request):
 	user=request.user
 	chan = Channel.objects.all()
 	Channels_all=[]
@@ -43,8 +43,23 @@ def index(request):
 		Channels_all.append(data)
 	Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
 
-	return render(request,'archile/index.html',{'channels':Channels_all})
+	return render(request,'archile/my_channels.html',{'channels':Channels_all})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def index(request):
+	return render(request,'archile/index.html')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def my_subscriptions(request):
+	Channels_all = []
+	return render(request,'archile/my_subscriptions.html',{'channels':Channels_all})
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def liked_posts(request):
+	return render(request,'archile/liked_posts.html')
 
 
 def user_login(request):
@@ -401,7 +416,7 @@ def subscribe_channel(request,c_id):
 			Chan.no_of_subscriptions = count + 1
 		subs.save()
 	Chan.save()
-	return redirect(channel,c_id)
+	return redirect(my_channels)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

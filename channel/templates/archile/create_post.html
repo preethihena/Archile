@@ -1,12 +1,13 @@
 {% extends 'archile/base.html' %}
 {% load static %}
 {% block content %}
-<div style="padding-left: 1.5rem;padding-top: 1rem;">
-	<ol class="breadcrumb breadcrumb-right-arrow">
+<div style="padding-left: 1.5rem;">
+	<ol class="breadcrumb breadcrumb-right-arrow" style="padding: 0px;">
   		<li class="breadcrumb-item"><a href="{% url 'index' %}" style="text-decoration: none;">Home</a></li>
   		<li class="breadcrumb-item"><a href="{% url 'channel' c_id=channel.c_id %}" style="text-decoration: none;">{{channel.name}}</a></li>
 	    <li class="breadcrumb-item active" aria-current="page">Add Post</li>
 	</ol>
+	<hr>
 	<div class="col-md-12">
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
