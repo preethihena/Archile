@@ -381,33 +381,53 @@ def edit_channel(request,c_id):
 	return render(request, 'archile/edit_channel.html', context)
 
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')	
 def subscribe_channel(request,c_id):
-	Chan = Channel.objects.get(c_id=c_id)
-	count =Chan.no_of_subscriptions
+	Chan_obj = Channel.objects.get(c_id=c_id)
+	count =Chan_obj.no_of_subscriptions
 	user = request.user
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
 	try:
-		subs = Subscription.objects.get(c_id=Chan,u_id=user)
-		Chan.no_of_subscriptions = count -1
-		subs.delete()
+		subs_obj = Subscription.objects.get(c_id=Chan_obj,u_id=user)
+		Chan_obj.no_of_subscriptions = count -1
+		subs_obj.delete()
 	except:
-		subs = Subscription(c_id=Chan,u_id=user,s_datetime=local)
+		subs_obj = Subscription(c_id=Chan_obj,u_id=user,s_datetime=local)
 		if count == None:
-			Chan.no_of_subscriptions = 1
+			Chan_obj.no_of_subscriptions = 1
 		else:
-			Chan.no_of_subscriptions = count + 1
-		subs.save()
-	Chan.save()
+			Chan_obj.no_of_subscriptions = count + 1
+		subs_obj.save()
+	Chan_obj.save()
 	return redirect(channel,c_id)
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def post(request,p_id):
 	post_obj = Post.objects.get(p_id=p_id)
+	user = request.user
+	try:
+		cur_user_pst_act_obj = post_actions.objects.get(p_id=post_obj,u_id=user)
+		if cur_user_pst_act_obj.ld_status == 1:
+			post_obj.ld_status = True
+		elif cur_user_pst_act_obj.ld_status == 0:
+			post_obj.ld_status = False
+		else:
+			post_obj.ld_status = None
+		if cur_user_pst_act_obj.report_status == 1:
+			post_obj.report_status = True
+		elif cur_user_pst_act_obj.report_status == 0:
+			post_obj.report_status = False
+		else:
+			post_obj.report_status = None
+	except:
+		post_obj.ld_status = None
+		post_obj.report_status = None
 	context={}
 	context['post'] = post_obj
 	files = Post_files.objects.filter(p_id=p_id)
@@ -417,14 +437,52 @@ def post(request,p_id):
 	for f in files:
 		p=str(f.file)
 		f.filename=p.split('/')[1]
+		f.upload_datetime =arrow.get(f.upload_datetime).format('Do MMMM YYYY')
+		try:
+			cur_user_pf_act_obj = post_file_actions.objects.get(pf_id=f,u_id=user)
+			if cur_user_pf_act_obj.ld_status == 1:
+				f.ld_status = True
+			elif cur_user_pf_act_obj.ld_status == 0:
+				f.ld_status = False
+			else:
+				f.ld_status = None
+			if cur_user_pf_act_obj.report_status == 1:
+				f.report_status = True
+			elif cur_user_pf_act_obj.report_status == 0:
+				f.report_status = False
+			else:
+				f.report_status = None
+		except:
+			f.report_status = None
+			f.ld_status = None
 		post_files.append(f)
 	for thread in thread_obj:
-		reply_threads = Post_threads.objects.filter(pt_id_reply_to=thread.pt_id)
+		reply_thread = Post_threads.objects.filter(pt_id_reply_to=thread)
+		try:
+			cur_user_pt_act_obj = post_thread_actions.objects.get(pt_id=thread,u_id=user)
+			thread.ld_status=cur_user_pt_act_obj.ld_status
+			thread.report_status=cur_user_pf_act_obj.report_status
+		except:
+			thread.report_status = None
+			thread.ld_status = None
+		reply_threads=[]
+		for each in reply_thread:
+			try:
+				cur_user_pt_act_obj = post_thread_actions.objects.get(pt_id=each,u_id=user)
+				each.ld_status=cur_user_pt_act_obj.ld_status
+				each.report_status=cur_user_pf_act_obj.report_status
+			except:
+				each.report_status = None
+				each.ld_status = None
+			reply_threads.append(each)
+
 		val = [thread,reply_threads]
 		post_threads.append(val)
 	context['post_files'] = post_files
 	context['post_threads'] = post_threads
 	return render(request, 'archile/post.html',context)
+
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
@@ -551,6 +609,8 @@ def download(request, path,pf_id):
 			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
 			return response
 	raise Http404
+
+
 
 # if action=0 -->dislike, action=1-->like ,action=2 -->report,action=3-->unreport
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -690,6 +750,8 @@ def add_thread(request,place,any_id):
 	return redirect(index)
 
 
+
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def add_reply(request,place,any_id):
@@ -707,3 +769,64 @@ def add_reply(request,place,any_id):
 		if place == 'channel':
 			return redirect(channel,any_id)
 	return redirect(index)
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def post_thread_action(request,pt_id,typ):
+	pt_obj = Post_threads.objects.get(pt_id=pt_id)
+	print(pt_obj.pt_id)
+	user = request.user
+	typ = int(typ)
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	try:
+		pt_act_obj = post_thread_actions.objects.get(u_id=user,pt_id=pt_obj)
+		print(pt_act_obj.ld_status)
+		if typ == 1:
+			if pt_act_obj.ld_status == 1:
+				pt_act_obj.ld_status = None
+				pt_obj.no_of_likes -=1
+			elif pt_act_obj.ld_status == 0:
+				pt_act_obj.ld_status = 1
+				pt_obj.no_of_likes+=1
+				pt_obj.no_of_dislikes-=1
+			elif pt_act_obj.ld_status == None:
+				pt_act_obj.ld_status = 1
+				pt_obj.no_of_likes+=1
+		elif typ == 0:
+			if pt_act_obj.ld_status == 0:
+				pt_act_obj.ld_status = None
+				pt_obj.no_of_dislikes -=1
+			elif pt_act_obj.ld_status == 1:
+				pt_act_obj.ld_status = 0
+				pt_obj.no_of_dislikes+=1
+				pt_obj.no_of_likes-=1
+			elif pt_act_obj.ld_status == None:
+				pt_act_obj.ld_status = 0
+				pt_obj.no_of_dislikes+=1
+		elif typ == 3:
+			if pt_act_obj.report_status == None or pt_act_obj.report_status == False:
+				pt_act_obj.report_status = True
+				pt_obj.no_of_reports+=1
+			elif pt_act_obj.report_status == True:
+				pt_act_obj.report_status = False
+				pt_act_obj.no_of_reports-=1
+	except:
+		pt_act_obj = post_thread_actions()
+		pt_act_obj.u_id=user
+		pt_act_obj.pt_id=pt_obj
+		if typ==1:
+			pt_act_obj.ld_status = 1
+			pt_obj.no_of_likes+=1
+		elif typ == 2:
+			pt_act_obj.ld_status = 0
+			pt_obj.no_of_dislikes+=1
+		elif typ == 3:
+			pt_act_obj.report_status = True
+			pt_obj.no_of_reports+=1
+	pt_obj.save()
+	pt_act_obj.latest_datetime = local
+	pt_act_obj.save()
+	return redirect(post,pt_obj.p_id.p_id)
