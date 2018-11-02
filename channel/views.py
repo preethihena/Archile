@@ -280,6 +280,9 @@ def edit_post(request,p_id):
 	post_obj=Post.objects.get(p_id=p_id)
 	post_tag_object = Post_tags.objects.filter(p_id=post_obj)
 	context = {'post':post_obj,'tags':post_tag_object}
+	post_old_tags = []
+	for tags in post_tag_object:
+		post_old_tags.append(tags.t_id.tag_name)
 	if request.method == 'POST':
 		title = request.POST['post_title']
 		description = request.POST['post_description']
@@ -292,8 +295,27 @@ def edit_post(request,p_id):
 			postf_obj.status=False
 			print(postf_obj.file)
 			postf_obj.save()
-		post_tags = request.POST['post_tags']
-		print(post_tags)
+
+		#eedit tags
+		post_tags = list(map(lambda tag:tag.strip(),request.POST['post_tags'].split(',')))
+		old_tags = list(set(post_old_tags).difference(set(post_tags)))
+		for tag in old_tags:
+			tag_obj = Tags.objects.get(tag_name=tag)
+			old_tag_obj = Post_tags.objects.filter(t_id=tag_obj,p_id=post_obj)
+			tag_obj.no_of_use-=1
+			tag_obj.save()
+			old_tag_obj.delete()
+		new_tags = list(set(post_tags).difference(set(post_old_tags)))
+		for tag in new_tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			post_tag=Post_tags(p_id=post_obj,t_id=tag_obj)
+			post_tag.save()
+
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
 		FILES = ['AUDIO','VIDEO','IMAGES','DOCS','ARCHIVES']
@@ -317,7 +339,10 @@ def edit_post(request,p_id):
 def edit_channel(request,c_id):
 	channel_obj=Channel.objects.get(c_id=c_id)
 	channel_tag_object = Channel_tags.objects.filter(c_id=channel_obj)
-	context = {'channel':channel_obj,'tags':channel_tag_object}
+	channel_old_tags = []
+	for tags in channel_tag_object:
+		channel_old_tags.append(tags.t_id.tag_name)
+	context = {'channel':channel_obj,'tags':channel_old_tags}
 	if request.method == 'POST':
 		description = request.POST['channel_description']
 		channel_obj.description=description
@@ -326,8 +351,27 @@ def edit_channel(request,c_id):
 			channel_obj.logo.delete(save=True)
 		except:
 			pass
-		channel_tags = request.POST['channel_tags']
-		print(channel_tags)
+		channel_tags = list(map(lambda tag:tag.strip(),request.POST['channel_tags'].split(',')))
+
+
+		old_tags = list(set(channel_old_tags).difference(set(channel_tags)))
+		for tag in old_tags:
+			tag_obj = Tags.objects.get(tag_name=tag)
+			old_tag_obj = Channel_tags.objects.filter(t_id=tag_obj,c_id=channel_obj)
+			tag_obj.no_of_use-=1
+			tag_obj.save()
+			old_tag_obj.delete()
+		new_tags = list(set(channel_tags).difference(set(channel_old_tags)))
+		for tag in new_tags:
+			try:
+				tag_obj=Tags.objects.get(tag_name=tag)
+				tag_obj.no_of_use+=1
+			except:
+				tag_obj = Tags(tag_name=tag,no_of_use = 1)
+			tag_obj.save()
+			channel_tag=Channel_tags(c_id=channel_obj,t_id=tag_obj)
+			channel_tag.save()
+
 		if 'channel_logo' in request.FILES:
 			logo = request.FILES['channel_logo']
 			channel_obj.logo = logo
