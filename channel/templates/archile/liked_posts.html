@@ -8,45 +8,61 @@
 		</ol>
 		<hr>
 		<div class="col-md-12 search_results">
-			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
+			{% if posts|length|add:0 == 0%}
 			<div class="row">
 				<div class="col-md-12" style="margin-top: 2.5rem;">
-				<h4>No Channels</h4>
+				<h4>No Liked Post</h4>
 				</div>
 			</div>
 			{% endif %}
-			{% for i in channels %}
-		    <div class="row">
-		    	<div class="col-md-2">
-		    		<img class="channel_logo" src="{{i.logo.url}}">
-		    	</div>
-		    	
-		    	<div class="col-md-7" style="margin-top: 2.5rem;">
-		    		<h3><a href="{% url 'channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">{{i.name}}</a></h3></center>
-		    		<div class="channel_des">
-		    			Subscriptions: {{i.no_of_subscriptions}}
-		    			<br>
-		    			{{i.description}}
-		    		</div>
-		    	</div>
-		    	<div class="col-md-3" style="margin-top: 2.5rem;">
-		    		<div class="row" style="text-align: center;margin-top: 2rem;">
-		    			<div class="col-md-8">
-		    				{% if i.subs %}
-		    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
-			    			</a>
-			    			{% else %}
-			    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Subscribe</button>
-			    			</a>
-			    			{% endif %}
-		    			</div>
-		    		</div>
-		    	</div>
-		    </div>
-		    <hr>
-		    {% endfor %}
+			{% if posts|length|add:0 != 0%}
+			<div id="home" class="container tab-pane active"><br>
+				<div class="row">
+					<table class="table">
+					<tr>
+						<th>Title</th>
+						<th>Likes</th>
+						<th>Dislikes</th>
+						<th>Reports</th>
+						<th>Upload Date</th>
+						<th>Upload By</th>
+					</tr>
+					{% for pst in posts %}
+				    <tr>
+				    	{%if pst.status %}
+						<td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td>
+						<td>
+							{% if pst.report_status != True %}
+							<a href="{% url 'actions' type_of='posts' action=1 any_id=pst.p_id %}?next=channel">
+							{%endif%}
+							{% if pst.ld_status == None or pst.ld_status == False %}
+							<i class="far fa-thumbs-up fa-lg"></i>
+							{% elif pst.ld_status == True %}
+							<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>
+							{%endif%}
+							{{pst.no_of_likes}}
+							{% if pst.report_status != True %}</a>{%endif%}
+						</td>
+						<td>
+							<a href="{% url 'actions' type_of='posts' action=0 any_id=pst.p_id %}?next=channel">
+								{% if pst.ld_status == None or pst.ld_status == True %}
+								<i class="far fa-thumbs-down fa-lg"></i> 
+								{% elif pst.ld_status == False %}
+								<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>
+								{%endif%}
+								{{pst.no_of_dislikes}}
+							</a>
+						</td>
+						<td>{%if pst.report_status == False or pst.report_status == None %}<a href="{% url 'actions' type_of='posts' action=2 any_id=pst.p_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif pst.report_status == True %}<a href="{% url 'actions' type_of='posts' action=3 any_id=pst.p_id %}?next=channel"><i style="color: red;" class="fas fa-bug fa-lg"></i>{%endif%} {{pst.no_of_reports}}</a></td>
+						<td> {{pst.creation_datetime}}</td>
+						<td>{{pst.u_id.first_name}} {{pst.u_id.last_name}}</i></td>
+						{%endif%}
+				    </tr>
+				    {% endfor %}
+					</table>
+				</div>
+	    	</div>
+	    	{%endif%}
 		</div>
 	</div>
 	

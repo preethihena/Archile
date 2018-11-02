@@ -26,7 +26,8 @@ urlpatterns = [
     path('my_channels',my_channels,name="my_channels"),
     path('liked_posts',liked_posts,name="liked_posts"),
     path('my_subscriptions',my_subscriptions,name="my_subscriptions"),
-    path('post_thread_action/<int:pt_id>/<int:typ>',post_thread_action,name="post_thread_action")
+    path('post_thread_action/<int:pt_id>/<int:typ>',post_thread_action,name="post_thread_action"),
+    path('channel_thread_action/<int:ct_id>/<int:typ>',channel_thread_action,name="channel_thread_action"),
 
 ]
 
