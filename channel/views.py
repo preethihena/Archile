@@ -537,6 +537,7 @@ def channel(request,c_id):
 		channel.report_status = channel_actions_obj.report_status
 	except:
 		channel.report_status = None
+	thread_obj = Channel_threads.objects.filter(c_id=channel,ct_id_reply_to=None)
 	context['channel'] = channel
 	context['posts']=[]
 	context['docs']=[]
@@ -597,6 +598,32 @@ def channel(request,c_id):
 				context['docs'].append(f)
 			if f.file_type == "ARCHIVES":
 				context['archives'].append(f)
+
+	channel_threads=[]
+	for thread in thread_obj:
+		reply_thread = Channel_threads.objects.filter(ct_id_reply_to=thread)
+		try:
+			cur_user_pt_act_obj = channel_thread_actions.objects.get(ct_id=thread,u_id=user)
+			thread.ld_status=cur_user_pt_act_obj.ld_status
+			thread.report_status=cur_user_pt_act_obj.report_status
+		except:
+			thread.report_status = None
+			thread.ld_status = None
+		reply_threads=[]
+		for each in reply_thread:
+			try:
+				cur_user_pt_act_obj = channel_thread_actions.objects.get(ct_id=each,u_id=user)
+				each.ld_status=cur_user_pt_act_obj.ld_status
+				each.report_status=cur_user_pt_act_obj.report_status
+			except:
+				each.report_status = None
+				each.ld_status = None
+			reply_threads.append(each)
+
+		val = [thread,reply_threads]
+		channel_threads.append(val)
+
+	context['channel_threads'] = channel_threads
 	try:
 		subs = Subscription.objects.get(c_id=channel,u_id=user)
 		context['subs'] = True
@@ -753,15 +780,19 @@ def add_thread(request,place,any_id):
 	if request.method == "POST":
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
+		comment = request.POST['comment']
+		typ = request.POST['typ']
 		if place == 'posts':
-			comment = request.POST['comment']
-			typ = request.POST['typ']
 			post_obj = Post.objects.get(p_id=any_id)
 			post_thread_obj = Post_threads(u_id=request.user,p_id=post_obj,typ=typ,description=comment,creation_datetime=local)
 			post_thread_obj.save()
 			return redirect(post,any_id)
 		if place == 'channel':
+			channel_obj = Channel.objects.get(c_id=any_id)
+			channel_thread_obj =Channel_threads(u_id=request.user,c_id=channel_obj,typ=typ,description=comment,creation_datetime=local)
+			channel_thread_obj.save()
 			return redirect(channel,any_id)
+
 	return redirect(index)
 
 
@@ -773,16 +804,20 @@ def add_reply(request,place,any_id):
 	if request.method == "POST":
 		utc = arrow.utcnow()
 		local = utc.to('Asia/Kolkata')
+		comment = request.POST['comment']
+		typ = request.POST['typ']
 		if place == 'posts':
-			comment = request.POST['comment']
-			typ = request.POST['typ']
 			pt_obj = Post_threads.objects.get(pt_id=any_id)
 			post_obj = pt_obj.p_id
 			post_thread_obj = Post_threads(u_id=request.user,p_id=post_obj,typ=typ,description=comment,creation_datetime=local,pt_id_reply_to=pt_obj)
 			post_thread_obj.save()
 			return redirect(post,post_obj.p_id)
 		if place == 'channel':
-			return redirect(channel,any_id)
+			ct_obj = Channel_threads.objects.get(ct_id=any_id)
+			channel_obj = ct_obj.c_id
+			channel_thread_obj = Channel_threads(u_id=request.user,c_id=channel_obj,typ=typ,description=comment,creation_datetime=local,ct_id_reply_to=ct_obj)
+			channel_thread_obj.save()
+			return redirect(channel,channel_obj.c_id)
 	return redirect(index)
 
 
@@ -845,3 +880,63 @@ def post_thread_action(request,pt_id,typ):
 	pt_act_obj.latest_datetime = local
 	pt_act_obj.save()
 	return redirect(post,pt_obj.p_id.p_id)
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/user_login')
+def channel_thread_action(request,ct_id,typ):
+	ct_obj = Channel_threads.objects.get(ct_id=ct_id)
+	user = request.user
+	typ = int(typ)
+	utc = arrow.utcnow()
+	local = utc.to('Asia/Kolkata')
+	try:
+		ct_act_obj = channel_thread_actions.objects.get(u_id=user,ct_id=ct_obj)
+		if typ == 1:
+			if ct_act_obj.ld_status == 1:
+				ct_act_obj.ld_status = None
+				ct_obj.no_of_likes -=1
+			elif ct_act_obj.ld_status == 0:
+				ct_act_obj.ld_status = 1
+				ct_obj.no_of_likes+=1
+				ct_obj.no_of_dislikes-=1
+			elif ct_act_obj.ld_status == None:
+				ct_act_obj.ld_status = 1
+				ct_obj.no_of_likes+=1
+		elif typ == 0:
+			if ct_act_obj.ld_status == 0:
+				ct_act_obj.ld_status = None
+				ct_obj.no_of_dislikes -=1
+			elif ct_act_obj.ld_status == 1:
+				ct_act_obj.ld_status = 0
+				ct_obj.no_of_dislikes+=1
+				ct_obj.no_of_likes-=1
+			elif ct_act_obj.ld_status == None:
+				ct_act_obj.ld_status = 0
+				ct_obj.no_of_dislikes+=1
+		elif typ == 2:
+			if ct_act_obj.report_status == None or ct_act_obj.report_status == 0:
+				ct_act_obj.report_status = 1
+				ct_obj.no_of_reports+=1
+			elif ct_act_obj.report_status == 1:
+				ct_act_obj.report_status = 0
+				ct_obj.no_of_reports-=1
+	except:
+		ct_act_obj = channel_thread_actions()
+		ct_act_obj.u_id=user
+		ct_act_obj.ct_id=ct_obj
+		if typ==1:
+			ct_act_obj.ld_status = 1
+			ct_obj.no_of_likes+=1
+		elif typ == 0:
+			ct_act_obj.ld_status = 0
+			ct_obj.no_of_dislikes+=1
+		elif typ == 2:
+			ct_act_obj.report_status = 1
+			ct_obj.no_of_reports+=1
+	ct_obj.save()
+	ct_act_obj.latest_datetime = local
+	ct_act_obj.save()
+	return redirect(channel,ct_obj.c_id.c_id)
+

@@ -340,70 +340,145 @@
 	    </div>
 	    
 	    <div id="menu6" class="container tab-pane fade"><br>
-	     	<div class="row">
-    			<div class="col-md-9">
-	    			<div class="alert alert-info" role="alert" style="margin-bottom: 1px;">
-					  hgjhkjh ggh hjkhjg  jkjh g jkjh
+	     	<script type="text/javascript">
+    		function change_arrow(icon_id) {
+    			cn = document.getElementById(icon_id).className;
+    			if (cn.endsWith("down") == true){
+    				document.getElementById(icon_id).className = "fas fa-chevron-up";
+    			}
+    			else{
+    				document.getElementById(icon_id).className = "fas fa-chevron-down";	
+    			}
+    		}
+    	</script>
+    	<div class="row">
+    		<div class="col-md-9">
+    			<form action="{% url 'add_thread' place='channel' any_id=channel.c_id %}" method="post">
+    				{% csrf_token %}
+    			<table style="width: 100%;" class="table">
+    				<tr>
+    					<td style="width: 80%;" rowspan="2"><textarea rows="4" class="form-control" type="text" name="comment" placeholder="Add a comment..."></textarea></td>
+    					<td>
+    						<select class="form-control" style="width: 100%;" name="typ" >
+			    				<option value="Q">Question</option>
+			    				<option value="A">Assertion</option>
+			    			</select>			
+    					</td>
+    				</tr>
+    				<tr>
+    					<td><input style="width: 100%;" class="btn btn-light" type="submit" value="Comment"></td>
+    				</tr>
+    			</table>
+    			</form>
+    		</div>
+    	</div>
+    	<!-- This is a comment -->
+    	<div class="row">
+    		<div class="col-md-9">
+    			{% for channel_th in channel_threads %}
+    			<div class="alert{%if channel_th.0.typ == 'A' %} alert-info{%else%} alert-warning{%endif%}" role="alert" style="margin-bottom: 1px;">
+				  {{channel_th.0.description}}
+				</div>
+				<div class="row">
+					<div class="col-md-8">
+						{% if channel_th.0.report_status != True %}
+						<a href="{% url 'channel_thread_action'  ct_id=channel_th.0.ct_id  typ=1 %}">
+						{%endif%}
+						{% if channel_th.0.ld_status == None or channel_th.0.ld_status == False %}
+						<i class="far fa-thumbs-up fa-sm" style="padding-left: 15px;"></i>
+						{% elif channel_th.0.ld_status == True %}
+						<i style="color:#0a0;padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i>
+						{%endif%}
+						{{channel_th.0.no_of_likes}}
+
+						{% if channel_th.0.report_status != True %}</a>{%endif%}
+						<a href="{% url 'channel_thread_action'  ct_id=channel_th.0.ct_id  typ=0 %}">
+						{% if channel_th.0.ld_status == None or channel_th.0.ld_status == True %}
+						<i class="far fa-thumbs-down fa-sm" style="padding-left: 15px;"></i>
+						{% elif channel_th.0.ld_status == False %}
+						<i style="color:#a00;padding-left: 15px;" class="far fa-thumbs-down fa-sm"></i>
+						{%endif%}
+						{{channel_th.0.no_of_dislikes}}
+
+						<a href="{% url 'channel_thread_action'  ct_id=channel_th.0.ct_id  typ=2 %}">{% if channel_th.0.report_status == False or channel_th.0.report_status == None %}<i class="fas fa-bug fa-sm" style="padding-left: 15px;"></i>{%elif channel_th.0.report_status == True %}<i class="fas fa-bug fa-sm" style="color: red;padding-left: 15px;"></i>{%endif%} {{channel_th.0.no_of_reports}}</a>
+
+						<a data-toggle="collapse" href="#collapse{{channel_th.0.ct_id}}" onclick='change_arrow("down_arrow")'><span style="padding-left: 25px;font-size: 14px;">Previous replies <i id="down_arrow" class="fas fa-chevron-down"></i></span></a>
+						<a data-toggle="collapse" href="#replyto{{channel_th.0.ct_id}}"><span style="padding-left: 25px;font-size: 14px;">Add Reply <i class="fas fa-plus"></i></span></a>
 					</div>
+					<div style="text-align: right;" class="col-md-4">
+						<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i>{{channel_th.0.u_id.first_name}}
+					</div>
+				</div>
+
+				<div class="collapse" id="replyto{{channel_th.0.ct_id}}">
 					<div class="row">
-						<div class="col-md-8">
-							<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;">34</span>
-							<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;">78</span>
-							<a data-toggle="collapse" href="#collapse" onclick='change_arrow("down_arrow")'><span style="padding-left: 25px;font-size: 14px;">Previous replies <i id="down_arrow" class="fas fa-chevron-down"></i></span></a>
-							<a data-toggle="collapse" href="#replyto"><span style="padding-left: 25px;font-size: 14px;">Add Reply <i class="fas fa-plus"></i></span></a>
-						</div>
-						<div style="text-align: right;" class="col-md-4">
-							<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i>ASd kjh
-						</div>
-					</div>
+			    		<div class="col-md-1"></div>
+						<div class="col-md-11">
+			    			<form action="{% url 'add_reply' place='channel' any_id=channel_th.0.ct_id %}" method="post">
+			    				{%csrf_token%}
+			    			<table style="width: 100%;" class="table">
+			    				<tr>
+			    					<td style="width: 80%;" rowspan="2"><textarea rows="4" class="form-control" type="text" name="comment" placeholder="Add a comment..."></textarea></td>
+			    					<td>
+			    						<select class="form-control" style="width: 100%;" name="typ" >
+						    				<option value="Q">Question</option>
+						    				<option value="A">Assertion</option>
+						    			</select>			
+			    					</td>
+			    				</tr>
+			    				<tr>
+			    					<td><input style="width: 100%;" class="btn btn-light" type="submit" value="Comment"></td>
+			    				</tr>
+			    			</table>
+			    			</form>
+			    		</div>
+			    	</div>
+				</div>
 
-					<div class="collapse" id="replyto">
-						<div class="row">
-				    		<div class="col-md-1"></div>
-							<div class="col-md-11">
-				    			<form action="" method="post">
-				    				{%csrf_token%}
-				    			<table style="width: 100%;" class="table">
-				    				<tr>
-				    					<td style="width: 80%;" rowspan="2"><textarea rows="4" class="form-control" type="text" name="comment" placeholder="Add a comment..."></textarea></td>
-				    					<td>
-				    						<select class="form-control" style="width: 100%;" name="typ" >
-							    				<option value="Q">Question</option>
-							    				<option value="A">Assertion</option>
-							    			</select>			
-				    					</td>
-				    				</tr>
-				    				<tr>
-				    					<td><input style="width: 100%;" class="btn btn-light" type="submit" value="Comment"></td>
-				    				</tr>
-				    			</table>
-				    			</form>
-				    		</div>
-				    	</div>
-					</div>
+				<div class="collapse" id="collapse{{channel_th.0.ct_id}}">
+					{% for reply in channel_th.1 %}
+					<div class="row" style="padding-top: 15px;">
+						<div class="col-md-1"></div>
+						<div class="col-md-11">
+							<div class="alert{%if reply.typ == 'A' %} alert-info{%else%} alert-warning{%endif%}" role="alert" style="margin-bottom: 1px;">
+							  {{reply.description}}
+							</div>	
+							<div class="row" >
+								<div class="col-md-6">
+								{% if reply.report_status != True %}
+						<a href="{% url 'channel_thread_action'  ct_id=reply.ct_id  typ=1 %}">
+						{%endif%}
+						{% if reply.ld_status == None or reply.ld_status == False %}
+						<i class="far fa-thumbs-up fa-sm" style="padding-left: 15px;"></i>
+						{% elif reply.ld_status == True %}
+						<i style="color:#0a0;padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i>
+						{%endif%}
+						<span style="font-size: 14px;"> {{reply.no_of_likes}}</span>
+						{% if reply.report_status != True %}</a>{%endif%}
 
-					<div class="collapse" id="collapse">
-						<div class="row" style="padding-top: 15px;">
-							<div class="col-md-1"></div>
-							<div class="col-md-11">
-								<div class="alert alert-warning" role="alert" style="margin-bottom: 1px;">
-								  asdjhbasdbasd jabshdjah djash d
-								</div>	
-								<div class="row" >
-									<div class="col-md-6">
-										<i style="padding-left: 15px;" class="far fa-thumbs-up fa-sm"></i><span style="font-size: 14px;"> 34</span>
-										<i style="padding-left: 5px; color:#a00;" class="far fa-thumbs-down fa-sm"></i><span style="font-size: 14px;"> 12</span>
-									</div>
-									<div style="text-align: right;" class="col-md-6">
-										<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> asdasd asd 
-									</div>
+						<a href="{% url 'channel_thread_action'  ct_id=reply.ct_id  typ=0 %}">
+						{% if reply.ld_status == None or reply.ld_status == True %}
+						<i class="far fa-thumbs-down fa-sm" style="padding-left: 5px;"></i>
+						{% elif reply.ld_status == False %}
+						<i style="color:#a00;padding-left: 5px;" class="far fa-thumbs-down fa-sm"></i>
+						{%endif%}
+						<span style="font-size: 14px;"> {{reply.no_of_dislikes}}</span>
+						</a>
+						<a href="{% url 'channel_thread_action'  ct_id=reply.ct_id  typ=2 %}">{% if reply.report_status == False or reply.report_status == None %}<i class="fas fa-bug fa-sm" style="padding-left: 5px;"></i>{%elif reply.report_status == True %}<i class="fas fa-bug fa-sm" style="color: red;padding-left: 5px;"></i>{%endif%} {{reply.no_of_reports}}</a>
+								</div>
+								<div style="text-align: right;" class="col-md-6">
+									<i style="padding-left: 20px;font-size: 14px;" class="fas fa-user-circle fa-lg"></i> {{reply.u_id.first_name}}
 								</div>
 							</div>
 						</div>
 					</div>
-	    		</div>
-	    	</div> 
+					{%endfor%}
+				</div>
+				{%endfor%}
+    		</div>
+    	</div>
 	    </div>
+    	
 	    {% comment %}
 	    {% endcomment %}
 	    
