@@ -4,25 +4,43 @@
 <div style="padding-left: 1.5rem;padding-top: 1rem;">
 	<ol class="breadcrumb breadcrumb-right-arrow">
   		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-	    <li class="breadcrumb-item active" aria-current="page">Create Channel</li>
+  		<li class="breadcrumb-item"><a href="{% url 'channel' c_id=channel.c_id %}" style="text-decoration: none;">{{channel.name}}</a></li>
+	    <li class="breadcrumb-item active" aria-current="page">Edit</li>
 	</ol>
 	<hr>
 	<div class="col-md-12">
 	    <div class="row">
 	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
-	            <form method="POST" enctype="multipart/form-data" action="{% url 'create_channel' %}">
+	            <form method="POST" enctype="multipart/form-data" action="{% url 'edit_channel' c_id=channel.c_id %}">
 	            	{% csrf_token %}
 				  <div class="form-group row">
 				    <label for="validationCustom01" class="col-sm-3 col-form-label">Channel Name</label>
 				    <div class="col-sm-3">
-				      <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Django" name="channel_name" required>
+				      <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Django" name="channel_name" value="{{channel.name}}" disabled>
 				    </div>
 				  </div>
+				  {% if channel.logo %}
+				  <div class="form-group row">
+						<label class="col-sm-3 col-form-label">Current Profile Image:</label>
+						<div class="col-sm-8 custom-control custom-checkbox">
+							<table class="table">
+								<tr>
+									<th>File name</th>
+									<th>Delete?</th>
+								</tr>
+								<tr>
+									<td scope="row">{{channel.logo_name}}</td>
+									<td><input type="checkbox" name="old_logo" value="old"></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					{%endif%}
 				  <div class="form-group row">
 				    <label for="logo" class="col-sm-3 col-form-label">Channel Logo</label>
 				    <div class="col-sm-6">
 					    <div class="custom-file">
-							<input type="file" class="custom-file-input" id="customFile"  accept="image/*" name="channel_logo" required>
+							<input type="file" class="custom-file-input" id="customFile"  accept="image/*" name="channel_logo">
 							<label class="custom-file-label" for="customFile" >Choose file</label>
 						</div>
 				    </div>
@@ -30,13 +48,13 @@
 				<div class="form-group row">
 				    <label for="exampleFormControlTextarea1" class="col-sm-3 col-form-label">Description:</label>
 				    <div class="col-sm-7">
-				    	<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" required></textarea>
+				    	<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="channel_description" >{{channel.description}}</textarea>
 				    </div>
 				</div>
 				  <div class="form-group row">
 				    <label for="ChannelName" class="col-sm-3 col-form-label">Tags</label>
 				    <div class="col-sm-7">
-				  		<input type="text" value="" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
+				  		<input type="text" value="{% for tag in tags %}{{tag.t_id.tag_name}},{%endfor%}" name="channel_tags" data-role="tagsinput" placeholder="Add tags" />
 				    </div>
 				  </div>
 				  <div class="form-group row">
@@ -47,11 +65,6 @@
 				  </div>
 				</form>
 	        </div>
-	        {%comment%}
-	        <div class="col-sm-4">
-	      		Similar Channel
-	        </div>
-	        {%endcomment%}
 	    </div>
 	</div>
 </div>

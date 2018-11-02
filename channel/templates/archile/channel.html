@@ -5,12 +5,18 @@
 		<div class="col-md-12">
 		    <div class="row">
 		    	<div class="col-md-2">
+		    		{%if channel.logo%}
 		    		<img class="channel_logo" src="{{ channel.logo.url }}">
+		    		{%else%}
+		    		<img class="channel_logo" src="{% static 'archile/dummy_channel.jpg' %}">
+		    		{%endif%}
 		    	</div>
 		    	<div class="col-md-5" style="margin-top: 2.5rem;">
 		    		<h3>{{channel.name}}</h3>
 		    		<div class="channel_des">
 		    			Subscribers: {{channel.no_of_subscriptions}}
+		    			<br>
+		    			No of Reports : {{channel.no_of_reports}}
 		    			<br>
 		    			{{channel.description}}
 		    		</div>
@@ -34,6 +40,20 @@
 		    				</div>
 		    				<div class="row" style="text-align: center;">
 		    					<span class="col" style="font-weight: bolder;">Create Post</span>
+		    				</div>
+		    				</a>
+		    			</div>
+		    			<div class="col-md-4">
+		    				<a href="{% url 'report_channel' c_id=channel.c_id %}">
+		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
+		    				{%if channel.report_status != True %}
+		    					<i class="col fas fa-bug fa-lg" ></i>
+		    				{% else %}
+		    					<i class="col fas fa-bug fa-lg" style="color: red;"></i>
+		    				{%endif%}
+		    				</div>
+		    				<div class="row" style="text-align: center;">
+		    					<span class="col" style="font-weight: bolder;">Report Channel</span>
 		    				</div>
 		    				</a>
 		    			</div>
@@ -99,11 +119,11 @@
         		</tr>
         		{% for pst in posts %}
 			    <tr>
-			    	{%if pst%}
+			    	{%if pst.status %}
 					<td><a href="{% url 'post' p_id=pst.p_id %}">{{pst.title}}</a></td>
-					<td><a href="{% url 'actions' type_of='posts' action=1 any_id=pst.p_id %}">{% if pst.ld_status == None or pst.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif pst.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{pst.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='posts' action=0 any_id=pst.p_id %}">{% if pst.ld_status == None or pst.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i> {% elif pst.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{pst.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='posts' action=2 any_id=pst.p_id %}">{{pst.no_of_reports}}</a></td>
+					<td>{% if pst.report_status != True %}<a href="{% url 'actions' type_of='posts' action=1 any_id=pst.p_id %}?next=channel">{%endif%}{% if pst.ld_status == None or pst.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif pst.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{pst.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='posts' action=0 any_id=pst.p_id %}?next=channel">{% if pst.ld_status == None or pst.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i> {% elif pst.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{pst.no_of_dislikes}}</a></td>
+					<td>{%if pst.report_status == False or pst.report_status == None %}<a href="{% url 'actions' type_of='posts' action=2 any_id=pst.p_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif pst.report_status == True %}<a href="{% url 'actions' type_of='posts' action=3 any_id=pst.p_id %}?next=channel"><i style="color: red;" class="fas fa-bug fa-lg"></i>{%endif%} {{pst.no_of_reports}}</a></td>
 					<td> {{pst.creation_datetime}}</td>
 					<td>{{pst.u_id.first_name}} {{pst.u_id.last_name}}</i></td>
 					{%endif%}
@@ -121,20 +141,21 @@
         			<th>Download</th>
         			<th>Likes</th>
         			<th>Dislikes</th>
+        			<th>Reports</th>
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
         		
 			    {% for doc in docs %}
         		<tr>
-        		{%if doc %}
+        		{%if doc.status %}
 					<td>{{doc.filename}}</td>
-					<td><a href="download/{{doc.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=1  any_id=doc.pf_id %}">{% if doc.ld_status == None or doc.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif doc.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{doc.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=doc.pf_id %}">{% if doc.ld_status == None or doc.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif doc.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{doc.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=doc.pf_id %}">Irrelevant {{doc.no_of_reports}}</a></td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
+					<td><a href="{% url 'download' path=doc.filename pf_id=doc.pf_id %}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td>{% if doc.report_status != True %}<a href="{% url 'actions' type_of='post_file'  action=1  any_id=doc.pf_id %}?next=channel">{%endif%}{% if doc.ld_status == None or doc.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif doc.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{doc.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=doc.pf_id %}?next=channel">{% if doc.ld_status == None or doc.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif doc.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{doc.no_of_dislikes}}</a></td>
+					<td>{% if doc.report_status == False or doc.report_status == None %}<a href="{% url 'actions' type_of='post_file'  action=2  any_id=doc.pf_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif doc.report_status == True %}<a href="{% url 'actions' type_of='post_file'  action=3  any_id=doc.pf_id %}?next=channel"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{doc.no_of_reports}}</a></td>
 					<td>{{doc.upload_datetime}} </td>
+					<td>{{doc.p_id.u_id.first_name}}</td>
 			    {% endif %}
 			     </tr>
 			    {% endfor %}
@@ -151,19 +172,20 @@
         			<th>Download</th>
         			<th>Likes</th>
         			<th>Dislikes</th>
-        			<th>Irrelevant</th>
+        			<th>Reports</th>
         			<th>Upload Date</th>
+        			<th>Upload By</th>
         		</tr>
         		{% for image in images %}
         		<tr>
-        		{%if image %}
+        		{%if image.status %}
 					<td>{{image.filename}}</td>
-					<td><a href="download/{{image.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions'  type_of='post_file'  action=1  any_id=image.pf_id %}">{% if image.ld_status == None or image.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif image.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{image.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=image.pf_id %}">{% if image.ld_status == None or image.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif image.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{image.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions'  type_of='post_file'  action=2  any_id=image.pf_id %}">Irrelevant {{image.no_of_reports}}</a></td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
+					<td><a href="{% url 'download' path=image.filename pf_id=image.pf_id %}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td>{% if image.report_status != True %}<a href="{% url 'actions'  type_of='post_file'  action=1  any_id=image.pf_id %}?next=channel">{%endif%}{% if image.ld_status == None or image.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif image.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{image.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=image.pf_id %}?next=channel">{% if image.ld_status == None or image.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif image.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{image.no_of_dislikes}}</a></td>
+					<td>{% if image.report_status == False or image.report_status == None %}<a href="{% url 'actions'  type_of='post_file'  action=2  any_id=image.pf_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif image.report_status == True %}<a href="{% url 'actions'  type_of='post_file'  action=3  any_id=image.pf_id %}?next=channel"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{image.no_of_reports}}</a></td>
 					<td>{{image.upload_datetime}} </td>
+					<td>{{image.p_id.u_id.first_name}}</td>
 			    {%endif%}
 			     </tr>
 			    {% endfor %}
@@ -179,19 +201,21 @@
         			<th>Download</th>
         			<th>Likes</th>
         			<th>Dislikes</th>
+        			<th>Reports</th>
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
 			    {% for aud in audio %}
         		<tr>
-        		{%if aud %}
+        		{%if aud.status %}
 					<td>{{aud.filename}}</td>
-					<td><a href="download/{{aud.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=1  any_id=aud.pf_id %}">{% if aud.ld_status == None or aud.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif aud.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{aud.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=aud.pf_id %}">{% if aud.ld_status == None or aud.ld_status == True  %}<i class="far fa-thumbs-down fa-lg"></i>{% elif aud.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{aud.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=aud.pf_id %}">Irrelevant {{aud.no_of_reports}}</a></td>
+					<td><a href="{% url 'download' path=aud.filename pf_id=aud.pf_id %}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td>{% if aud.report_status != True %}<a href="{% url 'actions' type_of='post_file'  action=1  any_id=aud.pf_id %}?next=channel">{%endif%}{% if aud.ld_status == None or aud.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif aud.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{aud.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=aud.pf_id %}?next=channel">{% if aud.ld_status == None or aud.ld_status == True  %}<i class="far fa-thumbs-down fa-lg"></i>{% elif aud.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%}{{aud.no_of_dislikes}}</a></td>
+					<td>{% if aud.report_status == False or aud.report_status == None %}<a href="{% url 'actions' type_of='post_file'  action=2  any_id=aud.pf_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif aud.report_status == True %}<a href="{% url 'actions' type_of='post_file'  action=3  any_id=aud.pf_id %}?next=channel"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{aud.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{aud.upload_datetime}} </td>
+					<td>{{aud.p_id.u_id.first_name}}</td>
 			    {%endif%}
 			     </tr>
 			    {% endfor %}
@@ -207,19 +231,21 @@
         			<th>Download</th>
         			<th>Likes</th>
         			<th>Dislikes</th>
+        			<th>Reports</th>
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
 			    {% for vid in video %}
         		<tr>
-        		{%if vid %}
+        		{%if vid.status %}
 					<td>{{vid.filename}}</td>
-					<td><a href="download/{{vid.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions'  type_of='post_file' action=1 any_id=vid.pf_id %}">{% if vid.ld_status == None or vid.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif vid.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{vid.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions'  type_of='post_file' action=0 any_id=vid.pf_id %}"><{% if vid.ld_status == None or vid.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif vid.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%} {{vid.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions'  type_of='post_file' action=2 any_id=vid.pf_id %}">Irrelevant {{vid.no_of_reports}}</a></td>
+					<td><a href="{% url 'download' path=vid.filename pf_id=vid.pf_id %}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td>{% if vid.report_status != True %}<a href="{% url 'actions'  type_of='post_file' action=1 any_id=vid.pf_id %}?next=channel">{%endif%}{% if vid.ld_status == None or vid.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif vid.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{vid.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions'  type_of='post_file' action=0 any_id=vid.pf_id %}?next=channel"><{% if vid.ld_status == None or vid.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif vid.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%} {{vid.no_of_dislikes}}</a></td>
+					<td>{%if vid.report_status ==  None or vid.report_status == False %}<a href="{% url 'actions'  type_of='post_file' action=2 any_id=vid.pf_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif vid.report_status == True %}<a href="{% url 'actions'  type_of='post_file' action=3 any_id=vid.pf_id %}?next=channel"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{vid.no_of_reports}}</a></td>
 					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
 					<td>{{vid.upload_datetime}} </td>
+					<td>{{vid.p_id.u_id.first_name}}</td>
 			    {%endif%}
 			     </tr>
 			    {% endfor %}
@@ -235,19 +261,20 @@
         			<th>Download</th>
         			<th>Likes</th>
         			<th>Dislikes</th>
+        			<th>Reports</th>
         			<th>Upload Date</th>
         			<th>Upload By</th>
         		</tr>
 			    {% for archive in archives %}
         		<tr>
-        		{%if archive %}
+        		{%if archive.status %}
 					<td>{{archive.filename}}</td>
-					<td><a href="download/{{archive.filename}}"><i class="fas fa-download fa-lg"></i></a></td>
-					<td><a href="{% url 'actions'  type_of='post_file'  action=1  any_id=archive.pf_id %}">{% if archive.ld_status == None or archive.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif archive.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{archive.no_of_likes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=archive.pf_id %}">{% if archive.ld_status == None or archive.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif archive.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%} {{archive.no_of_dislikes}}</a></td>
-					<td><a href="{% url 'actions' type_of='post_file'  action=2  any_id=archive.pf_id %}">Irrelevant {{archive.no_of_reports}}</a></td>
-					{% comment %}<td><a href="{% url 'post' %}">Django Documentation</a></td>{% endcomment %}
+					<td><a href="{% url 'download' path=archive.filename pf_id=archive.pf_id %}"><i class="fas fa-download fa-lg"></i></a></td>
+					<td>{% if archive.report_status != True %}<a href="{% url 'actions'  type_of='post_file'  action=1  any_id=archive.pf_id %}?next=channel">{%endif%}{% if archive.ld_status == None or archive.ld_status == False %}<i class="far fa-thumbs-up fa-lg"></i>{% elif archive.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{%endif%}{{archive.no_of_likes}}</a></td>
+					<td><a href="{% url 'actions' type_of='post_file'  action=0  any_id=archive.pf_id %}?next=channel">{% if archive.ld_status == None or archive.ld_status == True %}<i class="far fa-thumbs-down fa-lg"></i>{% elif archive.ld_status == False %}<i style="color:#a00;" class="far fa-thumbs-down fa-lg"></i>{%endif%} {{archive.no_of_dislikes}}</a></td>
+					<td>{% if archive.report_status == None or archive.report_status == False %}<a href="{% url 'actions' type_of='post_file'  action=2  any_id=archive.pf_id %}?next=channel"><i class="fas fa-bug fa-lg"></i>{%elif archive.report_status == True %}<a href="{% url 'actions' type_of='post_file'  action=3  any_id=archive.pf_id %}?next=channel"><i class="fas fa-bug fa-lg" style="color: red;"></i>{%endif%} {{archive.no_of_reports}}</a></td>
 					<td>{{archive.upload_datetime}} </td>
+					<td>{{archive.p_id.u_id.first_name}}</td>
 			    {%endif%}
 			     </tr>
 			    {% endfor %}

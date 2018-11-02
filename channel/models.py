@@ -90,6 +90,7 @@ class Channel(models.Model):
 	description = models.CharField(max_length=500,default="")
 	logo = models.ImageField(upload_to='channel_logo_images', blank=True)
 	no_of_subscriptions = models.IntegerField(default=0)
+	no_of_reports = models.IntegerField(default=0)
 	creation_datetime = models.DateTimeField('date created',auto_now=True)
 	status = models.BooleanField(
 		'Channel status',
@@ -98,6 +99,11 @@ class Channel(models.Model):
 		)
 	def __str__(self):
 		return str(self.name+str(self.c_id))
+	def logo_name(self):
+		if self.logo:
+			return list((self.logo.name).split('/'))[1]
+		else:
+			return None
 
 
 class Subscription(models.Model):
@@ -107,6 +113,8 @@ class Subscription(models.Model):
 	s_datetime = models.DateTimeField('date created',auto_now=True)
 	def __str__(self):
 		return str(self.c_id.name + self.u_id.username)
+	class Meta:
+		unique_together = ('c_id', 'u_id',)
 
 class Post(models.Model):
 	p_id = models.AutoField(primary_key = True)
@@ -189,9 +197,10 @@ class Post_threads(models.Model):
 	def __str__(self):
 		return str(self.p_id.name+str(self.pt_id)+"status="+self.status)
 
+
 class Tags(models.Model):
 	t_id = models.AutoField(primary_key=True)
-	tag_name = models.CharField(max_length=200)
+	tag_name = models.CharField(max_length=200,unique=True)
 	no_of_use = models.IntegerField(default=0)
 	def __str__(self):
 		return str(self.tag_name+str(self.no_of_use))
@@ -201,11 +210,15 @@ class Post_tags(models.Model):
 	pt_id = models.AutoField(primary_key = True)
 	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)
 	t_id = models.ForeignKey(Tags,on_delete=models.CASCADE)
+	class Meta:
+		unique_together = ('p_id', 't_id',)
 
 class Channel_tags(models.Model):
 	ct_id = models.AutoField(primary_key = True)
 	c_id = models.ForeignKey(Channel,on_delete=models.CASCADE)
 	t_id = models.ForeignKey(Tags,on_delete=models.CASCADE)
+	class Meta:
+		unique_together = ('c_id', 't_id',)
 
 class post_actions(models.Model):
 	pa_id = models.AutoField(primary_key = True)
@@ -214,6 +227,8 @@ class post_actions(models.Model):
 	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
+	class Meta:
+		unique_together = ('u_id', 'p_id',)
 
 class post_file_actions(models.Model):
 	pfa_id = models.AutoField(primary_key = True)
@@ -222,6 +237,8 @@ class post_file_actions(models.Model):
 	latest_datetime = models.DateTimeField('date created',auto_now=True)
 	ld_status = models.NullBooleanField()
 	report_status = models.NullBooleanField()
+	class Meta:
+		unique_together = ('u_id', 'pf_id',)
 
 class channel_thread_actions(models.Model):
 	cta_id = models.AutoField(primary_key = True)
@@ -242,7 +259,11 @@ class post_thread_actions(models.Model):
 class channel_actions(models.Model):
 	ca_id = models.AutoField(primary_key=True)
 	u_id = models.ForeignKey(User,on_delete=models.PROTECT)
+	c_id = models.ForeignKey(Channel,on_delete=models.PROTECT)
 	report_status = models.NullBooleanField()
+	class Meta:
+		unique_together = ('u_id', 'c_id',)
+
 
 class Dowload_history(models.Model):
 	dw_id = models.AutoField(primary_key=True)
