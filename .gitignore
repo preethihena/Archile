@@ -17,7 +17,6 @@ channel/__pycache__/
 *.pyc
 */__pycache__/*
 local_settings.py
-archile/settings.py
 db.sqlite3
 media
 archile/staticfiles/*

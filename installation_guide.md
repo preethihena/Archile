@@ -1,10 +1,11 @@
 # Instructions to install(in Ubuntu 16.04 and Python 3.5):
 
 ## Installing Mysql
-`sudo apt-get update`
-`sudo apt-get install mysql-server`
+```
+sudo apt-get update
+sudo apt-get install mysql-server
+```
 You'll be prompted to create a root password during the installation. Choose a secure one and make sure you remember it, because you'll need it later. 
-
 
 `mysql -u root -p`
 
@@ -21,8 +22,13 @@ sudo python3 dependencies/pip-18.1-py2.py3-none-any.whl/pip install dependencies
 `source .env/bin/activate`
 
 ### For rest all dependencies:
-`pip install dependencies/*`
+```
+pip install dependencies/*
+```
 
 If error comes and shows mysql-client is having some problem
-`sudo apt-get install libmysqlclient-dev python3-dev`
-`sudo apt-get install libmysqlclient-dev python3-dev --fix-missing` *(if required)* 
+```
+sudo apt-get install libmysqlclient-dev python3-dev
+sudo apt-get install libmysqlclient-dev python3-dev --fix-missing (if required)
+```
+
