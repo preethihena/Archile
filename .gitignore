@@ -1,6 +1,7 @@
 archile/__pycache__/
 channel/__pycache__/
 channel/migrations/
+channel/__pycache__/
 # Compiled source #
 ###################
 *.com
