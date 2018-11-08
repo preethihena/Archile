@@ -31,7 +31,7 @@ def to_dict(instance):
 @login_required(login_url='/user_login')
 def my_channels(request):
 	user=request.user
-	chan = Channel.objects.all()
+	chan = Channel.objects.filter(u_id=user)
 	Channels_all=[]
 	for each in chan:
 		data = to_dict(each)
@@ -52,17 +52,6 @@ def my_channels(request):
 @login_required(login_url='/user_login')
 def index(request):
 	return render(request,'archile/index.html')
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
-def my_subscriptions(request):
-	Channels_all = []
-	return render(request,'archile/my_subscriptions.html',{'channels':Channels_all})
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
-def liked_posts(request):
-	return render(request,'archile/liked_posts.html')
 
 
 def user_login(request):
