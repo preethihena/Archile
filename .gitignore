@@ -1,6 +1,7 @@
 archile/__pycache__/
 channel/__pycache__/
 channel/migrations/
+channel/__pycache__/
 # Compiled source #
 ###################
 *.com
@@ -16,7 +17,6 @@ channel/migrations/
 *.pyc
 */__pycache__/*
 local_settings.py
-archile/settings.py
 db.sqlite3
 media
 archile/staticfiles/*
