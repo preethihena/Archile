@@ -1,5 +1,5 @@
 archile/__pycache__/
-settings.py
+archile/settings.py
 channel/__pycache__/
 channel/migrations/
 # Compiled source #
