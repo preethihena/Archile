@@ -40,7 +40,7 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
-				<form class="form-inline" action="{% url 'search_box' %}" method="post">
+				<form class="form-inline" action="{% url 'search' %}" method="get">
 					{% csrf_token %}
 					<input class="form-control mr-sm-1" type="text" placeholder="Search" name="search_query" style="width: 400px;">
 					<div class="form-group" style="margin-right: 4px;">

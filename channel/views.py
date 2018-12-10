@@ -125,91 +125,74 @@ def user_logout(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
-def search(request,query):
-	
-	def valid_date(inputDate):
-		try:
-			year,month,day = inputDate.split('-')
-		except:
-			return False
+def search(request):
 
-		isValidDate = True
-
-		try :
-		    datetime.datetime(int(year),int(month),int(day))
-		except ValueError :
-		    isValidDate = False
-		
-		return isValidDate
-	
-	def valid_search(search_query):
-		if 'search_query' not in search_query:
-			return False
-		if 'from' in search_query:
-			if valid_date(search_query['from']) == False:
-				return False
-		if 'to' in search_query:
-			if valid_date(search_query['to']) == False:
-				return False
-
-		for i in ['channel','post','documents','videos','images','audio','archives']:
-			if i in search_query:
-				if search_query[i] != 'on':
-					return False
-		
-		if 'sort' in search_query:
-			if search_query['sort'] not in ['uploadDate_asc','uploadDate_dec','likes_asc','likes_dec','size_asc','size_dec']:
-				return False
-		return True
-
-	#query is a string, converting it to dictionary
 	user=request.user
-	query = eval(query)
-
-	if valid_search(query):
-		#Send the search reults with this query to search-results page.
-		text =query['search_query'].lower().split()
-		
-		Channels = Channel.objects.all()
-		Posts = Post.objects.all()
-		Ch=[]
-		Ps=[]
-		for word in text:
-			Ch.append(Channels.filter(name__icontains=word))
-			Ps.append(Posts.filter(title__icontains=word))
+	try:
+		query =request.GET['search_query']
+		text = query.lower().split()
+		search_type = request.GET['search_type']
+		page = request.GET.get('page', 1)
 		Channels_all=[]
-		ch_set = set()
-		for chan in Ch:
-			for each in chan:
-				if each.c_id not in ch_set:
-					data = to_dict(each)
-					try:
-						subs = Subscription.objects.get(c_id=data['c_id'],u_id=user)
-						data['subs'] = True
-					except:
-						data['subs'] = False
-					ch_set.add(data['c_id'])
-					Channels_all.append(data)
-		Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
 		Posts_all=[]
-		ps_set = set()
-		for pst in Ps:
-			for each in pst:
-				if each.p_id not in ps_set:
-					data = to_dict(each)
-					ps_set.add(data['p_id'])
-					Posts_all.append(data)
-		Posts_all=sorted(Posts_all,key=lambda d:[-d['no_of_likes'],d['no_of_dislikes'],d['creation_datetime']])
+		if search_type == 'Channel':
+			Channels = Channel.objects.all()
+			Ch=[]
+			for word in text:
+				Ch.append(Channels.filter(name__icontains=word))
+			print(Ch)
+			ch_set = set()
+			for chan in Ch:
+				for each in chan:
+					if each.c_id not in ch_set:
+						data = to_dict(each)
+						try:
+							subs = Subscription.objects.get(c_id=data['c_id'],u_id=user)
+							data['subs'] = True
+						except:
+							data['subs'] = False
+						ch_set.add(data['c_id'])
+						Channels_all.append(data)
+			Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
+			print(Channels_all)
+			paginator = Paginator(Channels_all, 2)
+			try:
+				Channels_all = paginator.page(page)
+			except PageNotAnInteger:
+				Channels_all = paginator.page(1)
+			except EmptyPage:
+				Channels_all = paginator.page(paginator.num_pages)
+			
+		else:
+			Posts = Post.objects.all()
+			Ps=[]
+			for word in text:
+				Ps.append(Posts.filter(title__icontains=word))
+			ps_set = set()
+			for pst in Ps:
+				for each in pst:
+					if each.p_id not in ps_set:
+						data = to_dict(each)
+						ps_set.add(data['p_id'])
+						Posts_all.append(data)
+			Posts_all=sorted(Posts_all,key=lambda d:[-d['no_of_likes'],d['no_of_dislikes'],d['creation_datetime']])
+			paginator = Paginator(Posts_all, 2)
+			try:
+				Posts_all = paginator.page(page)
+			except PageNotAnInteger:
+				Posts_all = paginator.page(1)
+			except EmptyPage:
+				Posts_all = paginator.page(paginator.num_pages)
+			
 		context = {
 			'channels': Channels_all,
-			'posts': Posts_all
+			'posts': Posts_all,
+			'query': query
 		}
 		return render(request, 'archile/search_results.html',context)
-	else:
-		# redirect to home page, as of now redirecting to search_box(which is a dummy for our search filter)
-		return redirect(search_box)
+	except:
+		return redirect(index)
 	
-	return render(request, 'archile/search.html')
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -220,7 +203,7 @@ def search_box(request):
 		query = {}
 		for i in request.POST:
 			query[i] = request.POST[i]
-
+		
 		del query['csrfmiddlewaretoken']
 
 		# if query['from'] == '':
