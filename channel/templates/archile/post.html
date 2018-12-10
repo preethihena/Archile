@@ -60,7 +60,7 @@
 				        		{% for file in post_files %}
 				        		{% if file.status %}
 				        		<tr>
-							    <td>{{file.filename}}</td>
+							    <td><a href="{{file.file.url}}">{{file.filename}}</a></td>
 								<td>
 									<a href="{% url 'download' path=file.filename pf_id=file.pf_id %}"><i class="fas fa-download fa-lg"></i></a>
 								</td>
