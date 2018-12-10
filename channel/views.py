@@ -316,10 +316,14 @@ def save_post(request):
 				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
 
+		all_subscribers = Subscription.objects.filter(c_id=c_id)
+		message = "New Post Added with title {} by {}.".format(title,user.email)
+		for each_subscriber in all_subscribers:
+			Send_Email(each_subscriber.u_id.email, "New Post Added in channel {}".format(ch.name),message)
 
 
 		return redirect(channel,c_id)
-	return render(request, 'archile/channel.html')
+	return redirect(index)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -450,6 +454,10 @@ def subscribe_channel(request,c_id):
 			Chan_obj.no_of_subscriptions = count + 1
 		subs_obj.save()
 	Chan_obj.save()
+	message = "You are Subscribeed to the channel {}".format(Chan_obj)
+
+	Send_Email(user.email, "Subscribed!",message)
+
 	return redirect(my_channels)
 
 
@@ -849,11 +857,18 @@ def add_reply(request,place,any_id):
 			ct_obj = Channel_threads.objects.get(ct_id=any_id)
 			channel_obj = ct_obj.c_id
 			channel_thread_obj = Channel_threads(u_id=request.user,c_id=channel_obj,typ=typ,description=comment,creation_datetime=local,ct_id_reply_to=ct_obj)
-			send_mail = Channel_threads.objects.filter(ct_id_reply_to=ct_obj) 
-			send_mail.append(Channel_threads.objects.get(ct_id=ct_obj))
 			channel_thread_obj.save()
-			for each in send_mail:
-				send_notification(each.u_id)
+			# send_mail = Channel_threads.objects.filter(ct_id_reply_to=ct_obj) 
+			# send_mail = set([user.u_id.email for user in send_mail])
+			# send_mail.add(ct_obj.u_id.email)
+			# message = " There is a new reply in the channel {} where you have commented earlier.".format(channel_obj.name)
+			# for each in send_mail:
+			# 	Send_Email(each, "Got a Reply",message)
+			all_subscribers = Subscription.objects.filter(c_id=channel_obj)
+			message = " There is a new reply in the channel {} where you have commented earlier.".format(channel_obj.name)
+			for each_subscriber in all_subscribers:
+				Send_Email(each_subscriber.u_id.email, "New Reply in",message)
+
 			return redirect(channel,channel_obj.c_id)
 	return redirect(index)
 
