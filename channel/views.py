@@ -12,6 +12,7 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.paginator import Paginator
 
 def to_dict(instance):
     opts = instance._meta
@@ -64,12 +65,20 @@ def my_channels(request):
 @login_required(login_url='/user_login')
 def index(request):
 	Channels = Channel.objects.all()
-	mostsubs_Channels=[]
-	for each in Channels:
-		if each.no_of_subscriptions>0:
-			mostsubs_Channels.append(each)
-	print(mostsubs_Channels)
-	mostsubs_Channels.sort(key=lambda d:d.no_of_subscriptions,reverse=True)
+	page = request.GET.get('page', 1)
+	paginator = Paginator(Channels, 1)
+	try:
+		mostsubs_Channels = paginator.page(page)
+	except PageNotAnInteger:
+		mostsubs_Channels = paginator.page(1)
+	except EmptyPage:
+		mostsubs_Channels = paginator.page(paginator.num_pages)
+	# mostsubs_Channels=[]
+	# for each in Channels:
+	# 	if each.no_of_subscriptions>0:
+	# 		mostsubs_Channels.append(each)
+	# print(mostsubs_Channels)
+	# mostsubs_Channels.sort(key=lambda d:d.no_of_subscriptions,reverse=True)
 	context = {
 	            'channels' : mostsubs_Channels
 	}
