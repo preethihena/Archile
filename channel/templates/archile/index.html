@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 <div style="width: 80%;margin: auto;">
-	
 	<br>
 	<div  style="background-color: #ebf3f3;padding: 20px;border-radius: 10px;"> 
 		<blockquote class="blockquote" style="margin: 0px;">
@@ -29,6 +28,7 @@
 		</ul>
 	</div>
 </div>
+
 <div class="container">
 		<div class="col-md-12 search_results">
 			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
@@ -131,4 +131,5 @@
 		    
 		</div>
 	</div>
+
 {% endblock %}
