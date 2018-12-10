@@ -137,6 +137,10 @@ class Post(models.Model):
 	def myfiles(self):
 		return Post_files.objects.all().filter(p_id=self.p_id)
 	
+	def no_of_files(self):
+		print("ssdf")
+		return len(self.myfiles())
+
 class Post_files(models.Model):
 	pf_id = models.AutoField(primary_key = True)
 	p_id = models.ForeignKey(Post,on_delete=models.CASCADE)

@@ -88,7 +88,7 @@ def my_channels(request):
 def index(request):
 	Channels = Channel.objects.all()
 	page = request.GET.get('page', 1)
-	paginator = Paginator(Channels, 1)
+	paginator = Paginator(Channels, 3)
 	try:
 		mostsubs_Channels = paginator.page(page)
 	except PageNotAnInteger:
