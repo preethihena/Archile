@@ -11,6 +11,7 @@ from django.views.decorators.cache import cache_control
 import os
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.sites.shortcuts import get_current_site
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -29,7 +30,6 @@ def to_dict(instance):
             data[f.name] = f.value_from_object(instance)
     return data
 
-
 def Send_Email(to_address,subject, text):
 
 	message = MIMEMultipart()
@@ -47,6 +47,19 @@ def Send_Email(to_address,subject, text):
 	smtpObj.quit()
 
 #Send_Email("krishnakumar.d16@iiits.in", "Welcome to Archile!","<i>Archile</i> is an online platform where you can find and share valuable resources. Everything on <i>Archile</i> is very simple.<br><ul><li><b><i>Search</i></b> for resources by providing keywords.</li><li><b><i>Like</i></b> resources which you think are relevant and useful in particular channels. If not, <b><i>Dislike</i></b> them.</li><li><b><i>Report</i></b> resources you find disturbing and irrelevant.</li><li><b><i>Create Channels</i></b> and <b><i>Create Posts</i></b> to share your knowledge.</li><li>Add relevant <i><b>tags</b></i> while creating channels and posts to make the resources easier to search. </li></ul>Thank you for using <i>Archile</i>.")
+
+#'http://34.222.42.228/archile/auth/user/'
+#'http://'+current_site.domain+'/archile/auth/user/'
+def change_call_back(request):
+	current_site = get_current_site(request)
+	payload = {'clientId':'5bd17f19d9aa55001529f8fb', 'secret':"6d5fc80be2b62f1eb699f1be6bfc44394de1e2e18f7fd825a7cf045e9825b5ac2d5661b924965f49b97d6827a5bbd298e1549660d43ea70c5830af0241ff3482",
+'url':'http://'+current_site.domain+'/archile/auth/user/'
+}
+	url = "https://serene-wildwood-35121.herokuapp.com/oauth/changeUrl"
+	print(payload)
+	response=requests.post(url, data=payload)
+	data=response.json()
+	print(data)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
@@ -87,6 +100,7 @@ def index(request):
 
 
 def user_login(request):
+	# change_call_back(request)
 	return render(request,'archile/login.html')
 
 #user logout
