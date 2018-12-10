@@ -63,7 +63,18 @@ def my_channels(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
 def index(request):
-	return render(request,'archile/index.html')
+	Channels = Channel.objects.all()
+	mostsubs_Channels=[]
+	for each in Channels:
+		if each.no_of_subscriptions>0:
+			mostsubs_Channels.append(each)
+	print(mostsubs_Channels)
+	mostsubs_Channels.sort(key=lambda d:d.no_of_subscriptions,reverse=True)
+	context = {
+	            'channels' : mostsubs_Channels
+	}
+
+	return render(request,'archile/index.html',context)
 
 
 def user_login(request):
@@ -268,6 +279,7 @@ def save_post(request):
 				file_data[file] = request.FILES.getlist(file)
 
 		utc = arrow.utcnow()
+		print(utc)
 		local = utc.to('Asia/Kolkata')
 		post_object = Post(u_id=user,c_id=ch,description=description,title=title,creation_datetime=local)
 		post_object.save()
@@ -821,7 +833,11 @@ def add_reply(request,place,any_id):
 			ct_obj = Channel_threads.objects.get(ct_id=any_id)
 			channel_obj = ct_obj.c_id
 			channel_thread_obj = Channel_threads(u_id=request.user,c_id=channel_obj,typ=typ,description=comment,creation_datetime=local,ct_id_reply_to=ct_obj)
+			send_mail = Channel_threads.objects.filter(ct_id_reply_to=ct_obj) 
+			send_mail.append(Channel_threads.objects.get(ct_id=ct_obj))
 			channel_thread_obj.save()
+			for each in send_mail:
+				send_notification(each.u_id)
 			return redirect(channel,channel_obj.c_id)
 	return redirect(index)
 
