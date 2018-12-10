@@ -12,6 +12,10 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 def to_dict(instance):
     opts = instance._meta
     data = {}
@@ -26,6 +30,23 @@ def to_dict(instance):
     return data
 
 
+def Send_Email(to_address,subject, text):
+
+	message = MIMEMultipart()
+	message['From'] = "iiits.archile@gmail.com"
+	message['To'] = to_address
+
+	message["Subject"] = subject
+	body = text
+	message.attach(MIMEText(body, 'html'))
+	password = "Archile!23"
+
+	smtpObj = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+	smtpObj.login(message['From'], password)
+	smtpObj.sendmail(message['From'], message['To'], message.as_string())         
+	smtpObj.quit()
+
+#Send_Email("krishnakumar.d16@iiits.in", "Welcome to Archile!","<i>Archile</i> is an online platform where you can find and share valuable resources. Everything on <i>Archile</i> is very simple.<br><ul><li><b><i>Search</i></b> for resources by providing keywords.</li><li><b><i>Like</i></b> resources which you think are relevant and useful in particular channels. If not, <b><i>Dislike</i></b> them.</li><li><b><i>Report</i></b> resources you find disturbing and irrelevant.</li><li><b><i>Create Channels</i></b> and <b><i>Create Posts</i></b> to share your knowledge.</li><li>Add relevant <i><b>tags</b></i> while creating channels and posts to make the resources easier to search. </li></ul>Thank you for using <i>Archile</i>.")
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
@@ -288,6 +309,8 @@ def save_post(request):
 			for file in file_data[file_name]:
 				pf_obj=Post_files(p_id=post_object,file_type=file_name,file=file,upload_datetime=local)
 				pf_obj.save()
+
+
 
 		return redirect(channel,c_id)
 	return render(request, 'archile/channel.html')
