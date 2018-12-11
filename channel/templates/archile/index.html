@@ -17,19 +17,8 @@
 	<style>
 		ul{list-style-type: circle;}
 	</style>
-	<div style="width: 50%;margin:auto;">
-		<i>Archile</i> is a online platform where you can find and share valuable resources. Everything on <i>Archile</i> is as simple as ABC.<br>
-		<ul>
-			<li><b><i>Search</i></b> for resources by providing keywords.</li>
-			<li><b><i>Like</i></b> resources which you think are relevant and useful in particular channels. If not, <b><i>Dislike</i></b> them.</li>
-			<li><b><i>Report</i></b> resources you find disturbing and irrelevant.</li>
-			<li><b><i>Create Channels</i></b> and <b><i>Create Posts</i></b> to share your knowledge.</li> 
-			<li>Add relevant <i><b>tags</b></i> while creating channels and posts to make the resources easier to search. </li>
-		</ul>
-	</div>
-</div>
-
-<div class="container">
+	
+	<div class="container">
 		<div class="col-md-12 search_results">
 			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
 			<div class="row">
@@ -38,8 +27,9 @@
 				</div>
 			</div>
 			{% endif %}
+			<table class="table">
 			{% for i in channels %}
-		    <div class="row">
+		    <!--div class="row">
 		    	<div class="col-md-2">
 		    		<img class="channel_logo" src="{{i.logo.url}}">
 		    	</div>
@@ -68,9 +58,29 @@
 		    		</div>
 		    	</div>
 		    </div>
-		    <hr>
+		    <hr-->
+		    <tr>
+	    			<td style="padding: 20px;"><img class="channel_logo" src="{{i.logo.url}}"></td>
+	    			<td style="vertical-align: middle;">
+	    				<span style="font-size: 28px;color: black;"><a style="text-decoration: none;" href="{% url 'channel' c_id=i.c_id %}">{{i.name}}</a></span>
+	    				<span style="font-size: 14px;color: #aaa;padding-top: -15px;">{{i.no_of_subscriptions}} subscriptions | Created on: {{i.creation_datetime}}</span>
+	    				<br>
+			    		{{i.description}}
+	    			</td>
+	    			<td>
+	    				{% if i.subs %}
+	    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-muted" style="margin-top:1.5rem;">Unsubscribe</button>
+		    			</a>
+		    			{% else %}
+		    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-danger" style="margin-top:1.5rem;">Subscribe</button>
+		    			</a>
+		    			{% endif %}
+	    			</td>
+	    		</tr>
 		    {% endfor %}
-		    
+		    </table>
 			  <!-- ul class="pagination">
 			    <li class="page-item">
 			      <a class="page-link" href="#" aria-label="Previous">
@@ -91,7 +101,7 @@
 			</nav> -->
 		    {% if channels.has_other_pages %}
 		    <nav aria-label="Page navigation example">
-			  <ul class="pagination">
+			  <ul class="pagination justify-content-center">
 			    {% if channels.has_previous %}
 			      <li class="page-item">
 			      	<a href="?page={{ channels.previous_page_number }}" class="page-link" aria-label="Previous">
@@ -131,5 +141,6 @@
 		    
 		</div>
 	</div>
+</div>
 
 {% endblock %}

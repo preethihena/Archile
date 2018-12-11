@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 	<div class="container">
-		<div class="col-md-12 search_results">
+		<div class="col-md-12">
 			{% if channels|length|add:0 == 0 and posts|length|add:0 == 0 %}
 			<div class="row">
 				<div class="col-md-12" style="margin-top: 2.5rem;">
@@ -10,41 +10,36 @@
 				</div>
 			</div>
 			{% endif %}
+
+			<table class="table">
 			{% for i in channels %}
-		    <div class="row">
-		    	<div class="col-md-2">
-		    		<img class="channel_logo" src="{{i.logo.url}}">
-		    	</div>
-		    	
-		    	<div class="col-md-7" style="margin-top: 2.5rem;">
-		    		<h3><a href="{% url 'channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">{{i.name}}</a></h3></center>
-		    		<div class="channel_des">
-		    			Subscriptions: {{i.no_of_subscriptions}}
-		    			<br>
-		    			{{i.description}}
-		    		</div>
-		    	</div>
-		    	<div class="col-md-3" style="margin-top: 2.5rem;">
-		    		<div class="row" style="text-align: center;margin-top: 2rem;">
-		    			<div class="col-md-8">
-		    				{% if i.subs %}
-		    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
-			    			</a>
-			    			{% else %}
-			    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Subscribe</button>
-			    			</a>
-			    			{% endif %}
-		    			</div>
-		    		</div>
-		    	</div>
-		    </div>
-		    <hr>
+	    		<tr>
+	    			<td style="padding: 20px;"><img class="channel_logo" src="{{i.logo.url}}"></td>
+	    			<td style="vertical-align: middle;">
+	    				<span style="font-size: 28px;color: black;"><a style="text-decoration: none;" href="{% url 'channel' c_id=i.c_id %}">{{i.name}}</a></span>
+	    				<span style="font-size: 14px;color: #aaa;padding-top: -15px;">{{i.no_of_subscriptions}} subscriptions | Created on: {{i.creation_datetime}}</span>
+	    				<br>
+			    		{{i.description}}
+	    			</td>
+	    			<td>
+	    				{% if i.subs %}
+	    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-muted" style="margin-top:1.5rem;">Unsubscribe</button>
+		    			</a>
+		    			{% else %}
+		    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-danger" style="margin-top:1.5rem;">Subscribe</button>
+		    			</a>
+		    			{% endif %}
+	    			</td>
+	    		</tr>
 		    {% endfor %}
+	    	</table>
+
+		    <!-- Code for Posts --->
 		    {% if channels.has_other_pages %}
 		    <nav aria-label="Page navigation example">
-			  <ul class="pagination">
+			  <ul class="pagination justify-content-center">
 			    {% if channels.has_previous %}
 			      <li class="page-item">
 			      	<a href="?page={{ channels.previous_page_number }}&search_query={{query}}&search_type=Channel" class="page-link" aria-label="Previous">
@@ -81,23 +76,25 @@
 			    {% endif %}
 			  </ul>
 			{% endif %}
+
 		    {% for i in posts %}
-		    <div class="row">
-		    	<div class="col-md-2">
-		    		<img class="post_image" src="http://rs775.pbsrc.com/albums/yy35/PhoenyxStar/link-1.jpg~c200">
+		    <div class="card">
+		    	<div class="card-header">
+		    		<span style="font-size: 25px;text-decoration: none;color: black;"><a href="{% url 'post' p_id=i.p_id %}" style="text-decoration: none;color: black;">{{i.title}}</a></span>
+		    		<span style="margin-left: 20px;"><i class="far fa-thumbs-up"></i> {{i.no_of_likes}}</span>
+		    		<span style="margin-left: 20px;"><i class="far fa-thumbs-down"></i> {{i.no_of_dislikes}}</span>
+		    		<span style="margin-left: 20px;"><i class="far fa-file-alt"></i> {{i.no_of_files}}</span>
+		    		<span style="float: right;margin-top: 5px;"> Channel Name</span>
 		    	</div>
-		    	<div class="col-md-7" style="margin-top: 2.5rem;">
-		    		<h3><a href="{% url 'post' p_id=i.p_id %}" style="text-decoration: none;color: black;">{{i.title}}</a></h3></center>
-		    		<div class="channel_des">
-		    			{{i.description}}
-		    		</div>
+				<div class="card-body">
+	    			{{i.description}}
 		    	</div>
 		    </div>
-		    <hr>
+		    <br>
 		    {% endfor %}
 		    {% if posts.has_other_pages %}
 		    <nav aria-label="Page navigation example">
-			  <ul class="pagination">
+			  <ul class="pagination justify-content-center">
 			    {% if posts.has_previous %}
 			      <li class="page-item">
 			      	<a href="?page={{ posts.previous_page_number }}&search_query={{query}}&search_type=Post" class="page-link" aria-label="Previous">
