@@ -87,8 +87,19 @@ def my_channels(request):
 @login_required(login_url='/user_login')
 def index(request):
 	Channels = Channel.objects.all()
+	user = request.user
+	Channels_all=[]
+	for each in Channels:
+		data = to_dict(each)
+		try:
+			subs = Subscription.objects.get(c_id=data['c_id'],u_id=user)
+			data['subs'] = True
+		except:
+			data['subs'] = False
+		
+		Channels_all.append(data)
 	page = request.GET.get('page', 1)
-	paginator = Paginator(Channels, 3)
+	paginator = Paginator(Channels_all, 3)
 	try:
 		mostsubs_Channels = paginator.page(page)
 	except PageNotAnInteger:
@@ -155,7 +166,7 @@ def search(request):
 						Channels_all.append(data)
 			Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
 			#print(Channels_all)
-			paginator = Paginator(Channels_all, 2)
+			paginator = Paginator(Channels_all, 4)
 			try:
 				Channels_all = paginator.page(page)
 			except PageNotAnInteger:
@@ -176,7 +187,7 @@ def search(request):
 						ps_set.add(data['p_id'])
 						Posts_all.append(data)
 			Posts_all=sorted(Posts_all,key=lambda d:[-d['no_of_likes'],d['no_of_dislikes'],d['creation_datetime']])
-			paginator = Paginator(Posts_all, 2)
+			paginator = Paginator(Posts_all, 4)
 			try:
 				Posts_all = paginator.page(page)
 			except PageNotAnInteger:
@@ -458,7 +469,7 @@ def subscribe_channel(request,c_id):
 
 	# Send_Email(user.email, "Subscribed!",message)
 
-	return redirect(my_channels)
+	return redirect(my_subscriptions)
 
 
 
