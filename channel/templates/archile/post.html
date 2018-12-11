@@ -3,13 +3,14 @@
 {% block content %}
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-<div class="container-fluid" style="padding-left: 1.5rem;padding-top: 1rem;">
+<div class="container-fluid" style="padding-left: 1.5rem;">
 	<div class="col-md-12">
-		<ol class="breadcrumb breadcrumb-right-arrow">
+		<ol class="breadcrumb breadcrumb-right-arrow" style="margin: 0px;">
 	  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
 	  		<li class="breadcrumb-item"><a href="{% url 'channel' c_id=post.c_id.c_id %}" style="text-decoration: none;">{{post.c_id.name}}</a></li>
 		    <li class="breadcrumb-item active" aria-current="page">{{post.title|title}}</li>
 		</ol>
+		<hr style="margin-top: 0px;">
 		<div class="row">
     		<div class="col-md-12" style="padding-left: 1.8em;">
    				<h3>{{post.title|title}}</h3>
@@ -17,29 +18,29 @@
     			
     	</div>
     	<div class="row">
-    		<div class="col-sm-12" style="padding-left: 1.8em;">
+    		<div class="col-sm-12" style="padding-left: 1.8em; font-size: 15px;">
    				<div class="row">
    					<div class="col-md-5">
    						{% if post.report_status != True %}
-   						<a href="{% url 'actions' type_of='posts' action=1 any_id=post.p_id %}?next=post">
+   						<a href="{% url 'actions' type_of='posts' action=1 any_id=post.p_id %}?next=post" style="text-decoration: none;">
    						{%endif%}
    						{% if post.ld_status == None or post.ld_status == False %}
    						<i class="far fa-thumbs-up fa-lg"></i>
    						{% elif post.ld_status == True %}<i style="color:#0a0;" class="far fa-thumbs-up fa-lg"></i>{% endif %} {{post.no_of_likes}}
    						{% if post.report_status != True %}</a>{%endif%}
-   						<a href="{% url 'actions' type_of='posts' action=0 any_id=post.p_id %}?next=post">
+   						<a href="{% url 'actions' type_of='posts' action=0 any_id=post.p_id %}?next=post" style="text-decoration: none;">
    						{% if post.ld_status == None or post.ld_status == True %}<i style="padding-left: 20px;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
    						{% elif post.ld_status == False %}<i style="padding-left: 20px; color:#a00;" class="far fa-thumbs-down fa-lg"></i> {{post.no_of_dislikes}}
    						{% endif %}
    						</a>
    						{%if post.report_status == None or post.report_status == False %}
-   						<a href="{% url 'actions' type_of='posts' action=2 any_id=post.p_id  %}?next=post"><i class="fas fa-bug fa-lg" style="padding-left: 20px;"></i>{%elif post.report_status == True %}<a href="{% url 'actions' type_of='posts' action=3 any_id=post.p_id %}?next=post"><i style="color: red;padding-left: 20px;" class="fas fa-bug fa-lg "></i>{%endif%}  {{post.no_of_reports}}</a>
+   						<a href="{% url 'actions' type_of='posts' action=2 any_id=post.p_id  %}?next=post" style="text-decoration: none;"><i class="far fa-flag fa-lg" style="padding-left: 20px;"></i>{%elif post.report_status == True %}<a href="{% url 'actions' type_of='posts' action=3 any_id=post.p_id %}?next=post"><i style="color: #8B008B;padding-left: 20px;" class="far fa-flag fa-lg "></i>{%endif%}  {{post.no_of_reports}}</a>
 
    					</div>
    					<div class="col-md-4" style="text-align: right;">
-   						<a href="{% url 'edit_post' p_id=post.p_id %}"><i  class="fas fa-pencil-alt fa-lg" ></i> Edit</a>
+   						<a href="{% url 'edit_post' p_id=post.p_id %}" style="text-decoration: none;"><i  class="fas fa-pencil-alt fa-lg" ></i> Edit</a>
    						<i style="padding-left: 20px;" class="fas fa-user-circle fa-lg"></i> {{post.c_id.u_id.first_name}} {{post.c_id.u_id.last_name}}
-   						<span>| 23 October 2018</span>
+   						<span>| {{post.creation_datetime}}</span>
    					</div>
 				</div>
 				<div class="row">

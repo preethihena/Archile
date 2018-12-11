@@ -27,8 +27,9 @@
 				</div>
 			</div>
 			{% endif %}
+			<table class="table">
 			{% for i in channels %}
-		    <div class="row">
+		    <!--div class="row">
 		    	<div class="col-md-2">
 		    		<img class="channel_logo" src="{{i.logo.url}}">
 		    	</div>
@@ -57,9 +58,29 @@
 		    		</div>
 		    	</div>
 		    </div>
-		    <hr>
+		    <hr-->
+		    <tr>
+	    			<td style="padding: 20px;"><img class="channel_logo" src="{{i.logo.url}}"></td>
+	    			<td style="vertical-align: middle;">
+	    				<span style="font-size: 28px;color: black;"><a style="text-decoration: none;" href="{% url 'channel' c_id=i.c_id %}">{{i.name}}</a></span>
+	    				<span style="font-size: 14px;color: #aaa;padding-top: -15px;">{{i.no_of_subscriptions}} subscriptions | Created on: {{i.creation_datetime}}</span>
+	    				<br>
+			    		{{i.description}}
+	    			</td>
+	    			<td>
+	    				{% if i.subs %}
+	    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-muted" style="margin-top:1.5rem;">Unsubscribe</button>
+		    			</a>
+		    			{% else %}
+		    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}">
+		    				<button type="button" class="btn btn-danger" style="margin-top:1.5rem;">Subscribe</button>
+		    			</a>
+		    			{% endif %}
+	    			</td>
+	    		</tr>
 		    {% endfor %}
-		    
+		    </table>
 			  <!-- ul class="pagination">
 			    <li class="page-item">
 			      <a class="page-link" href="#" aria-label="Previous">

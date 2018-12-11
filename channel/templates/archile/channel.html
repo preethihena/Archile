@@ -3,76 +3,71 @@
 {% block content %}
 	<div class="container-fluid">
 		<div class="col-md-12">
-		    <div class="row">
-		    	<div class="col-md-2">
-		    		{%if channel.logo%}
-		    		<img class="channel_logo" src="{{ channel.logo.url }}">
-		    		{%else%}
-		    		<img class="channel_logo" src="{% static 'archile/dummy_channel.jpg' %}">
-		    		{%endif%}
-		    	</div>
-		    	<div class="col-md-5" style="margin-top: 2.5rem;">
-		    		<h3>{{channel.name}}</h3>
-		    		<div class="channel_des">
-		    			Subscribers: {{channel.no_of_subscriptions}}
-		    			<br>
-		    			No of Reports : {{channel.no_of_reports}}
-		    			<br>
-		    			{{channel.description}}
-		    		</div>
-		    	</div>
-		    	<div class="col-md-5" style="margin-top: 2.5rem;">
-		    		<div class="row">
-		    			<div class="col-md-4">
-		    				<a href="{% url 'edit_channel' c_id=channel.c_id %}">
-			    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
-			    					<i class="col fas fa-pencil-alt fa-lg" ></i>
-			    				</div>
-			    				<div class="row" style="text-align: center;padding-top: 2px;">
-			    					<span class="col" style="font-weight: bolder;">Edit Channel</span>
-			    				</div>
-			    			</a>
-		    			</div>
-		    			<div class="col-md-4">
-		    				<a href="{% url 'create_post' c_id=channel.c_id %}">
+		    <table class="table">
+		    	<tr>
+		    		<td style="padding: 20px; width: 100px;">
+		    			{%if channel.logo%}
+			    		<img class="channel_logo" src="{{ channel.logo.url }}">
+			    		{%else%}
+			    		<img class="channel_logo" src="{% static 'archile/dummy_channel.jpg' %}">
+			    		{%endif%}
+			    		
+		    		</td>
+		    		<td style="vertical-align: middle;">
+		    			<span style="font-size: 28px;color: black;"><a style="text-decoration: none;" href="{% url 'channel' c_id=channel.c_id %}">{{channel.name}}</a></span><br>
+	    				<span style="font-size: 14px;color: #aaa;padding-top: -15px;">{{channel.no_of_subscriptions}} subscriptions</span>
+	    				<span style="font-size: 14px;color: #aaa;padding-top: -15px;"> | Created on: {{channel.creation_datetime}}</span>
+		    		</td>
+		    		<td style="vertical-align: middle;">
+		    			<a href="{% url 'edit_channel' c_id=channel.c_id %}" style="text-decoration: none;">
+		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
+		    					<i class="col fas fa-pencil-alt fa-lg" ></i>
+		    				</div>
+		    				<div class="row" style="text-align: center;padding-top: 2px;">
+		    					<span class="col">Edit Channel</span>
+		    				</div>
+		    			</a>
+		    		</td>
+		    		<td style="vertical-align: middle;">
+		    			<a href="{% url 'create_post' c_id=channel.c_id %}" style="text-decoration: none;">
 		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
 		    					<i class="col fas fa-plus-circle fa-lg" ></i>
 		    				</div>
 		    				<div class="row" style="text-align: center;">
-		    					<span class="col" style="font-weight: bolder;">Create Post</span>
+		    					<span class="col">Create Post</span>
 		    				</div>
-		    				</a>
-		    			</div>
-		    			<div class="col-md-4">
-		    				<a href="{% url 'report_channel' c_id=channel.c_id %}">
+		    			</a>
+		    		</td>
+		    		<td style="vertical-align: middle;">
+		    			<a href="{% url 'report_channel' c_id=channel.c_id %}" style="text-decoration: none;">
 		    				<div class="row" style="text-align: center;margin-bottom: 1rem;">
 		    				{%if channel.report_status != True %}
-		    					<i class="col fas fa-bug fa-lg" ></i>
+		    					<i class="col far fa-flag fa-lg"></i>
 		    				{% else %}
-		    					<i class="col fas fa-bug fa-lg" style="color: red;"></i>
+		    					<i class="col fas fa-flag fa-lg" style="color: red;"></i>
 		    				{%endif%}
 		    				</div>
 		    				<div class="row" style="text-align: center;">
-		    					<span class="col" style="font-weight: bolder;">Report Channel</span>
+		    					<span class="col">Report Channel</span>
 		    				</div>
-		    				</a>
-		    			</div>
-		    		</div>
-		    		<div class="row" style="text-align: center;margin-top: 2rem;">
-		    			<div class="col-md-8">
-		    				{% if subs %}
-		    				<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
-			    			</a>
-			    			{% else %}
-			    			<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
-			    				<button type="button" class="btn btn-danger">Subscribe</button>
-			    			</a>
-			    			{% endif %}
-		    			</div>
-		    		</div>
-		    	</div>
-		    </div>
+		    			</a>
+		    		</td>
+		    		<td style="vertical-align: middle;">
+	    				{% if subs %}
+	    				<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
+		    				<button type="button" class="btn btn-muted">Unsubscribe</button>
+		    			</a>
+		    			{% else %}
+		    			<a href="{% url 'subscribe_channel' c_id=channel.c_id %}" style="text-decoration: none;color: black;">
+		    				<button type="button" class="btn btn-danger">Subscribe</button>
+		    			</a>
+		    			{% endif %}
+		    		</td>
+		    	</tr>
+		    	<tr>
+		    		<td colspan="6">{{channel.description}}</td>
+		    	</tr>
+		    </table>
 		</div>
 	</div>
 	<hr>
@@ -82,21 +77,37 @@
 		    <li class="nav-item">
 		      <a class="nav-link active" data-toggle="tab" href="#home">Posts</a>
 		    </li>
+
+		    {% if docs %}
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu1">Docs</a>
 		    </li>
+		    {% endif %}
+
+		    {% if images %}
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu2">Images</a>
 		    </li>
+		    {% endif %}
+
+		    {% if audio %}
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu3">Audios</a>
 		    </li>
+		    {% endif %}
+
+		    {% if video %}
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu4">Videos</a>
 		    </li>
+		    {% endif %}
+
+		    {% if archives %}
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu5">Archives</a>
 		    </li>
+		    {% endif %}
+
 		    <li class="nav-item">
 		      <a class="nav-link" data-toggle="tab" href="#menu6">Forum</a>
 		    </li>
@@ -106,6 +117,7 @@
 	  <div class="tab-content">
 	    <div id="home" class="container tab-pane active"><br>
 	      <div class="row">
+	      	{% if posts %}
 	      	<table class="table">
         		<tr>
         			<th>Title</th>
@@ -148,6 +160,9 @@
 			    </tr>
 			    {% endfor %}
 			</table>
+			{% else %}
+			<p>This channel doesn't contain any posts yet.</p>
+			{% endif %}
 	      </div>
 	    </div>
 	   

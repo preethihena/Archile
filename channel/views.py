@@ -57,10 +57,10 @@ def change_call_back(request):
 'url':'http://'+current_site.domain+'/archile/auth/user/'
 }
 	url = "https://serene-wildwood-35121.herokuapp.com/oauth/changeUrl"
-	print(payload)
+	#print(payload)
 	response=requests.post(url, data=payload)
 	data=response.json()
-	print(data)
+	#print(data)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
@@ -140,7 +140,7 @@ def search(request):
 			Ch=[]
 			for word in text:
 				Ch.append(Channels.filter(name__icontains=word))
-			print(Ch)
+			#print(Ch)
 			ch_set = set()
 			for chan in Ch:
 				for each in chan:
@@ -154,7 +154,7 @@ def search(request):
 						ch_set.add(data['c_id'])
 						Channels_all.append(data)
 			Channels_all=sorted(Channels_all,key=lambda d:-d['no_of_subscriptions'])
-			print(Channels_all)
+			#print(Channels_all)
 			paginator = Paginator(Channels_all, 2)
 			try:
 				Channels_all = paginator.page(page)
@@ -293,7 +293,7 @@ def save_post(request):
 				file_data[file] = request.FILES.getlist(file)
 
 		utc = arrow.utcnow()
-		print(utc)
+		#print(utc)
 		local = utc.to('Asia/Kolkata')
 		post_object = Post(u_id=user,c_id=ch,description=description,title=title,creation_datetime=local)
 		post_object.save()
@@ -345,7 +345,7 @@ def edit_post(request,p_id):
 		for pf_id in files:
 			postf_obj=Post_files.objects.get(pf_id=pf_id)
 			postf_obj.status=False
-			print(postf_obj.file)
+			#print(postf_obj.file)
 			postf_obj.save()
 
 		#eedit tags
@@ -547,7 +547,7 @@ def report_channel(request, c_id):
 	channel_object = Channel.objects.get(c_id=c_id)
 	try:
 		channel_act_obj = channel_actions.objects.get(c_id = channel_object,u_id=user)
-		print(channel_act_obj.report_status)
+		#print(channel_act_obj.report_status)
 		if channel_act_obj.report_status == True:
 			channel_act_obj.report_status = False
 			channel_object.no_of_reports-=1
@@ -878,14 +878,14 @@ def add_reply(request,place,any_id):
 @login_required(login_url='/user_login')
 def post_thread_action(request,pt_id,typ):
 	pt_obj = Post_threads.objects.get(pt_id=pt_id)
-	print(pt_obj.pt_id)
+	#print(pt_obj.pt_id)
 	user = request.user
 	typ = int(typ)
 	utc = arrow.utcnow()
 	local = utc.to('Asia/Kolkata')
 	try:
 		pt_act_obj = post_thread_actions.objects.get(u_id=user,pt_id=pt_obj)
-		print(pt_act_obj.ld_status)
+		#print(pt_act_obj.ld_status)
 		if typ == 1:
 			if pt_act_obj.ld_status == 1:
 				pt_act_obj.ld_status = None
