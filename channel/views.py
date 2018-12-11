@@ -454,9 +454,9 @@ def subscribe_channel(request,c_id):
 			Chan_obj.no_of_subscriptions = count + 1
 		subs_obj.save()
 	Chan_obj.save()
-	message = "You are Subscribeed to the channel {}".format(Chan_obj)
+	# message = "You are Subscribeed to the channel {}".format(Chan_obj)
 
-	Send_Email(user.email, "Subscribed!",message)
+	# Send_Email(user.email, "Subscribed!",message)
 
 	return redirect(my_channels)
 
