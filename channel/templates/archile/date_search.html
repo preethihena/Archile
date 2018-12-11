@@ -1,0 +1,40 @@
+{% extends 'archile/base.html' %}
+{% load static %}
+{% block content %}
+<div style="padding-left: 1.5rem;">
+	<ol class="breadcrumb breadcrumb-right-arrow" style="padding: 0px;">
+  		<li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
+	    <li class="breadcrumb-item active" aria-current="page">Search Channel</li>
+	</ol>
+	<hr>
+	<div class="col-md-12">
+	    <div class="row">
+	        <div class="col-sm-8" style="padding-top: 0.5rem; ">
+	            <form method="POST" enctype="multipart/form-data" action="{% url 'channel_dates' %}">
+	            	{% csrf_token %}
+				  <div class="form-group row">
+				    <label for="validationCustom01" class="col-sm-3 col-form-label">Start Date</label>
+				    <div class="col-sm-3">
+				      <input type="date" placeholder="org_date" class="form-control mb-2" id="inlineFormInput" name="start_date" required>
+				    </div>
+				  </div>
+				  <div class="form-group row">
+				    <label for="validationCustom01" class="col-sm-3 col-form-label">End Date</label>
+				    <div class="col-sm-3">
+				      <input type="date" placeholder="org_date" class="form-control mb-2" id="inlineFormInput" name="end_date" required>
+				    </div>
+				  </div>
+				  <div class="form-group row">
+				    <label for="ChannelName" class="col-sm-3 col-form-label"></label>
+				    <div class="col-sm-7">
+				  		<button type="submit" class="btn btn-primary">Submit</button>
+				    </div>
+				  </div>
+				</form>
+	        </div>
+	  
+	    </div>
+	</div>
+</div>
+
+{% endblock %}

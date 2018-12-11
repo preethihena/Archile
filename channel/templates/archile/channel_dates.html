@@ -1,0 +1,82 @@
+{% extends 'archile/base.html' %}
+{% load static %}
+{% block content %}
+	<div class="container">
+		<div class="col-md-12 search_results">
+			<form method="GET" action="{% url 'channel_sort_by' %}">
+	        	{% csrf_token %}
+			  <div class="form-group row">
+			    <div class="col-sm-3">
+			      <input type="text" placeholder="org_date" class="form-control mb-2" id="inlineFormInput" name="start_date" hidden value="{{start_date}}">
+			    </div>
+			  </div>
+			  <div class="form-group row">
+			    <div class="col-sm-3">
+			      <input type="text" placeholder="org_date" class="form-control mb-2" id="inlineFormInput" name="end_date" hidden value="{{end_date}}">
+			    </div>
+			  </div>
+			  <div class="form-group row">
+			    <div class="col-sm-3">
+			      <input type="text" placeholder="org_date" class="form-control mb-2" id="inlineFormInput" name="end_date" hidden value="{{end_date}}">
+			    </div>
+			  </div>
+			  <div class="form-group row">
+				  <label for="validationCustom01" class="col-sm-3 col-form-label">Sort By</label>
+				  <div class="col-sm-3">
+
+				   <select class="form-control" id="from_mail" placeholder="Sort By" name="order">
+			        <option value="no_of_reports">reports</option>
+			        <option value="no_of_subscriptions">subscriptions</option>
+			        </select>
+			    </div>
+			</div>
+			  <div class="form-group row">
+			    <label for="ChannelName" class="col-sm-3 col-form-label"></label>
+			    <div class="col-sm-7">
+			  		<button type="submit" class="btn btn-primary">Submit</button>
+			    </div>
+			  </div>
+			</form>
+			{% if channels|length|add:0 == 0 and post|length|add:0 == 0 %}
+			<div class="row">
+				<div class="col-md-12" style="margin-top: 2.5rem;">
+				<h4>No Results</h4>
+				</div>
+			</div>
+			{% endif %}
+			{% for i in channels %}
+		    <div class="row">
+		    	<div class="col-md-2">
+		    		<img class="channel_logo" src="{{i.logo.url}}">
+		    	</div>
+		    	
+		    	<div class="col-md-7" style="margin-top: 2.5rem;">
+		    		<h3><a href="{% url 'channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">{{i.name}}</a></h3></center>
+		    		<div class="channel_des">
+		    			Subscriptions: {{i.no_of_subscriptions}}
+		    			<br>
+		    			{{i.description}}
+		    		</div>
+		    	</div>
+		    	<div class="col-md-3" style="margin-top: 2.5rem;">
+		    		<div class="row" style="text-align: center;margin-top: 2rem;">
+		    			<div class="col-md-8">
+		    				{% if i.subs %}
+		    				<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">Unsubscribe</button>
+			    			</a>
+			    			{% else %}
+			    			<a href="{% url 'subscribe_channel' c_id=i.c_id %}" style="text-decoration: none;color: black;">
+			    				<button type="button" class="btn btn-danger">Subscribe</button>
+			    			</a>
+			    			{% endif %}
+		    			</div>
+		    		</div>
+		    	</div>
+		    </div>
+		    <hr>
+		    {% endfor %}
+		</div>
+	</div>
+	
+{% endblock %}
