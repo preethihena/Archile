@@ -138,7 +138,6 @@ class Post(models.Model):
 		return Post_files.objects.all().filter(p_id=self.p_id)
 	
 	def no_of_files(self):
-		print("ssdf")
 		return len(self.myfiles())
 
 class Post_files(models.Model):
