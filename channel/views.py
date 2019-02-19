@@ -4,19 +4,25 @@ from .models import *
 import requests,arrow
 from django.contrib.auth import authenticate, login as auth_login,logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login as auth_login
 from django.db.models.fields.related import ManyToManyField
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator
-
+from django.template import RequestContext
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from django.http import HttpResponse,HttpResponseRedirect
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from .tokens import account_activation_token,password_reset_token
+from django.core.mail import EmailMessage
+
+from . forms import UserForm,PasswordForm
 
 def to_dict(instance):
     opts = instance._meta
@@ -61,6 +67,241 @@ def change_call_back(request):
 	response=requests.post(url, data=payload)
 	data=response.json()
 	#print(data)
+
+
+
+
+
+# login - logout
+
+
+#sending mail for password reset
+def password_mail(user,request):
+
+    current_site = get_current_site(request)
+    message = render_to_string('archile/password_reset_email.html', {
+        'user':user, 
+        'domain':current_site.domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'token': password_reset_token.make_token(user),
+    })
+    print("password reset")
+    mail_subject = 'Reset Password of Archile Account.'
+    to_email = user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
+#sending mail for activation
+def activation_mail(user,request):
+    current_site = get_current_site(request)
+    message = render_to_string('archile/acc_active_email.html', {
+        'user':user, 
+        'domain':current_site.domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'token': account_activation_token.make_token(user),
+    })
+    mail_subject = 'Account Activation Mail -  Archile'
+    to_email = user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
+#new registration
+def register(request):
+    # Like before, get the request's context.
+    if request.user.is_authenticated:
+        return redirect('/')
+    context = RequestContext(request)
+    # A boolean value for telling the template whether the registration was successful.
+    # Set to False initially. Code changes value to True when registration succeeds.
+    registered = False
+
+    # If it's a HTTP POST, we're interested in processing form data.
+    if request.method == 'POST':
+        # Attempt to grab information from the raw form information.
+        # Note that we make use of both UserForm and UserProfileForm.
+        user_form = UserForm(data=request.POST)
+        
+        # If the two forms are valid...
+        if user_form.is_valid():
+            # Save the user's form data to the database.
+            user = user_form.save(commit=False)
+
+            # Now we hash the password with the set_password method.
+            # Once hashed, we can update the user object.
+            user.set_password(user.password)
+            user.is_active = False
+            user.save()
+
+            # Now sort out the UserProfile instance.
+            # Since we need to set the user attribute ourselves, we set commit=False.
+            # This delays saving the model until we're ready to avoid integrity problems.
+            # user_profile = UserProfile(user=user)
+            # user_profile.save()
+
+            activation_mail(user,request)
+            return HttpResponse('Please confirm your email address to complete the registration')
+        # Invalid form or forms - mistakes or something else?
+        # Print problems to the terminal.
+        # They'll also be shown to the user.
+        else:
+            print(user_form.errors)
+
+    # Not a HTTP POST, so we render our form using two ModelForm instances.
+    # These forms will be blank, ready for user input.
+    else:
+        user_form = UserForm()
+    # Render the template depending on the context.
+    return render(request,'archile/login1.html',{'user_form': user_form,'registered': registered})
+
+
+#request a new confirmation mail.
+def new_confirmation_mail(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        try:
+            user = User.objects.get(email=email)
+            if user:
+                if user.is_active == False:
+                    activation_mail(user,request)
+                    return HttpResponse('Activation Link has been sent')
+                else:
+                    return HttpResponse('Account already activated')
+        except:
+            msg="No user with email : {} exist".format(email)
+            return HttpResponse(msg)
+    else:
+        return render(request,'archile/confirmation.html', {})
+
+
+#user login view
+def user_login(request):
+    # Like before, obtain the context for the user's request.
+    if request.user.is_authenticated:
+        return redirect('/')
+    context = RequestContext(request)
+
+    # If the request is a HTTP POST, try to pull out the relevant information.
+    if request.method == 'POST':
+        # Gather the username and password provided by the user.
+        # This information is obtained from the login form.
+        email = request.POST['email']
+        password = request.POST['password']
+        # Use Django's machinery to attempt to see if the username/password
+        # combination is valid - a User object is returned if it is.
+        try:
+            user = User.objects.get(email=email)
+            # Is the account active? It could have been disabled.
+            if user.is_active:
+                # If the account is valid and active, we can log the user in.
+                # We'll send the user back to the homepage.
+                user = authenticate(email=email, password=password)
+                auth_login(request, user)
+                return HttpResponseRedirect('/')
+            else:
+                # An inactive account was used - no logging in!
+                return HttpResponse("Your account is disabled.")
+        except:
+            # Bad login details were provided. So we can't log the user in.
+            print ("Invalid login details: {0}".format(email))
+            return HttpResponse("Invalid login details supplied.")
+
+    # The request is not a HTTP POST, so display the login form.
+    # This scenario would most likely be a HTTP GET.
+    else:
+        # No context variables to pass to the template system, hence the
+        # blank dictionary object...
+        user_form = UserForm()
+        return render(request,'archile/login1.html', {'user_form': user_form})
+
+
+
+#view for account activation
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        auth_login(request, user)
+        return render(request,'archile/information.html', {'message':'Thank you for your email confirmation. You will be redirected to Home page in sometime.'}) 
+    else:
+        return HttpResponse('Activation link is invalid!')
+
+
+
+#user logout
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required(login_url='/')
+def user_logout(request):
+    # Since we know the user is logged in, we can now just log them out.
+    logout(request)
+
+    # Take the user back to the homepage.
+    return HttpResponseRedirect('/')
+
+
+
+#view for requestion password reset. It takes email as input and mailes the email with unique token
+
+def request_reset(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        print(email)
+        try:
+            user = User.objects.get(email=email)
+            print(user.first_name)
+            if user.email:
+                #mailing unique token and link to the user
+                password_mail(user,request)
+                message = '''We've emailed you instructions for setting your password, if an account exists with the email you entered.
+    You should receive them shortly.
+    If you don't receive an email, please make sure you've entered the address you registered with,
+    and check your spam folder.
+    '''
+                return render(request,'archile/information.html', {'message':message})
+        except:
+            msg="No user with email : {} exist".format(email)
+            return HttpResponse(msg)
+    else:
+        return render(request,'archile/password_reset_form.html')
+
+
+#verifying the reset password link and reseting the pasasword
+def reset_password(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        user = None
+    if user is not None and password_reset_token.check_token(user, token):
+        if request.method == 'POST':
+            password_form = PasswordForm(data=request.POST)
+
+            # If the two forms are valid...
+            if password_form.is_valid():
+                password=password_form.cleaned_data['password']
+                user.set_password(password)
+                user.save()
+                message = 'Your password has been set. You will be redirected to SignIn page in sometime.'
+                return render(request,'archile/information.html', {'message':message}) 
+                
+            else:
+                print(password_form.errors)
+        else:
+            password_form = PasswordForm()
+        return render(request,'archile/password_reset_confirm.html',{'form':password_form}) 
+    else:
+        return HttpResponse('Password link is invalid!')
+        
+
+
+
+
+
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='/user_login')
@@ -119,19 +360,19 @@ def index(request):
 	return render(request,'archile/index.html',context)
 
 
-def user_login(request):
-	# change_call_back(request)
-	return render(request,'archile/login.html')
+# def user_login(request):
+# 	# change_call_back(request)
+# 	return render(request,'archile/login.html')
 
 #user logout
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required(login_url='/user_login')
-def user_logout(request):
-    # Since we know the user is logged in, we can now just log them out.
-    logout(request)
+# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+# @login_required(login_url='/user_login')
+# def user_logout(request):
+#     # Since we know the user is logged in, we can now just log them out.
+#     logout(request)
 
-    # Take the user back to the homepage.
-    return redirect(user_login)
+#     # Take the user back to the homepage.
+#     return redirect(user_login)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -572,6 +813,9 @@ def report_channel(request, c_id):
 		channel_act_obj.c_id = channel_object
 		channel_object.no_of_reports+=1
 	channel_act_obj.save()
+	if channel_object.no_of_reports >=1:
+		channel_object.status = False
+		channel_object.save()
 	channel_object.save()
 	return redirect(channel,c_id)
 

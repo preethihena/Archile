@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('',index,name="index"),
-    path('logout',user_logout,name="logout"),
-    path('user_login',user_login,name="user_login"),
+    path('logout/',user_logout,name="logout"),
+    path('user_login/',user_login,name="user_login"),
     re_path('archile/auth/user/(?P<token_id>[\w\!-@+]+)/',home,name="home"),
     re_path('actions/(?P<type_of>[a-z_]+)/(?P<action>[0-9]+)/(?P<any_id>[0-9]+)/',actions,name="actions"),
     path('search',search,name="search"),
@@ -28,7 +28,11 @@ urlpatterns = [
     path('my_subscriptions',my_subscriptions,name="my_subscriptions"),
     path('post_thread_action/<int:pt_id>/<int:typ>',post_thread_action,name="post_thread_action"),
     path('channel_thread_action/<int:ct_id>/<int:typ>',channel_thread_action,name="channel_thread_action"),
-
+    path('register/',register, name='register'),
+    path('mail_request/',new_confirmation_mail, name='new_confirmation_mail'),
+    path('password_reset/',request_reset, name='request_reset'),
+    re_path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/',activate, name='activate'),
+    re_path('reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/',reset_password, name='reset'),
 ]
 
 if settings.DEBUG:

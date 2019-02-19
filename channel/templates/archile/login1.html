@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Archile</title>
+	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Lobster+Two" rel="stylesheet">
+
+</head>
+<style type="text/css">
+	*{box-sizing: border-box;}
+	body,html{
+		width: 100%;
+		height: 100%;
+		margin: 0px;
+		padding: 0px;
+	}
+	.block{
+		position: absolute;
+		width: 50%;
+		height: 100%;
+
+	}
+	.archile{
+		font-family: 'Lobster Two', cursive;
+		/*font-family: 'Fredericka the Great', cursive;*/
+		font-size: 80px;
+		text-align: center;
+	}
+	.auth{
+		width: 400px;
+		border:2px solid #ddd;
+		border-radius: 2px;
+		margin: auto;
+		padding: 20px;
+		background-color: #eee;
+	}
+	.auth input[type=text],input[type=email],input[type=password],input[type=submit]{
+		width: 96%;
+		height: 40px;
+		border:2px solid #ddd;
+		border-radius: 7px;
+		text-align: center;
+		margin: 5px;
+		padding: 0px;
+		font-size: 16px;
+	}
+	.auth input[type=submit]{
+		background-color: #a8cbb0;
+		color: #222;
+	}
+</style>
+<body>
+<div class="block left"><center><img src="{% static 'archile/study_tree.png' %}" style="width: 90%;height: 90%;"></center></div>
+<div class="block right" style="left: 50%;">
+	<br><br>
+	<div class="archile">
+		Archile
+	</div>
+	<br>
+	<div id="login" class="auth">
+		<form autocomplete="off" action="{% url 'user_login' %}" method="post">
+			{% csrf_token %}
+			<br><input type="email" name="email" placeholder="Email">
+			<br><input type="password" name="password" placeholder="Password">
+			<br><div style="text-align: right;width: 100%;color: #555">Remember me<input type="checkbox" name="Remember"></div>
+			<br><input type="submit" name="login" value="Login">
+		</form>
+		<center><span style="cursor: pointer;color: #555;" onclick="document.getElementById('register').hidden=false;document.getElementById('login').hidden=true;">Not a member? Register.</span></center>
+	</div>
+	<div id="register" class="auth" hidden>
+		<form action="{% url 'register' %}" method="post">
+			{% csrf_token %}
+
+			{% for field in user_form.visible_fields %}
+	            {{ field.errors }}
+				{{ field.help_text }}<br />
+				{{ field }}
+			 {% endfor %}</br><br>
+			 {%comment%}
+			<br><input style="width: calc(48% - 5px);" type="text" name="fname" placeholder="First name"><input style="width: calc(48% - 5px);margin-right: 0px;" type="text" name="lname" placeholder="Last name">
+			<br><input type="email" name="email" placeholder="Email">
+			<br><input type="password" name="password" placeholder="Password">
+			<br><input type="password" name="cpassword" placeholder="Confirm password">{%endcomment%}
+			<br><br><input type="submit" name="login" value="Register">
+		</form>
+		<center><span style="cursor: pointer;color: #555;" onclick="document.getElementById('register').hidden=true;document.getElementById('login').hidden=false;">Already a member? Login.</span></center>
+	</div>
+</div>
+</body>
+</html>
