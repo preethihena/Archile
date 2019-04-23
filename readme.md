@@ -1,6 +1,8 @@
 # Website for Media Sharing-ARCHILE
 This is an Django based website which is developed by my team as part of our project in 5th semester engineering in Indian Institute of Information Technology, SriCity. 
 
+Archile is a  platform where fellow students can share resources,study materials etc with their fellow students.It is named **Archile** as a short form for Arcade(Storage) of files . It also has the feature of discussion forum in it which helps students to pose questions and fellow students ,seniors or teachers can answer their queries.It is limited only to a particular institution for now. It takes in the terminology of youtube . Channels are nothing but subjects . Content present in channels are called posts.The users who subscribe the channel can access the content of the channel(subject).There are many other features like filtering the search results , editing channels etc. This is a very helpful platform as all the content(of all divisions) taught in your school  is digitally available right in your phone. Juniors can get guidance from their seniors and teachers.It also helps in improving contacts with the people who are diving in the same pool as them.
+
 
 ## Requirements
 
